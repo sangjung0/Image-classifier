@@ -1,6 +1,20 @@
 import cv2
+from project_constants import FACE, NOSE, MOUTH, EYE
 
 class VideoData:
+    __COLORS = {
+        FACE : (255, 0, 0),
+        NOSE : (0, 255, 0),
+        MOUTH : (0, 0, 255),
+        EYE : (255,255,0)
+    }
+    __WEIGHT = {
+        FACE : 3,
+        NOSE : 3,
+        MOUTH : 3,
+        EYE : 3
+    }
+    
     def __init__(self, fileName = None):
         self.fileName = fileName
 
@@ -23,8 +37,8 @@ class VideoData:
 
             if ret:
                 if function is not None:
-                    lx, ly, rx, ry, color, weight = function(frame)
-                    cv2.rectangle(frame, (lx, ly), (rx, ry), color, weight)
+                    for kind, lx, ly, rx, ry in function(frame):
+                        cv2.rectangle(frame, (lx, ly), (rx, ry), VideoData.__COLORS[kind], VideoData.__WEIGHT[kind])
                 cv2.imshow(self.fileName, frame)
 
             if cv2.waitKey(delay) & 0xFF == ord('q'):
