@@ -28,7 +28,7 @@ class VideoData:
             self.__fileName = value
         else: raise Exception("fileName 값 잘못 됨")
         
-    def play(self, function = None):
+    def play(self, detector = None, filter = None, tracking = None, isNewScene = None):
         if(self.fileName is None): raise Exception("파일 이름 없음")
         cap = VideoData.read(self.fileName)
         delay = int(1000/cap.get(cv2.CAP_PROP_FPS))
@@ -36,9 +36,12 @@ class VideoData:
             ret, frame = cap.read()
 
             if ret:
-                if function is not None:
-                    for kind, lx, ly, rx, ry in function(frame):
+                img = filter(frame) if filter is not None else frame
+                if detector is not None:
+                    for kind, lx, ly, rx, ry in detector(img):
                         cv2.rectangle(frame, (lx, ly), (rx, ry), VideoData.__COLORS[kind], VideoData.__WEIGHT[kind])
+                if tracking is not None:
+                    tracking(img, isNewScene(img) if isNewScene else False)
                 cv2.imshow(self.fileName, frame)
 
             if cv2.waitKey(delay) & 0xFF == ord('q'):
