@@ -1,22 +1,11 @@
 import cv2
-from project_constants import FACE, NOSE, MOUTH, EYE
+import numpy as np
 
-class VideoData:
-    __COLORS = {
-        FACE : (255, 0, 0),
-        NOSE : (0, 255, 0),
-        MOUTH : (0, 0, 255),
-        EYE : (255,255,0)
-    }
-    __WEIGHT = {
-        FACE : 3,
-        NOSE : 3,
-        MOUTH : 3,
-        EYE : 3
-    }
-    
-    def __init__(self, fileName = None):
+class VideoData:    
+    def __init__(self, fileName = None, detectFrame = 1, scale = 1):
         self.fileName = fileName
+        self.__detectFrame = detectFrame
+        self.__scale = scale
 
     @property
     def fileName(self):
@@ -28,21 +17,33 @@ class VideoData:
             self.__fileName = value
         else: raise Exception("fileName 값 잘못 됨")
         
-    def play(self, detector = None, filter = None, tracking = None, isNewScene = None):
+    def play(self, detector = None, filter = None, tracker = None, sceneDetector = None):
         if(self.fileName is None): raise Exception("파일 이름 없음")
+
         cap = VideoData.read(self.fileName)
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         delay = int(1000/cap.get(cv2.CAP_PROP_FPS))
+        count = 0
+
         while(cap.isOpened()):
             ret, frame = cap.read()
+            if count % self.__detectFrame == 0:
+                count = 0
 
             if ret:
-                img = filter(frame) if filter is not None else frame
-                if detector is not None:
-                    for kind, lx, ly, rx, ry in detector(img):
-                        cv2.rectangle(frame, (lx, ly), (rx, ry), VideoData.__COLORS[kind], VideoData.__WEIGHT[kind])
-                if tracking is not None:
-                    tracking(img, isNewScene(img) if isNewScene else False)
+                resizedFrame = cv2.resize(frame, (width//self.__scale, height//self.__scale))
+                img = filter(resizedFrame) if filter is not None else resizedFrame
+                isNewScene = sceneDetector.isNewScene(img) if sceneDetector else False
+
+                if detector is not None and (count == 0 or isNewScene):
+                    faceLocation = detector.detect(img, draw=True, drawFrame=frame)
+
+                if tracker is not None:
+                    trackingData = tracker.tracking(img, isNewScene=isNewScene, draw=True, drawFrame=frame)
+
                 cv2.imshow(self.fileName, frame)
+            count += 1
 
             if cv2.waitKey(delay) & 0xFF == ord('q'):
                 break
