@@ -1,1 +1,1 @@
-TEST_VIDEO = './test/resources/test_video_1.mp4'
+TEST_VIDEO = './test/resources/test_video_3.mp4'
