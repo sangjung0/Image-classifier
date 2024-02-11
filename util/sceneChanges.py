@@ -19,3 +19,19 @@ class CalcHistogram:
             return result > CalcHistogram.THRESHOLD
     
     
+class CalcEdge:
+    THRESHOLD = 1.25
+    def __init__(self) -> None:
+        self.__prevEdge = None
+
+    def isNewScene(self, img, color = cv2.COLOR_BGR2GRAY):
+        edge = cv2.Canny(cv2.cvtColor(img, color), 50, 150)
+        if self.__prevEdge is None:
+            self.__prevEdge = edge
+            return False
+        else:
+            diff = cv2.absdiff(self.__prevEdge, edge)
+            result = np.sum(diff) / np.sum(self.__prevEdge)
+            self.__prevEdge = edge
+            return result > CalcEdge.THRESHOLD
+        

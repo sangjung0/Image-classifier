@@ -4,7 +4,7 @@
 
 from util.VideoData import VideoData
 from util import imgFilters
-from util.sceneChanges import CalcHistogram
+from util.sceneChanges import CalcHistogram, CalcEdge
 
-__all__ = ['VideoData', 'imgFilters', 'CalcHistogram']
+__all__ = ['VideoData', 'imgFilters', 'CalcHistogram', 'CalcEdge']
 __version__ = '0.1'
