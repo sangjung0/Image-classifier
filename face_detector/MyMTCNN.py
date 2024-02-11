@@ -5,10 +5,10 @@ from project_constants import FACE, NOSE, EYE, MOUTH
 
 class MyMTCNN(FaceDetector):
     def __init__(self):
-        self.mtcnn = MTCNN()
+        self.__mtcnn = MTCNN()
 
     def detect(self, img, color = cv2.COLOR_BGR2RGB):
-        source = self.mtcnn.detect_faces(cv2.cvtColor(img, color))
+        source = self.__mtcnn.detect_faces(cv2.cvtColor(img, color))
         boxs = []
         for i in source:
             #얼굴
