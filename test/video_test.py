@@ -1,31 +1,28 @@
-from util import VideoData
+from video import VideoPlayer
 from util import imgFilters
 from face_detector import MyMTCNN, HaarCascade, FaceDetectorFilter
 from face_tracker import LucasKanade, GunnerFarneback
 from util import CalcHistogram, CalcEdge
 
-def readTest(fileName, scale):
-    video = VideoData(fileName)
-    video.play()
+def readTest(fileName):
+    video = VideoPlayer(fileName)
+    video.singleProcessPlay()
 
 def mtcnnTest(fileName, scale):
-    video = VideoData(fileName, scale=scale)
-    faceDetectorFilter = FaceDetectorFilter(MyMTCNN(), scale = scale)
-    video.play(detector = faceDetectorFilter)
+    video = VideoPlayer(fileName, scale=scale, detector=FaceDetectorFilter(MyMTCNN()))
+    video.singleProcessPlay()
 
 def haarTest(fileName, scale):
-    video = VideoData(fileName, scale=scale)
-    faceDetectorFilter = FaceDetectorFilter(HaarCascade(), scale = scale)
-    video.play(detector = faceDetectorFilter)
+    video = VideoPlayer(fileName, scale=scale, detector=FaceDetectorFilter(HaarCascade()))
+    video.singleProcessPlay()
 
 def imgFilterTest(fileName, scale):
-    video = VideoData(fileName, scale=scale)
-    video.play( filter = imgFilters.bilateralFiltering)
+    video = VideoPlayer(fileName, scale=scale, filter = imgFilters.bilateralFiltering)
+    video.singleProcessPlay()
 
 def trackingTest(fileName, scale):
-    video = VideoData(fileName, scale=scale)
-    tracker = LucasKanade(scale=scale)
-    video.play( tracker= tracker)
+    video = VideoPlayer(fileName, scale=scale, tracker=LucasKanade())
+    video.singleProcessPlay()
 
 def trackingTest2(fileName, scale):
     pass
@@ -35,11 +32,14 @@ def trackingTest2(fileName, scale):
 
     
 def sceneChangeTest(fileName, scale):
-    video = VideoData(fileName, scale=scale)
-    tracker = LucasKanade(scale=scale)
-    video.play( tracker= tracker, sceneDetector=CalcHistogram())
+    video = VideoPlayer(fileName, scale=scale, tracker=LucasKanade(), sceneDetector=CalcHistogram())
+    video.singleProcessPlay()
 
 def sceneChangeTest2(fileName, scale):
-    video = VideoData(fileName, scale=scale)
-    tracker = LucasKanade(scale=scale)
-    video.play( tracker= tracker, sceneDetector=CalcEdge())
+    video = VideoPlayer(fileName, scale=scale, tracker=LucasKanade(), sceneDetector=CalcEdge())
+    video.singleProcessPlay()
+
+def test1(fileName, scale):
+    video = VideoPlayer(fileName, scale=scale, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), filter=imgFilters.gaussianFiltering)
+    video.singleProcessPlay(  )
+    # haar은 명암을 통해서 얼굴 인식하니까 명암비 조작이 더 좋을지도
