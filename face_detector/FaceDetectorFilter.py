@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
 from project_constants import FACE, NOSE, MOUTH, EYE
+from face_detector.FaceDetector import FaceDetector
 
-class FaceDetectorFilter:
+class FaceDetectorFilter(FaceDetector):
     __COLORS = {
         FACE : (255, 0, 0),
         NOSE : (0, 255, 0),
@@ -16,12 +17,15 @@ class FaceDetectorFilter:
         EYE : 3
     }
 
-    def __init__(self, detector, scale = 1):
+    def __init__(self, detector):
         self.__detector = detector
-        self.__scale = scale
 
-    # if draw == True then drawFrame is original frame
-    def detect(self, img, draw = False, drawFrame = None):
+    @property
+    def colorConstant(self):
+        return self.__detector.colorConstant
+
+    # if draw == True then need drawFrame and scale, drawFrame is original frame 
+    def detect(self, img, draw = False, drawFrame = None, scale = None):
         faceLocation = []
         for kind, lx, ly, rx, ry in self.__detector.detect(img):
             if kind == FACE:
@@ -29,7 +33,7 @@ class FaceDetectorFilter:
             if draw:
                 cv2.rectangle(
                     drawFrame, 
-                    (lx*self.__scale, ly*self.__scale), (rx*self.__scale, ry*self.__scale), 
+                    (lx*scale, ly*scale), (rx*scale, ry*scale), 
                     FaceDetectorFilter.__COLORS[kind], FaceDetectorFilter.__WEIGHT[kind]
                     )
         return faceLocation
