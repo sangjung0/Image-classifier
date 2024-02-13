@@ -4,11 +4,16 @@ from face_detector.FaceDetector import FaceDetector
 from project_constants import FACE, NOSE, EYE, MOUTH
 
 class MyMTCNN(FaceDetector):
-    def __init__(self):
+    def __init__(self, color = cv2.COLOR_BGR2RGB):
         self.__mtcnn = MTCNN()
+        self.__color = color
 
-    def detect(self, img, color = cv2.COLOR_BGR2RGB):
-        source = self.__mtcnn.detect_faces(cv2.cvtColor(img, color))
+    @property
+    def colorConstant(self):
+        return self.__color
+
+    def detect(self, img):
+        source = self.__mtcnn.detect_faces(img)
         boxs = []
         for i in source:
             #얼굴
