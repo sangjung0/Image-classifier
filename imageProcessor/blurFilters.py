@@ -3,9 +3,9 @@ import numpy as np
 
 def meanFiltering(img, inplace=False):
     if inplace:
-        img = cv2.blur(img, (5,5))
+        img = cv2.blur(img, (50,50))
         return img
-    return cv2.blur(img, (5,5))
+    return cv2.blur(img, (50,50))
 
 def medianFiltering(img, inplace=False):
     if inplace:
@@ -15,9 +15,9 @@ def medianFiltering(img, inplace=False):
 
 def gaussianFiltering(img, inplace=False):
     if inplace:
-        img = cv2.GaussianBlur(img, (11,11), 0)
+        img = cv2.GaussianBlur(img, (5,5), 0)
         return img
-    return cv2.GaussianBlur(img, (11,11), 0)
+    return cv2.GaussianBlur(img, (5,5), 0)
 
 def bilateralFiltering(img, inplace=False):
     if inplace:
