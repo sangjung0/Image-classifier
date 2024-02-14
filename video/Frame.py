@@ -34,7 +34,7 @@ class Frame:
         if cv2Constant == 'scale':
             self.__imgs[cv2Constant] = self.__filter(cv2.resize(self.frame, (self.__rWidth, self.__rHeight))) if self.__filter is not None else cv2.resize(self.frame, (self.__rWidth, self.__rHeight))
         else:
-            self.__imgs[cv2Constant] = self.__filter(cv2.cvtColor(self.getFrame(), cv2Constant)) if self.__filter is not None else cv2.cvtColor(self.getFrame(), cv2Constant) 
+            self.__imgs[cv2Constant] = cv2.cvtColor(self.getFrame(), cv2Constant) 
         return self.__imgs[cv2Constant]
 
     
