@@ -23,7 +23,7 @@ class VideoData:
         cap = VideoData.read(self.fileName)
         self.__width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.__height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.__fps = int(1000/cap.get(cv2.CAP_PROP_FPS))
+        self.__fps = int(cap.get(cv2.CAP_PROP_FPS))
         cap.release()
 
     def __enter__(self):
