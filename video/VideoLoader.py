@@ -1,15 +1,15 @@
 from multiprocessing import Value
 from project_constants import PAUSE, RUN, STOP
 from video.VideoBuffer import VideoBuffer
-from video.VideoData import VideoData
 from video.Frame import Frame
 from video.VideoSection import VideoSection
 from video.VideoProcessor import VideoProcessor
 import cv2
 
 class VideoLoader:
-    def __init__(self, videoBuffer: VideoBuffer, flag: Value): # type: ignore
+    def __init__(self, videoBuffer: VideoBuffer, flag: Value, lastIndex): # type: ignore
         self.__videoBuffer = videoBuffer
+        self.__lastIndex = lastIndex
         self.__flag = flag
         self.__frames = []
         self.__index = 0
@@ -28,7 +28,11 @@ class VideoLoader:
     def get(self):
         try:
             if len(self.__frames) == self.__index:
-                self.__frames = self.__videoBuffer.get().frameAry
+                videoSection = self.__videoBuffer.get(self.__lastIndex.value+1)
+                self.__frames = videoSection.frameAry
+                self.__index = 0
+                print(self.__lastIndex.value, "완료")
+                self.__lastIndex.value = videoSection.index
             frame = self.__frames.pop(self.__index)
             self.__index += 1
             return RUN, True, frame
