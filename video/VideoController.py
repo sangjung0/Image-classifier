@@ -12,7 +12,7 @@ import time
 from video.VideoSection import VideoSection
 
 class VideoController:
-    def __init__(self, fileName:str, detectFrameCount:int = 1, scale:int = 1, cfl:int = 100, filter = None, detector = None, tracker = None, sceneDetector = None, draw:bool = False ) -> None:
+    def __init__(self, fileName:str, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, filter = None, detector = None, tracker = None, sceneDetector = None, draw:bool = False ) -> None:
         self.__videoData = VideoData(fileName)
 
         self.frameGenerator = FrameGenerator(
@@ -26,6 +26,7 @@ class VideoController:
         self.data = Queue()
         self.result = Queue()
         self.flag = Value('i',PAUSE)
+        self.lastIndex = Value('i', -1)
         self.processes = []
 
 
@@ -45,7 +46,7 @@ class VideoController:
             processes.append(p)
         Thread(target=videoBuffer, args=(self.result, self.flag, lambda : not any(p.is_alive() for p in processes))).start()
 
-        return VideoLoader(videoBuffer, self.flag)
+        return VideoLoader(videoBuffer, self.flag, self.lastIndex)
     
 
     def videoDistributor(self): # type: ignore
@@ -56,19 +57,21 @@ class VideoController:
             it = iter(v)
             while True:
                 if self.flag.value == RUN:
-                    try:
-                        index, frame = next(it)
-                        frameAry.append(self.frameGenerator(index, frame))
-                        if len(frameAry) >= self.__cfl:
-                            self.data.put(pickle.dumps(VideoSection(videoSectionIndex, frameAry)))
-                            frameAry.clear()
-                            print(videoSectionIndex, "보냄")
-                            videoSectionIndex += 1
-                    except StopIteration:
-                        break
+                    if videoSectionIndex - self.lastIndex.value < 5:
+                        try:
+                            index, frame = next(it)
+                            frameAry.append(self.frameGenerator(index, frame))
+                            if len(frameAry) >= self.__cfl:
+                                self.data.put(pickle.dumps(VideoSection(videoSectionIndex, frameAry)))
+                                frameAry.clear()
+                                print(videoSectionIndex, "보냄")
+                                videoSectionIndex += 1
+                        except StopIteration:
+                            break
                 elif self.flag.value == PAUSE:
                     time.sleep(0.5)
                 elif self.flag.value == STOP:
-                    break
-        print("영상 로드 프로세서 종료")
+                    print("영상 로드 프로세서 종료")
+                    return
+        print("영상 로드 종료")
         self.flag.value = END_OF_LOAD
