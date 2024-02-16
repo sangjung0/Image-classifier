@@ -10,3 +10,6 @@ class VideoSection:
     @property
     def frameAry(self):
         return self.__frameAry
+    
+    def __lt__(self, other):
+        return self.index < other.index
