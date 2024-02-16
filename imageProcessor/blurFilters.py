@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+#현재 inplace 의미 없음. 수정할 것
 def meanFiltering(img, inplace=False):
     if inplace:
         img = cv2.blur(img, (50,50))
