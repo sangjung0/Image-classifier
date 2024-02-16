@@ -36,7 +36,7 @@ class VideoProcessor:
     def __call__(self, data: Queue, result: Queue, flag: Value): # type: ignore
         while True:
             if flag.value == PAUSE:
-                time.sleep(0.5)
+                pass
             elif flag.value == STOP:
                 break
             else:

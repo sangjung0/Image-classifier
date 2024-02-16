@@ -3,6 +3,7 @@
 """
 
 from video.VideoPlayer import VideoPlayer
+from video.VideoController import VideoController
 
-__all__ = ['VideoPlayer']
+__all__ = ['VideoPlayer', 'VideoController']
 __version__='0.1'

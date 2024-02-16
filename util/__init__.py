@@ -3,8 +3,7 @@
 """
 
 
-from util import imgFilters
 from util.sceneChanges import CalcHistogram, CalcEdge
 
-__all__ = ['imgFilters', 'CalcHistogram', 'CalcEdge']
+__all__ = ['CalcHistogram', 'CalcEdge']
 __version__ = '0.1'
