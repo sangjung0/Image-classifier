@@ -10,3 +10,7 @@ MOUTH = 'mouth'
 EYE = 'eye'
 FACE_MODEL = './face_detector/model/haarcascade_frontalface_default.xml'
 EYE_MODEL = './face_detector/model/haarcascade_eye.xml'
+RUN = 100
+STOP = 0
+PAUSE = 101
+END_OF_LOAD = 102
