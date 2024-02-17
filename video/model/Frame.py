@@ -37,15 +37,15 @@ class Frame:
             self.__imgs[cv2Constant] = cv2.cvtColor(self.getFrame(), cv2Constant) 
         return self.__imgs[cv2Constant]
     
-class FrameGenerator:
-    def __init__(self, width, height, scale, filter, isDetect):
-        self.__width = width
-        self.__height = height
-        self.__rWidth = width // scale
-        self.__rHeight =height // scale
-        self.__scale = scale
-        self.__isDetect = isDetect
-        self.__filter = filter
+    class FrameGenerator:
+        def __init__(self, width, height, scale, filter, isDetect):
+            self.__width = width
+            self.__height = height
+            self.__rWidth = width // scale
+            self.__rHeight =height // scale
+            self.__scale = scale
+            self.__isDetect = isDetect
+            self.__filter = filter
 
-    def generate(self, index, frame) :
-        return Frame(index, frame, self.__width, self.__height, self.__rWidth, self.__rHeight, self.__scale, self.__isDetect(index), self.__filter)
+        def generate(self, index, frame) :
+            return Frame(index, frame, self.__width, self.__height, self.__rWidth, self.__rHeight, self.__scale, self.__isDetect(index), self.__filter)
