@@ -49,7 +49,6 @@ class VideoData:
                 self.__prevFrame = frame
                 self.__index += 1
                 return self.__index, frame
-            #self.__cap.release()
             return StopIteration
 
     @staticmethod

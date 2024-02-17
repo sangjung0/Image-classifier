@@ -4,25 +4,23 @@ from video.VideoController import VideoController
 from video.VideoLoader import VideoLoader
 import time
 class VideoPlayer:
-    def __init__(self, videoController:VideoController, videoLoader:VideoLoader):
+    def __init__(self, videoLoader:VideoLoader):
         self.__videoLoader = videoLoader
-        self.__videoController = videoController
 
     def play(self):
         self.__videoLoader.run()
-        delay = 1000 // self.__videoController.videoData.fps
+        delay = 1000 // self.__videoLoader.videoData.fps
         print("딜레이 :", delay)
-        fileName = self.__videoController.videoData.fileName
+        fileName = self.__videoLoader.videoData.fileName
         while True:
             flag, ret, frame = self.__videoLoader.get()
             if ret:
-                cv2.imshow(fileName, frame.frame)
+                cv2.imshow(fileName, frame.getFrame())
             if flag == STOP:
                 break
                 
             if cv2.waitKey(delay) & 0xFF == ord('q'):
                 break
-            time.sleep(delay/1000)
         self.__videoLoader.stop()
         cv2.destroyAllWindows()
     
