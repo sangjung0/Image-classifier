@@ -47,6 +47,7 @@ from util import CalcHistogram, CalcEdge
 #     # haar은 명암을 통해서 얼굴 인식하니까 명암비 조작이 더 좋을지도
 
 def multiProcessPlayTest(fileName):
-    vc = VideoController(fileName, scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
-    vl = vc.getVideoLoader()
-    VideoPlayer(vc, vl).play()
+    #vl = VideoController.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), filter = deblurFilters.wienerFiltering, detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
+    vl = VideoController.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
+    #vl = VideoController.startAndGetVideoLoader(fileName)
+    VideoPlayer(vl).play()
