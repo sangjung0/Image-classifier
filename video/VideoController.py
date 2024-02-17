@@ -1,77 +1,72 @@
-from video.VideoBuffer import VideoBuffer
-from video.VideoData import VideoData
-from video.Frame import FrameGenerator
-from video.VideoLoader import VideoLoader
-from video.VideoProcessor import VideoProcessorGenerator
 from multiprocessing import Process, Queue, Value
-from project_constants import STOP, RUN, PAUSE, END_OF_LOAD
-from threading import Thread
 import pickle
+from threading import Thread
 import time
 
-from video.VideoSection import VideoSection
+from video.VideoBuffer import VideoBuffer
+from video.model import Frame
+from video.VideoData import VideoData
+from video.model.VideoSection import VideoSection
+from video.VideoData import VideoData
+from video.VideoLoader import VideoLoader
+from video.VideoProcessor import VideoProcessorGenerator
+from project_constants import STOP, RUN, PAUSE, END_OF_LOAD
+from util.util import AllProcessIsTerminated
 
 class VideoController:
-    def __init__(self, fileName:str, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, filter = None, detector = None, tracker = None, sceneDetector = None, draw:bool = False ) -> None:
-        self.__videoData = VideoData(fileName)
 
-        self.frameGenerator = FrameGenerator(
-            self.__videoData.width, self.__videoData.height, scale, filter,
-            lambda x: x % detectFrameCount == 0, 
-        ).generate
+    @staticmethod
+    def startAndGetVideoLoader(fileName:str, processorNumber:int = 4, detectFrameCount:int = 1, scale:int = 1, cfl:int = 50, filter = None, detector = None, tracker = None, sceneDetector = None, draw:bool = False):
 
-        self.videoProcessorGenerator = VideoProcessorGenerator(detector, tracker, sceneDetector, draw).generate
-        self.__cfl = cfl
-
-        self.data = Queue()
-        self.result = Queue()
-        self.flag = Value('i',PAUSE)
-        self.lastIndex = Value('i', -1)
-        self.processes = []
-
-
-    @property
-    def videoData(self):
-        return self.__videoData
-
-    def getVideoLoader(self, processorNumber = 1):
-
+        videoData = VideoData(fileName)
         videoBuffer = VideoBuffer()
         processes = []
+        videoProcessorGenerator = VideoProcessorGenerator(detector, tracker, sceneDetector, draw).generate
+        data = Queue()
+        result = Queue()
+        flag = Value('i',PAUSE)
+        lastIndex = Value('i', 0)
 
-        Process(target=self.videoDistributor).start()
+        Process(target=VideoController.__videoDistributor, args=(data, flag, lastIndex, videoData, scale, detectFrameCount, cfl, filter)).start()
+
         for _ in range(processorNumber):
-            p = Process(target=self.videoProcessorGenerator(), args=(self.data, self.result, self.flag))
+            p = Process(target=videoProcessorGenerator(), args=(data, result, flag))
             p.start()
             processes.append(p)
-        Thread(target=videoBuffer, args=(self.result, self.flag, lambda : not any(p.is_alive() for p in processes))).start()
 
-        return VideoLoader(videoBuffer, self.flag, self.lastIndex)
-    
+        Thread(target=videoBuffer, args=(result, flag, AllProcessIsTerminated(processes).allProcessIsTerminated)).start()
 
-    def videoDistributor(self): # type: ignore
+        return VideoLoader(videoData, videoBuffer, flag, lastIndex)
+
+    @staticmethod
+    def __videoDistributor(data: Queue, flag: Value, lastIndex: Value, videoData:VideoData, scale:int, detectFrameCount:int, cfl, filter): # type: ignore
         frameAry = []
         videoSectionIndex = 0
 
-        with self.__videoData as v:
+        frameGenerator = Frame.FrameGenerator(
+            videoData.width, videoData.height, scale, filter,
+            lambda x: x % detectFrameCount == 0, 
+        ).generate
+
+        with videoData as v:
             it = iter(v)
             while True:
-                if self.flag.value == RUN:
-                    if videoSectionIndex - self.lastIndex.value < 5:
+                if flag.value == RUN:
+                    if videoSectionIndex - lastIndex.value < 5:
                         try:
                             index, frame = next(it)
-                            frameAry.append(self.frameGenerator(index, frame))
-                            if len(frameAry) >= self.__cfl:
-                                self.data.put(pickle.dumps(VideoSection(videoSectionIndex, frameAry)))
+                            frameAry.append(frameGenerator(index, frame))
+                            if len(frameAry) >= cfl:
+                                data.put(pickle.dumps(VideoSection(videoSectionIndex, frameAry)))
                                 frameAry.clear()
                                 print(videoSectionIndex, "보냄")
                                 videoSectionIndex += 1
                         except StopIteration:
                             break
-                elif self.flag.value == PAUSE:
+                elif flag.value == PAUSE:
                     time.sleep(0.5)
-                elif self.flag.value == STOP:
+                elif flag.value == STOP:
                     print("영상 로드 프로세서 종료")
                     return
         print("영상 로드 종료")
-        self.flag.value = END_OF_LOAD
+        flag.value = END_OF_LOAD
