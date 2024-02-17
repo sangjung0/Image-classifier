@@ -1,18 +1,27 @@
-from multiprocessing import Value
-from project_constants import PAUSE, RUN, STOP
-from video.VideoBuffer import VideoBuffer
-from video.Frame import Frame
-from video.VideoSection import VideoSection
-from video.VideoProcessor import VideoProcessor
+from multiprocessing import Queue, Value
 import cv2
+import bisect
+import pickle
+
+from project_constants import PAUSE, RUN, STOP
+from video.model import Frame
+from video.model import VideoSection
+from video.VideoProcessor import VideoProcessor
 
 class VideoLoader:
-    def __init__(self, videoBuffer: VideoBuffer, flag: Value, lastIndex): # type: ignore
-        self.__videoBuffer = videoBuffer
+    def __init__(self, videoData, result:Queue, isFinish:object, flag: Value, lastIndex: Value): # type: ignore
+        self.__videoData = videoData
+        self.__result =result
+        self.__isFinish = isFinish
         self.__lastIndex = lastIndex
         self.__flag = flag
+        self.__videoSections = []
         self.__frames = []
         self.__index = 0
+
+    @property
+    def videoData(self):
+        return self.__videoData
 
     def pause(self):
         self.__flag.value = PAUSE
@@ -25,24 +34,35 @@ class VideoLoader:
             self.__flag.value = RUN
         else: raise Exception("프로세서 종료됨")
 
-    def get(self):
-        try:
-            if len(self.__frames) == self.__index:
-                videoSection = self.__videoBuffer.get(self.__lastIndex.value+1)
-                self.__frames = videoSection.frameAry
+    def getVideoSection(self):
+        if self.__result.empty():
+            if self.__isFinish():
+                return False, None
+        else:
+            videoSection = pickle.loads(self.__result.get())
+            print(videoSection.index, "받음")
+            if videoSection.index == self.__lastIndex.value:
+                return True, videoSection
+            bisect.insort(self.__videoSections, videoSection)
+        if len(self.__videoSections) > 0 and self.__videoSections[0].index == self.__lastIndex.value:
+            return True, self.__videoSections.pop(0)
+        return True, None
+
+    def getFrame(self):
+        if len(self.__frames) == self.__index:
+            ret, videoSection = self.getVideoSection()
+            if ret:
+                if videoSection is None:
+                    return RUN, False, None
+                self.__frames = videoSection.frames
                 self.__index = 0
                 print(self.__lastIndex.value, "완료")
-                self.__lastIndex.value = videoSection.index
-            frame = self.__frames.pop(self.__index)
-            self.__index += 1
-            return RUN, True, frame
-        except Exception as err:
-            if self.__flag == STOP:
-                return STOP, False, None
-            elif self.__flag == PAUSE:
-                return PAUSE, False, None
+                self.__lastIndex.value += 1
             else:
-                return RUN, False, None
+                return STOP, False, None
+        frame = self.__frames[self.__index]
+        self.__index += 1
+        return RUN, True, frame
 
 
             
