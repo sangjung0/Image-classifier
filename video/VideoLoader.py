@@ -27,9 +27,7 @@ class VideoLoader:
     def stop(self):
         self.__flag.value = STOP
         self.__join()
-        print("모든 프로세서 종료")
         self.__mediumJoin()
-        print("모든 전송매체 종료")
 
     def run(self):
         if self.__flag.value != STOP:
@@ -45,7 +43,6 @@ class VideoLoader:
                 return RUN, False, None
             self.__frames = videoSection.frames
             self.__index = 0
-            print(self.__lastIndex.value, "완료")
             self.__lastIndex.value += 1
         frame = self.__frames[self.__index]
         self.__index += 1

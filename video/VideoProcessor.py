@@ -5,6 +5,7 @@ import time
 from video.model import VideoSection
 from util.transceiver import TransceiverInterface
 from project_constants import STOP, PAUSE, END_OF_LOAD
+from util.util import Timer, Loger
 
 class VideoProcessor:
     def __init__(self, detector, tracker, sceneDetector, draw:bool):
@@ -14,7 +15,6 @@ class VideoProcessor:
         self.__sceneDetector = sceneDetector
 
     def processing(self, videoSection:VideoSection):
-        print(videoSection.index, "처리 시작")
         tracker = None
         if  self.__tracker is not None:
             tracker = self.__tracker.getTracker() #고민해보자
@@ -32,26 +32,38 @@ class VideoProcessor:
             if tracker is not None:
                 trackingData = tracker.tracking(frame.getFrame(self.__tracker.colorConstant), isNewScene, self.__draw, frame.frame, frame.scale)
 
-        print(videoSection.index, "처리 완료")
         return videoSection
     
     def __call__(self, data: Queue, result: Queue, flag: Value, transceiver:TransceiverInterface): # type: ignore
         try:
+            timer = Timer() # timer
+            loger = Loger("VideoProcessor") # logger
             while True:
                 if flag.value == PAUSE:
                     time.sleep(0.1)
                 elif flag.value == STOP:
                     break
                 else:
-                    ret, data_ = transceiver.receive(data)
-                    if ret:
-                        transceiver.send(result, (self.processing(data_)))
-                    elif flag.value == END_OF_LOAD:
-                        break
+                    if not data.empty():
+                        timer.start() # timer
+                        ret, data_ = transceiver.receive(data)
+                        timer.end() # timer
+                        loger("데이터 수신 후 압축 해제", timer=timer) # loger
+                        if ret:
+                            timer.start() # timer
+                            temp = self.processing(data_)
+                            timer.end() # timer
+                            loger("데이터 연산 완료", timer=timer) # loger
+                            timer.start() # timer
+                            transceiver.send(result, temp)
+                            timer.end() # timer
+                            loger("데이터 압축 후 전송", timer=timer) # loger
+                        elif flag.value == END_OF_LOAD:
+                            break
                     time.sleep(0.1)
-            print(os.getpid(), "연산 프로세서 종료")
+            loger(os.getpid(), "연산 프로세서 종료")
         except Exception as e:
-            print(os.getpid(), "연산 프로세서 오류", e)
+            loger(os.getpid(), "연산 프로세서 오류", e)
         return
     
 class VideoProcessorGenerator:

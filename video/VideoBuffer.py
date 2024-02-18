@@ -5,7 +5,8 @@ import time
 
 from util.transceiver import TransceiverInterface
 from video.model import VideoSection
-from project_constants import STOP, PAUSE, RUN
+from project_constants import STOP, PAUSE
+from util.util import Loger, Timer
 class VideoBuffer:
     def __init__(self):
         self.__videoSections = []
@@ -23,19 +24,27 @@ class VideoBuffer:
     
     def __call__(self, result:Queue, flag:Value, finish, transceiver:TransceiverInterface): # type: ignore
         try:
+            timer = Timer() # timer
+            loger = Loger("VideoBuffer") # loger
             while True:
                 if flag.value == STOP:
                     break
                 elif flag.value == PAUSE:
                     time.sleep(0.1)
                 else:
-                    ret, data = transceiver.receive(result)
-                    if ret:
-                        self.append(data)
-                        print("버퍼에 담김")
-                    elif finish():
-                        flag.value = STOP
+                    if not result.empty():
+                        timer.start()
+                        ret, data = transceiver.receive(result)
+                        timer.end()
+                        loger("데이터 수신 후 압축 해제", timer=timer)
+                        if ret:
+                            timer.start() # timer
+                            self.append(data)
+                            timer.end() # timer
+                            loger("버퍼에 담김", timer=timer) # loger
+                        elif finish():
+                            flag.value = STOP
         except Exception as e:
-            print("버퍼 쓰레드 오류", e)
-        print("버퍼 쓰레드 종료")
+            loger("버퍼 쓰레드 오류",e) # loger
+        loger("버퍼 쓰레드 종료") # loger
         return
