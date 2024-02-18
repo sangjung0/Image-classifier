@@ -4,3 +4,16 @@ class AllProcessIsTerminated:
 
     def allProcessIsTerminated(self):
         return not any(p.is_alive() for p in self.__processes)
+    
+    def wait(self):
+        for p in self.__processes:
+            p.join()
+
+class AllTransmissionMediumIsTerminated:
+    def __init__(self, mediums):
+        self.__mediums = mediums
+    
+    def wait(self):
+        for m in self.__mediums:
+            m.close()
+            m.join_thread()
