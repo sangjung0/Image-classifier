@@ -1,5 +1,7 @@
+from video.model.Frame import Frame
+from util.compressor import CompressorInterface
 class VideoSection:
-    def __init__(self, index, frames = [], compressor = None):
+    def __init__(self, index, frames = [], compressor:CompressorInterface = None):
         self.__index = index
         self.__frames = frames
         self.__compressor = compressor
@@ -7,13 +9,14 @@ class VideoSection:
     @property
     def index(self):
         return self.__index
-
-    @property
-    def frames(self):
-        return self.__frames
     
-    def append(self, frame):
-        self.__frames.append(frame if self.__compressor is None else self.__compressor(frame))
+    def append(self, frame:Frame):
+        if self.__compressor is not None:
+            imgs = frame.imgs
+            keys = imgs.keys()
+            for key in keys:
+                imgs[key] = self.__compressor.compress(imgs[key])
+        self.__frames.append(frame)
 
     def clear(self, index):
         self.__frames.clear()
@@ -24,3 +27,24 @@ class VideoSection:
     
     def __len__(self):
         return len(self.__frames)
+    
+    def __iter__(self):
+        return VideoSection.__VideoSectionIter(self.__frames, self.__compressor)
+    
+    class __VideoSectionIter:
+        def __init__(self, frames, compressor:CompressorInterface):
+            self.__index = 0
+            self.__frames = frames
+            self.__compressor = compressor
+        
+        def __next__(self):
+            if self.__index < len(self.__frames):
+                frame = self.__frames[self.__index]
+                self.__index += 1
+                if self.__compressor is not None:
+                    imgs = frame.imgs
+                    keys = imgs.keys()
+                    for key in keys:
+                        imgs[key] = self.__compressor.decompress(imgs[key])
+                return frame
+            raise StopIteration
