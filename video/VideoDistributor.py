@@ -10,9 +10,10 @@ from project_constants import PAUSE, STOP, RUN, END_OF_LOAD
 from util.util import Loger, Timer
 
 class VideoDistributor:
-    def __init__(self, videoData:VideoData, scale:int, detectFrameCount:int, cfl:int, filter:Type[object]):
+    def __init__(self, videoData:VideoData, scale:int, detectFrameCount:int, cfl:int, bufSize:int, filter:Type[object]):
         self.__videoData = videoData
         self.__cfl = cfl
+        self.__bufSize = bufSize
         self.__frameGenerator = Frame.FrameGenerator(
             videoData.width, videoData.height, scale, filter,
             lambda x: x % detectFrameCount == 0, 
@@ -32,7 +33,7 @@ class VideoDistributor:
                 it = iter(v)
                 while True:
                     if flag.value == RUN:
-                        if videoSectionIndex - lastIndex.value < 5:
+                        if videoSectionIndex - lastIndex.value < self.__bufSize:
                             try:
                                 index, frame = next(it)
                                 videoSection.append(self.__frameGenerator(index, frame))

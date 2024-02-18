@@ -17,7 +17,7 @@ class VideoController:
 
     @staticmethod
     def startAndGetVideoLoader(
-        fileName:str, processorNumber:int = 3, detectFrameCount:int = 1, scale:int = 1, cfl:int = 50, 
+        fileName:str, processorNumber:int = 3, detectFrameCount:int = 1, scale:int = 1, cfl:int = 50, bufSize:int = 5,
         transceiver:TransceiverInterface = Transceiver(PickleSerializer(), UnCompressor()), 
         filter = None, detector = None, tracker = None, sceneDetector = None, draw:bool = False
         ):
@@ -30,7 +30,7 @@ class VideoController:
         flag = Value('i',PAUSE)
         lastIndex = Value('i', 0)
 
-        videoDistributorProcess = Process(target=VideoDistributor(videoData, scale, detectFrameCount, cfl, filter), args=(data, flag, lastIndex, transceiver))
+        videoDistributorProcess = Process(target=VideoDistributor(videoData, scale, detectFrameCount, cfl, bufSize, filter), args=(data, flag, lastIndex, transceiver))
         videoDistributorProcess.start()
 
         for _ in range(processorNumber):
