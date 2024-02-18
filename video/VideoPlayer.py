@@ -15,7 +15,7 @@ class VideoPlayer:
         while True:
             flag, ret, frame = self.__videoLoader.get()
             if ret:
-                cv2.imshow(fileName, frame.getFrame())
+                cv2.imshow(fileName, frame.frame)
             if flag == STOP:
                 break
                 

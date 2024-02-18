@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 class Frame:
-    def __init__(self, index:int, frame:np.ndarray, width:int, height:int, rWidth:int, rHeight:int, scale:int, isDetect:bool, filter = None):
+    def __init__(self, index:int, frame:np.ndarray, width:int, height:int, rWidth:int, rHeight:int, scale:int, isDetect:bool, filter: object = None):
         self.__frame = frame
         self.__index = index
         self.__width = width

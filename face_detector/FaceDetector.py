@@ -1,9 +1,9 @@
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 
 class FaceDetector(ABC):
 
-    @abstractclassmethod
+    @abstractmethod
     def detect(self): pass
 
-    @abstractclassmethod
+    @abstractmethod
     def colorConstant(self): pass
