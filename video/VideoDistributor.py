@@ -27,6 +27,7 @@ class VideoDistributor:
             videoSection = VideoSection(videoSectionIndex, compressor=compressor)
 
             loger = Loger("VideoDistributor") # loger
+            loger(option="start") # loger
             timer = Timer() # timer
             timer.start() # timer
 
@@ -40,11 +41,11 @@ class VideoDistributor:
                                 videoSection.append(self.__frameGenerator(index, frame))
                                 if len(videoSection) >= self.__cfl:
                                     timer.end() # timer
-                                    loger("videoSection 데이터 담기", timer=timer) # loger
+                                    loger("videoSection 데이터 담기", option=timer) # loger
                                     timer.start() # timer
                                     transceiver.send(data, videoSection)
                                     timer.end() # timer
-                                    loger(videoSectionIndex, "압축 후 보냄", timer=timer) # loger
+                                    loger(videoSectionIndex, "압축 후 보냄", option=timer) # loger
                                     
                                     videoSectionIndex += 1
                                     videoSection.clear(videoSectionIndex)
@@ -53,13 +54,13 @@ class VideoDistributor:
                             except StopIteration:
                                 break
                     elif flag.value == STOP:
-                        loger(os.getpid(),"영상 로드 프로세서 종료") # loger
+                        loger(os.getpid(),"영상 로드 프로세서 종료", option="terminate") # loger
                         return
                     elif flag.value == PAUSE:
                         time.sleep(0.1)
         except Exception as e:
             loger(os.getpid(), "영상 분배기 오류", e) # loger
             
-        loger(os.getpid(), "영상 분배기 종료") # loger
+        loger(os.getpid(), "영상 분배기 종료", option="terminate") # loger
         flag.value = END_OF_LOAD
         return

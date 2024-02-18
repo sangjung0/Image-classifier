@@ -26,6 +26,7 @@ class VideoBuffer:
         try:
             timer = Timer() # timer
             loger = Loger("VideoBuffer") # loger
+            loger(option="start") # loger
             while True:
                 if flag.value == STOP:
                     break
@@ -36,15 +37,15 @@ class VideoBuffer:
                         timer.start()
                         ret, data = transceiver.receive(result)
                         timer.end()
-                        loger("데이터 수신 후 압축 해제", timer=timer)
+                        loger("데이터 수신 후 압축 해제", option=timer)
                         if ret:
                             timer.start() # timer
                             self.append(data)
                             timer.end() # timer
-                            loger("버퍼에 담김", timer=timer) # loger
+                            loger("버퍼에 담김", option=timer) # loger
                         elif finish():
                             flag.value = STOP
         except Exception as e:
             loger("버퍼 쓰레드 오류",e) # loger
-        loger("버퍼 쓰레드 종료") # loger
+        loger("버퍼 쓰레드 종료", option='terminate') # loger
         return

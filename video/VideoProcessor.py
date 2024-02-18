@@ -38,6 +38,7 @@ class VideoProcessor:
         try:
             timer = Timer() # timer
             loger = Loger("VideoProcessor") # logger
+            loger(option="start") # loger
             while True:
                 if flag.value == PAUSE:
                     time.sleep(0.1)
@@ -48,20 +49,20 @@ class VideoProcessor:
                         timer.start() # timer
                         ret, data_ = transceiver.receive(data)
                         timer.end() # timer
-                        loger("데이터 수신 후 압축 해제", timer=timer) # loger
+                        loger("데이터 수신 후 압축 해제", option=timer) # loger
                         if ret:
                             timer.start() # timer
                             temp = self.processing(data_)
                             timer.end() # timer
-                            loger("데이터 연산 완료", timer=timer) # loger
+                            loger(temp.index, "데이터 연산 완료", option=timer) # loger
                             timer.start() # timer
                             transceiver.send(result, temp)
                             timer.end() # timer
-                            loger("데이터 압축 후 전송", timer=timer) # loger
+                            loger("데이터 압축 후 전송", option=timer) # loger
                         elif flag.value == END_OF_LOAD:
                             break
                     time.sleep(0.1)
-            loger(os.getpid(), "연산 프로세서 종료")
+            loger(os.getpid(), "연산 프로세서 종료", option="terminate")
         except Exception as e:
             loger(os.getpid(), "연산 프로세서 오류", e)
         return
