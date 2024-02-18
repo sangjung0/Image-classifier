@@ -18,7 +18,7 @@ class VideoProcessor:
         tracker = None
         if  self.__tracker is not None:
             tracker = self.__tracker.getTracker() #고민해보자
-        for frame in videoSection.frames:
+        for frame in videoSection:
             isNewScene = False if self.__sceneDetector is None else self.__sceneDetector.isNewScene(frame.getFrame())
             if frame.isDetect or isNewScene:
                 if self.__detector is not None:

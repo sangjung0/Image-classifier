@@ -11,11 +11,10 @@ class VideoPlayer:
         delay = 1000 // self.__videoLoader.videoData.fps
         print("딜레이 :", delay)
         fileName = self.__videoLoader.videoData.fileName
-        while True:
-            flag, ret, frame = self.__videoLoader.get()
+        for flag, ret, frame in self.__videoLoader:
             if ret:
                 cv2.imshow(fileName, frame.frame)
-            if flag == STOP:
+            if flag == STOP: # Stop 처리는 안해도 될 듯
                 break
                 
             if cv2.waitKey(delay) & 0xFF == ord('q'):
