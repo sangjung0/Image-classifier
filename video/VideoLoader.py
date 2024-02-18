@@ -12,8 +12,7 @@ class VideoLoader:
         self.__videoData = videoData
         self.__lastIndex = lastIndex
         self.__flag = flag
-        self.__frames = []
-        self.__index = 0
+        self.__videoSectionIter = iter([])
         self.__join = join
         self.__mediumJoin = mediumJoin
 
@@ -34,19 +33,22 @@ class VideoLoader:
             self.__flag.value = RUN
         else: raise Exception("프로세서 종료됨")
 
-    def get(self):
-        if len(self.__frames) == self.__index:
-            if self.__flag ==  STOP:
-                return STOP, False, None
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        try:
+            frame = next(self.__videoSectionIter)
+            return RUN, True, frame
+        except StopIteration:
             videoSection = self.__videoBuffer.get(self.__lastIndex.value)
             if videoSection is None:
+                if self.__flag ==  STOP:
+                    raise StopIteration
                 return RUN, False, None
-            self.__frames = videoSection.frames
-            self.__index = 0
+            self.__videoSectionIter = iter(videoSection)
             self.__lastIndex.value += 1
-        frame = self.__frames[self.__index]
-        self.__index += 1
-        return RUN, True, frame
+            return self.__next__()
 
 
             
