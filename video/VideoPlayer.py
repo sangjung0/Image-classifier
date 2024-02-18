@@ -2,7 +2,6 @@ import cv2
 from project_constants import STOP
 from video.VideoController import VideoController
 from video.VideoLoader import VideoLoader
-import time
 class VideoPlayer:
     def __init__(self, videoLoader:VideoLoader):
         self.__videoLoader = videoLoader
@@ -21,6 +20,7 @@ class VideoPlayer:
                 
             if cv2.waitKey(delay) & 0xFF == ord('q'):
                 break
-        self.__videoLoader.stop()
         cv2.destroyAllWindows()
+        self.__videoLoader.stop()
+        return
     

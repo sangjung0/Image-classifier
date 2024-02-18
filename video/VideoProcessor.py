@@ -46,6 +46,7 @@ class VideoProcessor:
                 elif flag.value == END_OF_LOAD:
                     break
         print("연산 프로세서 종료")
+        return
     
 class VideoProcessorGenerator:
     def __init__(self, detector, tracker, sceneDetector, draw):

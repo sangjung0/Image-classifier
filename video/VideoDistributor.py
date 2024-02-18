@@ -39,3 +39,4 @@ class VideoDistributor:
                     return
         print("영상 로드 종료")
         flag.value = END_OF_LOAD
+        return

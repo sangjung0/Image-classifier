@@ -32,3 +32,4 @@ class VideoBuffer:
                 elif finish():
                     flag.value = STOP
         print("버퍼 쓰레드 종료")
+        return
