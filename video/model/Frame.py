@@ -3,7 +3,6 @@ import numpy as np
 
 class Frame:
     def __init__(self, index:int, frame:np.ndarray, width:int, height:int, rWidth:int, rHeight:int, scale:int, isDetect:bool, filter: object = None):
-        self.__frame = frame
         self.__index = index
         self.__width = width
         self.__height = height
@@ -12,11 +11,15 @@ class Frame:
         self.__scale = scale
         self.__isDetect = isDetect
         self.__filter = filter
-        self.__imgs = {}
+        self.__imgs = {'frame': frame}
+
+    @property
+    def imgs(self):
+        return self.__imgs
 
     @property
     def frame(self):
-        return self.__frame
+        return self.__imgs['frame']
     @property
     def index(self):
         return self.__index
