@@ -7,13 +7,15 @@ from video.VideoBuffer import VideoBuffer
 from video.VideoProcessor import VideoProcessor
 
 class VideoLoader:
-    def __init__(self, videoData, videoBuffer:VideoBuffer, flag: Value, lastIndex: Value): # type: ignore
+    def __init__(self, videoData, videoBuffer:VideoBuffer, flag: Value, lastIndex: Value, join:object, mediumJoin:object): # type: ignore
         self.__videoBuffer = videoBuffer
         self.__videoData = videoData
         self.__lastIndex = lastIndex
         self.__flag = flag
         self.__frames = []
         self.__index = 0
+        self.__join = join
+        self.__mediumJoin = mediumJoin
 
     @property
     def videoData(self):
@@ -24,6 +26,10 @@ class VideoLoader:
 
     def stop(self):
         self.__flag.value = STOP
+        self.__mediumJoin()
+        print("모든 전송매체 종료")
+        self.__join()
+        print("모든 프로세서 종료")
 
     def run(self):
         if self.__flag.value != STOP:
