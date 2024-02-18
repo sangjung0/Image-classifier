@@ -12,11 +12,14 @@ class VideoSection:
     
     def append(self, frame:Frame):
         if self.__compressor is not None:
-            imgs = frame.imgs
-            keys = imgs.keys()
-            for key in keys:
-                imgs[key] = self.__compressor.compress(imgs[key])
+            VideoSection._compress(frame, self.__compressor.compress)
         self.__frames.append(frame)
+
+    def compress(self, index:int):
+        if isinstance(self.__frames, bytes):
+            raise Exception("이미 압축되어 있음")
+        if self.__compressor is not None:
+            VideoSection._compress(self.__frames[index], self.__compressor.compress)
 
     def clear(self, index):
         self.__frames.clear()
@@ -42,9 +45,13 @@ class VideoSection:
                 frame = self.__frames[self.__index]
                 self.__index += 1
                 if self.__compressor is not None:
-                    imgs = frame.imgs
-                    keys = imgs.keys()
-                    for key in keys:
-                        imgs[key] = self.__compressor.decompress(imgs[key])
+                    VideoSection._compress(frame, self.__compressor.decompress)
                 return frame
             raise StopIteration
+
+    @staticmethod
+    def _compress(frame, compressor: object):
+        imgs = frame.imgs
+        keys = imgs.keys()
+        for key in keys:
+            imgs[key] = compressor(imgs[key])
