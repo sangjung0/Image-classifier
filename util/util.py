@@ -7,7 +7,8 @@ class AllProcessIsTerminated:
     
     def wait(self):
         for p in self.__processes:
-            p.join()
+            p.join(1)
+            if p.is_alive(): p.terminate()
 
 class AllTransmissionMediumIsTerminated:
     def __init__(self, mediums):
