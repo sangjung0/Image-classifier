@@ -3,7 +3,8 @@ import os
 import time
 from typing import Type
 
-from util.transceiver import TransceiverInterface
+from util import CompressorInterface
+from util import TransceiverInterface
 from video.VideoData import VideoData
 from video.model import Frame, VideoSection
 from project_constants import PAUSE, STOP, RUN, END_OF_LOAD
@@ -20,10 +21,10 @@ class VideoDistributor:
         ).generate
 
 
-    def __call__(self, data: Queue, flag: Value, lastIndex: Value, transceiver:TransceiverInterface): # type: ignore
+    def __call__(self, data: Queue, flag: Value, lastIndex: Value, transceiver:TransceiverInterface, compressor:CompressorInterface): # type: ignore
         try:
             videoSectionIndex = 0
-            videoSection = VideoSection(videoSectionIndex)
+            videoSection = VideoSection(videoSectionIndex, compressor=compressor)
 
             loger = Loger("VideoDistributor") # loger
             timer = Timer() # timer

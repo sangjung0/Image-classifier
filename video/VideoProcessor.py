@@ -18,7 +18,7 @@ class VideoProcessor:
         tracker = None
         if  self.__tracker is not None:
             tracker = self.__tracker.getTracker() #고민해보자
-        for frame in videoSection:
+        for idx, frame in enumerate(videoSection):
             isNewScene = False if self.__sceneDetector is None else self.__sceneDetector.isNewScene(frame.getFrame())
             if frame.isDetect or isNewScene:
                 if self.__detector is not None:
@@ -31,7 +31,7 @@ class VideoProcessor:
             
             if tracker is not None:
                 trackingData = tracker.tracking(frame.getFrame(self.__tracker.colorConstant), isNewScene, self.__draw, frame.frame, frame.scale)
-
+            videoSection.compress(idx)
         return videoSection
     
     def __call__(self, data: Queue, result: Queue, flag: Value, transceiver:TransceiverInterface): # type: ignore
