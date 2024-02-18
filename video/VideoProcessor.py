@@ -1,11 +1,11 @@
-from video.model import VideoSection
 from multiprocessing import Queue, Value
+
+from video.model import VideoSection
+from util.transceiver import TransceiverInterface
 from project_constants import STOP, PAUSE, END_OF_LOAD
-import pickle
-import time 
 
 class VideoProcessor:
-    def __init__(self, detector = None, tracker = None, sceneDetector = None, draw:bool = False ):
+    def __init__(self, detector, tracker, sceneDetector, draw:bool):
         self.__detector = detector
         self.__tracker = tracker
         self.__draw = draw
@@ -33,15 +33,16 @@ class VideoProcessor:
         print(videoSection.index, "처리 완료")
         return videoSection
     
-    def __call__(self, data: Queue, result: Queue, flag: Value): # type: ignore
+    def __call__(self, data: Queue, result: Queue, flag: Value, transceiver:TransceiverInterface): # type: ignore
         while True:
             if flag.value == PAUSE:
                 pass
             elif flag.value == STOP:
                 break
             else:
-                if not data.empty():
-                    result.put(pickle.dumps(self.processing(pickle.loads(data.get()))))
+                ret, data_ = transceiver.receive(data)
+                if ret:
+                    transceiver.send(result, (self.processing(data_)))
                 elif flag.value == END_OF_LOAD:
                     break
         print("연산 프로세서 종료")
