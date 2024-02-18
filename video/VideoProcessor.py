@@ -1,4 +1,6 @@
 from multiprocessing import Queue, Value
+import os
+import time
 
 from video.model import VideoSection
 from util.transceiver import TransceiverInterface
@@ -34,18 +36,22 @@ class VideoProcessor:
         return videoSection
     
     def __call__(self, data: Queue, result: Queue, flag: Value, transceiver:TransceiverInterface): # type: ignore
-        while True:
-            if flag.value == PAUSE:
-                pass
-            elif flag.value == STOP:
-                break
-            else:
-                ret, data_ = transceiver.receive(data)
-                if ret:
-                    transceiver.send(result, (self.processing(data_)))
-                elif flag.value == END_OF_LOAD:
+        try:
+            while True:
+                if flag.value == PAUSE:
+                    time.sleep(0.1)
+                elif flag.value == STOP:
                     break
-        print("연산 프로세서 종료")
+                else:
+                    ret, data_ = transceiver.receive(data)
+                    if ret:
+                        transceiver.send(result, (self.processing(data_)))
+                    elif flag.value == END_OF_LOAD:
+                        break
+                    time.sleep(0.1)
+            print(os.getpid(), "연산 프로세서 종료")
+        except Exception as e:
+            print(os.getpid(), "연산 프로세서 오류", e)
         return
     
 class VideoProcessorGenerator:

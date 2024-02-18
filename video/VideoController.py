@@ -30,14 +30,16 @@ class VideoController:
         flag = Value('i',PAUSE)
         lastIndex = Value('i', 0)
 
-        videoDistributorProcess = Process(target=VideoDistributor(videoData, scale, detectFrameCount, cfl, filter), args=(data, flag, lastIndex, transceiver)).start()
+        videoDistributorProcess = Process(target=VideoDistributor(videoData, scale, detectFrameCount, cfl, filter), args=(data, flag, lastIndex, transceiver))
+        videoDistributorProcess.start()
 
         for _ in range(processorNumber):
             p = Process(target=VideoProcessor(detector, tracker, sceneDetector, draw), args=(data, result, flag, transceiver))
             p.start()
             processes.append(p)
 
-        videoBufferThread = Thread(target=videoBuffer, args=(result, flag, AllProcessIsTerminated(processes).allProcessIsTerminated, transceiver)).start()
+        videoBufferThread = Thread(target=videoBuffer, args=(result, flag, AllProcessIsTerminated(processes).allProcessIsTerminated, transceiver))
+        videoBufferThread.start()
 
         return VideoLoader(
             videoData, videoBuffer, flag, lastIndex, 

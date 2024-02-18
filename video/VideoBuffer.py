@@ -1,6 +1,7 @@
 from multiprocessing import Queue, Value
 from threading import Lock
 import bisect
+import time
 
 from util.transceiver import TransceiverInterface
 from video.model import VideoSection
@@ -21,15 +22,20 @@ class VideoBuffer:
             return None
     
     def __call__(self, result:Queue, flag:Value, finish, transceiver:TransceiverInterface): # type: ignore
-        while True:
-            if flag.value == STOP:
-                break
-            else:
-                ret, data = transceiver.receive(result)
-                if ret:
-                    self.append(data)
-                    print("버퍼에 담김")
-                elif finish():
-                    flag.value = STOP
+        try:
+            while True:
+                if flag.value == STOP:
+                    break
+                elif flag.value == PAUSE:
+                    time.sleep(0.1)
+                else:
+                    ret, data = transceiver.receive(result)
+                    if ret:
+                        self.append(data)
+                        print("버퍼에 담김")
+                    elif finish():
+                        flag.value = STOP
+        except Exception as e:
+            print("버퍼 쓰레드 오류", e)
         print("버퍼 쓰레드 종료")
         return

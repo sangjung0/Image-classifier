@@ -26,10 +26,10 @@ class VideoLoader:
 
     def stop(self):
         self.__flag.value = STOP
-        self.__mediumJoin()
-        print("모든 전송매체 종료")
         self.__join()
         print("모든 프로세서 종료")
+        self.__mediumJoin()
+        print("모든 전송매체 종료")
 
     def run(self):
         if self.__flag.value != STOP:
