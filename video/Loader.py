@@ -1,14 +1,14 @@
 from multiprocessing import Value
 import cv2
+from typing import Type
 
-from project_constants import PAUSE, RUN, STOP
-from video.model import Frame, VideoSection
-from video.VideoBuffer import VideoBuffer
-from video.VideoProcessor import VideoProcessor
+from project_constants import PROCESSOR_PAUSE, PROCESSOR_RUN, PROCESSOR_STOP
+from video.model import Frame
+from video.Buffer import Buffer
 
-class VideoLoader:
-    def __init__(self, videoData, videoBuffer:VideoBuffer, flag: Value, lastIndex: Value, join:object, mediumJoin:object): # type: ignore
-        self.__videoBuffer = videoBuffer
+class Loader:
+    def __init__(self, videoData, buffer:Buffer, flag: Value, lastIndex: Value, join: Type[object], mediumJoin: Type[object]): # type: ignore
+        self.__buffer = buffer
         self.__videoData = videoData
         self.__lastIndex = lastIndex
         self.__flag = flag
@@ -21,16 +21,16 @@ class VideoLoader:
         return self.__videoData
 
     def pause(self):
-        self.__flag.value = PAUSE
+        self.__flag.value = PROCESSOR_PAUSE
 
     def stop(self):
-        self.__flag.value = STOP
+        self.__flag.value = PROCESSOR_STOP
         self.__join()
         self.__mediumJoin()
 
     def run(self):
-        if self.__flag.value != STOP:
-            self.__flag.value = RUN
+        if self.__flag.value != PROCESSOR_STOP:
+            self.__flag.value = PROCESSOR_RUN
         else: raise Exception("프로세서 종료됨")
 
     def __iter__(self):
@@ -39,14 +39,14 @@ class VideoLoader:
     def __next__(self):
         try:
             frame = next(self.__videoSectionIter)
-            return RUN, True, frame
+            return PROCESSOR_RUN, True, frame
         except StopIteration:
-            videoSection = self.__videoBuffer.get(self.__lastIndex.value)
-            if videoSection is None:
-                if self.__flag ==  STOP:
+            section = self.__buffer.get(self.__lastIndex.value)
+            if section is None:
+                if self.__flag ==  PROCESSOR_STOP:
                     raise StopIteration
-                return RUN, False, None
-            self.__videoSectionIter = iter(videoSection)
+                return PROCESSOR_RUN, False, None
+            self.__videoSectionIter = iter(section)
             self.__lastIndex.value += 1
             return self.__next__()
 
