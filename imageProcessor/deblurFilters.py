@@ -26,4 +26,4 @@ def wienerFiltering(img):
 
 #얘는 디블러 알고리즘 아님 노이즈 제거
 def TotalVariationDeblurringFiltering(img):
-    return denoise_tv_chambolle(img, weight=0.01, channel_axis=2)
+    return (denoise_tv_chambolle(img.astype(float) / 255.0, weight=0.1, channel_axis=2) * 255.0).astype(np.uint8)
