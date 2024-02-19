@@ -20,6 +20,7 @@ class Distributor:
         self.__filter = filter
 
     def __call__(self, data: Queue, flag: Value, lastIndex: Value, transceiver:TransceiverInterface, compressor: Type[CompressorInterface]): # type: ignore
+        loger = Loger("VideoDistributor") # loger
         try:
             #Frame
             width = self.__videoData.width
@@ -33,7 +34,6 @@ class Distributor:
             #VideoSection
             videoSection = Section(0, compressor=compressor())
 
-            loger = Loger("VideoDistributor") # loger
             loger(option="start") # loger
             timer = Timer() # timer
             timer.start() # timer

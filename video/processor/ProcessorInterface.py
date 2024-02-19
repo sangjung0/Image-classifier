@@ -20,11 +20,11 @@ class ProcessorInterface(ABC):
     def processing(self, section: Section): pass
 
     def __call__(self, data: Queue, result: Queue, flag: Value, transceiver:TransceiverInterface, finish:AllProcessIsTerminated.allProcessIsTerminated): # type: ignore
+        loger = Loger(self.__name) # logger
         try:
             self.__prepare__()
 
             timer = Timer() # timer
-            loger = Loger(self.__name) # logger
             loger(option="start") # loger
             while True:
                 if flag.value == PROCESSOR_PAUSE:

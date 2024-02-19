@@ -24,9 +24,9 @@ class Buffer:
             return None
     
     def __call__(self, result:Queue, flag:Value, finish, transceiver:TransceiverInterface): # type: ignore
+        loger = Loger("VideoBuffer") # loger
         try:
             timer = Timer() # timer
-            loger = Loger("VideoBuffer") # loger
             loger(option="start") # loger
             while True:
                 if flag.value == PROCESSOR_STOP:
