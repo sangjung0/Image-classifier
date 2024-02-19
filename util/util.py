@@ -61,3 +61,10 @@ class Loger:
     def __call__(self,*msg, option:object = None):
         if self.__isPrint:
             print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] - {self.__name.ljust(20)} - {str(option if option else None).ljust(20)}: ", " ".join(str(i) for i in msg))
+
+class DetectFrame:
+    def __init__(self, detectFrameCount):
+        self.__detectFrameCount = detectFrameCount
+    
+    def isDetect(self, x):
+        return x % self.__detectFrameCount == 0
