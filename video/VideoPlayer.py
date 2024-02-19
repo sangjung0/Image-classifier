@@ -1,25 +1,23 @@
 import cv2
-from project_constants import STOP
-from video.VideoController import VideoController
-from video.VideoLoader import VideoLoader
+from project_constants import PROCESSOR_STOP
+from video.Loader import Loader
 class VideoPlayer:
-    def __init__(self, videoLoader:VideoLoader):
-        self.__videoLoader = videoLoader
+    def __init__(self, Loader:Loader):
+        self.__loader = Loader
 
     def play(self):
-        self.__videoLoader.run()
-        delay = 1000 // self.__videoLoader.videoData.fps
+        self.__loader.run()
+        delay = 1000 // self.__loader.videoData.fps
         print("딜레이 :", delay)
-        fileName = self.__videoLoader.videoData.fileName
-        for flag, ret, frame in self.__videoLoader:
+        fileName = self.__loader.videoData.fileName
+        for flag, ret, frame in self.__loader:
             if ret:
                 cv2.imshow(fileName, frame.frame)
-            if flag == STOP: # Stop 처리는 안해도 될 듯
+            if flag == PROCESSOR_STOP: # Stop 처리는 안해도 될 듯
                 break
                 
             if cv2.waitKey(delay) & 0xFF == ord('q'):
                 break
         cv2.destroyAllWindows()
-        self.__videoLoader.stop()
+        self.__loader.stop()
         return
-    
