@@ -3,7 +3,7 @@
 """
 
 from video.model.Frame import Frame
-from video.model.VideoSection import VideoSection
+from video.model.Section import Section
 
-__all__ = ['Frame', 'VideoSection']
+__all__ = ['Frame', 'Section']
 __version__='0.1'
