@@ -1,3 +1,4 @@
+from multiprocessing import freeze_support
 from test import video_test
 from test_constants import TEST_VIDEO
 
@@ -11,4 +12,6 @@ from test_constants import TEST_VIDEO
 #video_test.sceneChangeTest2(TEST_VIDEO, 1) 
 #video_test.test1(TEST_VIDEO, 2)
 
-video_test.multiProcessPlayTest(TEST_VIDEO)
+if __name__ == "__main__":
+    freeze_support()
+    video_test.multiProcessPlayTest(TEST_VIDEO)
