@@ -4,15 +4,16 @@ import bisect
 import time
 
 from util.transceiver import TransceiverInterface
-from video.model import VideoSection
-from project_constants import STOP, PAUSE
+from video.model import Section
+from project_constants import PROCESSOR_STOP, PROCESSOR_PAUSE
 from util.util import Loger, Timer
-class VideoBuffer:
+
+class Buffer:
     def __init__(self):
         self.__videoSections = []
         self.__lock = Lock()
 
-    def append(self, value:VideoSection):
+    def append(self, value:Section):
         with self.__lock:
             bisect.insort(self.__videoSections, value)
 
@@ -28,9 +29,9 @@ class VideoBuffer:
             loger = Loger("VideoBuffer") # loger
             loger(option="start") # loger
             while True:
-                if flag.value == STOP:
+                if flag.value == PROCESSOR_STOP:
                     break
-                elif flag.value == PAUSE:
+                elif flag.value == PROCESSOR_PAUSE:
                     time.sleep(0.1)
                 else:
                     if not result.empty():
@@ -44,7 +45,7 @@ class VideoBuffer:
                             timer.end() # timer
                             loger("버퍼에 담김", option=timer) # loger
                         elif finish():
-                            flag.value = STOP
+                            flag.value = PROCESSOR_STOP
         except Exception as e:
             loger("버퍼 쓰레드 오류",e) # loger
         loger("버퍼 쓰레드 종료", option='terminate') # loger
