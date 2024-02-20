@@ -2,16 +2,18 @@ import cv2
 import numpy as np
 from abc import ABC, abstractmethod
 
-from project_constants import DETECTOR_FACE, DETECTOR_NOSE, DETECTOR_MOUTH, DETECTOR_EYE
+from project_constants import DETECTOR_FACE, DETECTOR_NOSE, DETECTOR_MOUTH, DETECTOR_EYE, DETECTOR_FRONT_FACE
 
 class DetectorInterface(ABC):
     __COLORS = {
+        DETECTOR_FRONT_FACE : (0, 255, 255),
         DETECTOR_FACE : (255, 0, 0),
         DETECTOR_NOSE : (0, 255, 0),
         DETECTOR_MOUTH : (0, 0, 255),
         DETECTOR_EYE : (255,255,0)
     }
     __WEIGHT = {
+        DETECTOR_FRONT_FACE : 4,
         DETECTOR_FACE : 3,
         DETECTOR_NOSE : 3,
         DETECTOR_MOUTH : 3,

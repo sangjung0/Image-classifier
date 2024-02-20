@@ -6,6 +6,7 @@ PROJECT_AUTHOR = 'sangjung'
 PROJECT_AUTHOR_EMAIL = 'sangjung245@gmail.com'
 
 DETECTOR_FACE = 'face'
+DETECTOR_FRONT_FACE = 'front_face'
 DETECTOR_NOSE = 'nose'
 DETECTOR_MOUTH = 'mouth'
 DETECTOR_EYE = 'eye'
