@@ -34,20 +34,25 @@ class DetectorInterface(ABC):
     def clear(self) -> None: pass
 
     @abstractmethod
-    def extract(self, draw:bool = False, drawFrames:list = None, scales:list = None): pass
+    def extract(self, scales:list, draw:bool = False, drawFrames:list = None): pass
 
     # if draw == True then need drawFrame and scale, drawFrame is original frame 
-    def _extract(self, location:list, draw:bool, drawFrames:list, scales:list):
+    def _extract(self, location:list, scales:list, draw:bool, drawFrames:list):
         faceLocations = []
         for idx, lt in enumerate(location):
             faceLocation = []
+            scale = scales[idx]
             for kind, lx, ly, rx, ry in lt:
-                if kind == DETECTOR_FACE:
+                lx *= scale
+                ly *= scale
+                rx *= scale
+                ry *= scale
+                if kind == DETECTOR_FRONT_FACE:
                     faceLocation.append([lx,ly,rx,ry])
                 if draw:
                     cv2.rectangle(
                         drawFrames[idx], 
-                        (lx*scales[idx], ly*scales[idx]), (rx*scales[idx], ry*scales[idx]), 
+                        (lx, ly), (rx, ry), 
                         DetectorInterface.__COLORS[kind], DetectorInterface.__WEIGHT[kind]
                         )
             faceLocations.append(faceLocation)

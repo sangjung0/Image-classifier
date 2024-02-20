@@ -27,15 +27,16 @@ class MyMTCNN(DetectorInterface):
     def combine(self):
         return np.vstack(tuple(img for img in self.__batch))
     
-    def extract(self, draw:bool = False, drawFrames:list = None, scales:list = None):
-        super()._extract(self.detect(), draw, drawFrames, scales)
+    def extract(self, scales:list, draw:bool = False, drawFrames:list = None):
+        return super()._extract(self.detect(), scales, draw, drawFrames)
 
     def detect(self):
         margin = self.__margin
         front = self.__front
+        length = len(self.__batch)
 
         source = self.combine()
-        height = source.shape[0] // len(self.__batch)
+        height = source.shape[0] // length
 
         destination = self.__mtcnn.detect_faces(source)
         destination.sort(key=lambda x: x['box'][1] + x['box'][3]//2)
@@ -109,5 +110,7 @@ class MyMTCNN(DetectorInterface):
                 temp['mouth_right'][0] + 1,
                 temp['mouth_right'][1] - minHeight + 1,
             ))
-        
+
+        for _ in range(length - len(imgs)):
+            imgs.append([])
         return imgs

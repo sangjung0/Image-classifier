@@ -21,8 +21,8 @@ class HaarCascade(DetectorInterface):
     def clear(self):
         self.__batch.clear()
     
-    def extract(self, draw:bool = False, drawFrames:list = None, scales:list = None):
-        super()._extract(self.detect(), draw, drawFrames, scales)
+    def extract(self, scales:list, draw:bool = False, drawFrames:list = None):
+        return super()._extract(self.detect(), scales, draw, drawFrames)
     
     def detect(self):
         imgs = []
