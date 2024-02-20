@@ -69,6 +69,6 @@ class Controller:
 
         return Loader(
             videoData, buffer, flag, lastIndex, 
-            AllProcessIsTerminated(visionProcessors + detectProcessors +[videoDistributorProcess, videoBufferThread]).wait,
+            AllProcessIsTerminated(visionProcessors + detectProcessors +[videoDistributorProcess, videoBufferThread]),
             AllTransmissionMediumIsTerminated([distributorToVision, visionToDetector, result]).wait
             )

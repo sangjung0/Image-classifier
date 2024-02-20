@@ -5,27 +5,33 @@ from typing import Type
 from project_constants import PROCESSOR_PAUSE, PROCESSOR_RUN, PROCESSOR_STOP
 from video.model import Frame
 from video.Buffer import Buffer
+from util.util import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
 
 class Loader:
-    def __init__(self, videoData, buffer:Buffer, flag: Value, lastIndex: Value, join: Type[object], mediumJoin: Type[object]): # type: ignore
+    def __init__(self, videoData, buffer:Buffer, flag: Value, lastIndex: Value, isRun: Type[AllProcessIsTerminated], mediumJoin: Type[AllTransmissionMediumIsTerminated.wait]): # type: ignore
         self.__buffer = buffer
         self.__videoData = videoData
         self.__lastIndex = lastIndex
         self.__flag = flag
         self.__videoSectionIter = iter([])
-        self.__join = join
+        self.__isRun = isRun
         self.__mediumJoin = mediumJoin
 
     @property
     def videoData(self):
         return self.__videoData
+    
+    def isFinish(self):
+        if self.__flag.value == PROCESSOR_STOP or self.__isRun.allProcessIsTerminated():
+            return True
+        return False
 
     def pause(self):
         self.__flag.value = PROCESSOR_PAUSE
 
     def stop(self):
         self.__flag.value = PROCESSOR_STOP
-        self.__join()
+        self.__isRun.wait()
         self.__mediumJoin()
 
     def run(self):
