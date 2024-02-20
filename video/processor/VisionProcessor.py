@@ -13,7 +13,7 @@ class VisionProcessor(ProcessorInterface):
 
     def __prepare__(self):
         if self.__tracker is not None: self.__tracker = self.__tracker()
-        if self.__tracker is not None: self.__sceneDetector = self.__sceneDetector()
+        if self.__sceneDetector is not None: self.__sceneDetector = self.__sceneDetector()
 
     def processing(self, section:Section):
 
