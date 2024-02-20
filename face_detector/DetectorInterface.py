@@ -25,16 +25,28 @@ class DetectorInterface(ABC):
     @abstractmethod
     def detect(self, img:np.ndarray) -> list: pass
 
+    @abstractmethod
+    def batch(self, img:np.ndarray) -> None: pass
+
+    @abstractmethod
+    def clear(self) -> None: pass
+
+    @abstractmethod
+    def extract(self, draw:bool = False, drawFrames:list = None, scales:list = None): pass
+
     # if draw == True then need drawFrame and scale, drawFrame is original frame 
-    def extract(self, location, draw, drawFrame, scale):
-        faceLocation = []
-        for kind, lx, ly, rx, ry in location:
-            if kind == DETECTOR_FACE:
-                faceLocation.append([lx,ly,rx,ry])
-            if draw:
-                cv2.rectangle(
-                    drawFrame, 
-                    (lx*scale, ly*scale), (rx*scale, ry*scale), 
-                    DetectorInterface.__COLORS[kind], DetectorInterface.__WEIGHT[kind]
-                    )
-        return faceLocation
+    def _extract(self, location:list, draw:bool, drawFrames:list, scales:list):
+        faceLocations = []
+        for idx, lt in enumerate(location):
+            faceLocation = []
+            for kind, lx, ly, rx, ry in lt:
+                if kind == DETECTOR_FACE:
+                    faceLocation.append([lx,ly,rx,ry])
+                if draw:
+                    cv2.rectangle(
+                        drawFrames[idx], 
+                        (lx*scales[idx], ly*scales[idx]), (rx*scales[idx], ry*scales[idx]), 
+                        DetectorInterface.__COLORS[kind], DetectorInterface.__WEIGHT[kind]
+                        )
+            faceLocations.append(faceLocation)
+        return faceLocations
