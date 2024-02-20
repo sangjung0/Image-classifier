@@ -52,7 +52,7 @@ def multiProcessPlayTest(fileName):
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True, transceiver=Transceiver(PickleSerializer(), GZipCompressor()))
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True, transceiver=Transceiver(PickleSerializer(), GZipCompressor()))
-    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1, visionProcessorNumber=1, detectProcessorNumber=1, bufSize=16, cfl=60,scale=1, compressor=JpgCompressor, tracker=LucasKanade, detector=MyMTCNN,sceneDetector=CalcHistogram, draw=True)
+    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1, visionProcessorNumber=1, detectProcessorNumber=1, bufSize=16, cfl=200,scale=2, compressor=JpgCompressor, detector=MyMTCNN,sceneDetector=CalcHistogram, draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), filter = deblurFilters.wienerFiltering, detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=1, cfl=50)

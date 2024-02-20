@@ -1,6 +1,7 @@
 from multiprocessing import freeze_support
 from test import video_test
 from test_constants import TEST_VIDEO
+import os
 
 #video_test.readTest(TEST_VIDEO)
 #video_test.mtcnnTest(TEST_VIDEO, 1)
@@ -14,4 +15,5 @@ from test_constants import TEST_VIDEO
 
 if __name__ == "__main__":
     freeze_support()
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     video_test.multiProcessPlayTest(TEST_VIDEO)
