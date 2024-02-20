@@ -28,10 +28,11 @@ class DetectProcessor(ProcessorInterface):
 
         if len(frames) == 0: return section
 
-        faceLocation = detector.extract(draw, [frame.frame for frame in frames], [frame.scale for frame in frames])
+        faceLocation = detector.extract( [frame.scale for frame in frames], draw, [frame.frame for frame in frames])
         detector.clear()
 
-        for frame in frames:
+        for frame, face in zip(frames, faceLocation):
+            frame.face = face
             section.compress(frame)
 
         return section

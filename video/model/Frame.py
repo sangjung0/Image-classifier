@@ -14,6 +14,17 @@ class Frame:
         self.__isDetect = isDetect
         self.__filter = filter
         self.__imgs = {FRAME_FRAME: frame}
+        self.__face = []
+
+    @property
+    def face(self):
+        self.__face
+    @face.setter
+    def face(self, value):
+        if isinstance(value, list):
+            self.__face = value
+        else:
+            raise ValueError("face is must be list")
 
     @property
     def imgs(self):
