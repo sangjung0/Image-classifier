@@ -14,13 +14,24 @@ class DetectProcessor(ProcessorInterface):
         if self.__detector is not None: self.__detector = self.__detector()
 
     def processing(self, section:Section):
+        if self.__detector is None: return section
 
         detector = self.__detector
         draw = self.__draw
+        frames = []
 
         for frame in section.frames:
-            if frame.isDetect and detector is not None:
+            if frame.isDetect:
                 section.deCompress(frame)
-                faceLocation = self.__detector.extract(frame.getFrame(detector.colorConstant), draw, frame.frame, frame.scale)
-                section.compress(frame)
+                frames.append(frame)
+                detector.batch(frame.getFrame(detector.colorConstant))
+
+        if len(frames) == 0: return section
+
+        faceLocation = detector.extract(draw, [frame.frame for frame in frames], [frame.scale for frame in frames])
+        detector.clear()
+
+        for frame in frames:
+            section.compress(frame)
+
         return section
