@@ -4,6 +4,7 @@ from face_detector import MyMTCNN, HaarCascade
 from face_tracker import LucasKanade, GunnerFarneback
 from util import CalcHistogram, CalcEdge
 from util import Transceiver, GZipCompressor, PickleSerializer, JpgCompressor
+from test.ImgTable import ImgTable
 
 
 # def readTest(fileName):
@@ -60,3 +61,7 @@ def multiProcessPlayTest(fileName):
 
     VideoPlayer(vl).play()
     print("종료")
+
+def pltTest(fileName):
+    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1, visionProcessorNumber=1, detectProcessorNumber=1, bufSize=16, cfl=200,scale=2, compressor=JpgCompressor, detector=MyMTCNN,sceneDetector=CalcHistogram, draw=False)
+    ImgTable(vl).show()

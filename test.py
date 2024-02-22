@@ -16,4 +16,5 @@ import os
 if __name__ == "__main__":
     freeze_support()
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-    video_test.multiProcessPlayTest(TEST_VIDEO)
+    video_test.pltTest(TEST_VIDEO)
+    #video_test.multiProcessPlayTest(TEST_VIDEO)
