@@ -18,7 +18,7 @@ class Frame:
 
     @property
     def face(self):
-        self.__face
+        return self.__face
     @face.setter
     def face(self, value):
         if isinstance(value, list):
