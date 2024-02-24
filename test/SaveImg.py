@@ -42,6 +42,13 @@ class SaveImg:
                     newFace[(50-height)//2:(50-height)//2+height, (50-width)//2:(50-width)//2+width] = face
 
                     cv2.imshow("tt",newFace)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        cv2.destroyAllWindows()
+                        all_images = np.array(all_images, dtype=np.uint8)
+                        self.__videoLoader.stop()
+                        np.save("test.npz", all_images)
+                        return
+
                     all_images.append(newFace)
 
                 idx+=1
@@ -50,5 +57,5 @@ class SaveImg:
         cv2.destroyAllWindows()
         all_images = np.array(all_images, dtype=np.uint8)
         self.__videoLoader.stop()
-        np.save("test.npz", all_images)
+        np.save("test", all_images)
         return

@@ -15,7 +15,7 @@ import os
 
 if __name__ == "__main__":
     freeze_support()
-    os.environ['QT_PLUGIN_PATH'] = '/home/ksj/anaconda3/envs/python309/lib/python3.9/site-packages/PyQt5/Qt5/plugins'
+    #os.environ['QT_PLUGIN_PATH'] = '/home/ksj/anaconda3/envs/python309/lib/python3.9/site-packages/cv2/Qt5/plugins'
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     video_test.saveTest(TEST_VIDEO)
     #video_test.multiProcessPlayTest(TEST_VIDEO)
