@@ -10,6 +10,7 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0
 RUN apt-get install -y busybox
 RUN apt-get install -y libgtk2.0-dev pkg-config
+RUN apt-get install -y python3-tk
 
 # Install pip requirements
 COPY requirements.txt .
