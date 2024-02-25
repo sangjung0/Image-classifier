@@ -6,6 +6,7 @@ from util import CalcHistogram, CalcEdge
 from util import Transceiver, GZipCompressor, PickleSerializer, JpgCompressor
 from test.ImgTable import ImgTable
 from test.SaveImg import SaveImg
+from face_recognizer import KMeans
 
 
 # def readTest(fileName):
@@ -70,3 +71,6 @@ def pltTest(fileName):
 def saveTest(fileName):
     vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1, visionProcessorNumber=1, detectProcessorNumber=1, bufSize=16, cfl=200,scale=2, compressor=JpgCompressor, detector=MyMTCNN,sceneDetector=CalcHistogram, draw=False)
     SaveImg(vl).save()
+
+def kMeansTest(fileName):
+    KMeans(fileName, (50, 50, 3)).run()

@@ -2,6 +2,8 @@ from multiprocessing import freeze_support
 from test import video_test
 from test_constants import TEST_VIDEO
 import os
+import matplotlib
+import tkinter
 
 #video_test.readTest(TEST_VIDEO)
 #video_test.mtcnnTest(TEST_VIDEO, 1)
@@ -13,9 +15,13 @@ import os
 #video_test.sceneChangeTest2(TEST_VIDEO, 1) 
 #video_test.test1(TEST_VIDEO, 2)
 
+# 도커 matplotlib 세팅
+matplotlib.use('TkAgg')
+
 if __name__ == "__main__":
     freeze_support()
-    #os.environ['QT_PLUGIN_PATH'] = '/home/ksj/anaconda3/envs/python309/lib/python3.9/site-packages/cv2/Qt5/plugins'
+    #os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = '/usr/local/lib/python3.9/site-packages/cv2/qt/plugins'
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-    video_test.saveTest(TEST_VIDEO)
+    #video_test.saveTest(TEST_VIDEO)
     #video_test.multiProcessPlayTest(TEST_VIDEO)
+    video_test.kMeansTest("./test.npy")
