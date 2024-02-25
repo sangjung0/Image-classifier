@@ -1,5 +1,7 @@
 from datetime import datetime
 import timeit
+import numpy as np
+import matplotlib.pyplot as plt
 
 class AllProcessIsTerminated:
     def __init__(self, processes):
@@ -68,3 +70,16 @@ class DetectFrame:
     
     def isDetect(self, x):
         return x % self.__detectFrameCount == 0
+
+def showImages(ary, ratio=1):
+    n = len(ary)
+    rows = int(np.ceil(n/10))
+    cols = n if rows < 2 else 10
+    fig, axs = plt.subplots(rows, cols, figsize=(cols*ratio, rows*ratio), squeeze=False)
+
+    for i in range(rows):
+        for j in range(cols):
+            if i*10 + j < n:
+                axs[i, j].imshow(ary[i*10+j])
+            axs[i,j].axis('off')
+    plt.show()
