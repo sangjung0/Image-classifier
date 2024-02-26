@@ -4,7 +4,7 @@ import numpy as np
 from face_tracker.TrackerInterface import TrackerInterface
 
 #https://bkshin.tistory.com/entry/OpenCV-31-%EA%B4%91%ED%95%99-%ED%9D%90%EB%A6%84Optical-Flow
-#작동유무 확인 안함
+#수정 필요
 class GunnerFarneback(TrackerInterface):
     def __init__(self, step:int = 64, color = cv2.COLOR_BGR2GRAY):
         self.__prevImg = None
