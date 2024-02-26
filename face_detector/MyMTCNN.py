@@ -3,7 +3,7 @@ import numpy as np
 from mtcnn import MTCNN
 
 from face_detector.DetectorInterface import DetectorInterface
-from project_constants import DETECTOR_FACE, DETECTOR_FRONT_FACE, DETECTOR_NOSE, DETECTOR_EYE, DETECTOR_MOUTH
+from project_constants import DETECTOR_FACE, DETECTOR_NOSE, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE, DETECTOR_RIGHT_MOUTH
 
 class MyMTCNN(DetectorInterface):
     COLOR = cv2.COLOR_BGR2RGB
@@ -28,9 +28,6 @@ class MyMTCNN(DetectorInterface):
 
     def combine(self):
         return np.vstack(tuple(img for img in self.__batch))
-    
-    def extract(self, scale:int, draw:bool = False, drawFrames:list = None):
-        return super()._extract(self.detect(), scale, draw, drawFrames)
 
     def detect(self):
         margin = self.__margin
@@ -59,59 +56,54 @@ class MyMTCNN(DetectorInterface):
                 maxHeight += height
                 continue
             idx+=1
-
+            face = {}
             temp = f['keypoints']
 
-            thrashold = abs(temp['right_eye'][0] - temp['left_eye'][0])//2 * front 
-            isFrontFace = temp['nose'][0] - temp['left_eye'][0] > thrashold and temp['right_eye'][0] - temp['nose'][0] > thrashold
-
-            boxs.append(( #얼굴
-                DETECTOR_FRONT_FACE if isFrontFace else DETECTOR_FACE,
+            # thrashold = abs(temp['right_eye'][0] - temp['left_eye'][0])//2 * front 
+            # isFrontFace = temp['nose'][0] - temp['left_eye'][0] > thrashold and temp['right_eye'][0] - temp['nose'][0] > thrashold
+            #DETECTOR_FRONT_FACE if isFrontFace else DETECTOR_FACE
+            face[DETECTOR_FACE] = ( #얼굴
                 f['box'][0] - int(f['box'][2] * ((margin - 1)/2)), 
                 f['box'][1] - minHeight - int(f['box'][3] * ((margin - 1)/2)),
                 f['box'][0] + int(f['box'][2] * margin),
                 f['box'][1] - minHeight + int(f['box'][3] * margin)
-            ))
+            )
 
-            boxs.append(( #코
-                DETECTOR_NOSE,
+            face[DETECTOR_NOSE] = ( #코
                 temp['nose'][0] - 1,
                 temp['nose'][1] - minHeight - 1,
                 temp['nose'][0] + 1,
                 temp['nose'][1] - minHeight + 1,
-            ))
+            )
 
-            boxs.append(( #왼쪽 눈
-                DETECTOR_EYE,
+            face[DETECTOR_LEFT_EYE] = ( #왼쪽 눈
                 temp['left_eye'][0] - 1,
                 temp['left_eye'][1] - minHeight - 1,
                 temp['left_eye'][0] + 1,
                 temp['left_eye'][1] - minHeight + 1,
-            ))
+            )
 
-            boxs.append(( #오른쪽 눈
-                DETECTOR_EYE,
+            face[DETECTOR_RIGHT_EYE]=(#오른쪽 눈
                 temp['right_eye'][0] - 1,
                 temp['right_eye'][1] - minHeight - 1,
                 temp['right_eye'][0] + 1,
                 temp['right_eye'][1] - minHeight + 1,
-            ))
+            )
 
-            boxs.append(( #왼쪽 입
-                DETECTOR_MOUTH,
+            face[DETECTOR_LEFT_MOUTH]=( #왼쪽 입
                 temp['mouth_left'][0] - 1,
                 temp['mouth_left'][1] - minHeight - 1,
                 temp['mouth_left'][0] + 1,
                 temp['mouth_left'][1] - minHeight + 1,
-            ))
+            )
 
-            boxs.append(( #오른쪽 입
-                DETECTOR_MOUTH,
+            face[DETECTOR_RIGHT_MOUTH] = ( #오른쪽 입
                 temp['mouth_right'][0] - 1,
                 temp['mouth_right'][1] - minHeight - 1,
                 temp['mouth_right'][0] + 1,
                 temp['mouth_right'][1] - minHeight + 1,
-            ))
+            )
+            boxs.append(face)
 
         for _ in range(length - len(imgs)):
             imgs.append([])

@@ -23,16 +23,13 @@ class HaarCascade(DetectorInterface):
     def clear(self):
         self.__batch.clear()
     
-    def extract(self, scale:int, draw:bool = False, drawFrames:list = None):
-        return super()._extract(self.detect(), scale, draw, drawFrames)
-    
     def detect(self):
         imgs = []
         for img in self.__batch:
             data = []
             faces = self.__faceModel.detectMultiScale(img)
             for x,y,w,h in faces:
-                data.append([DETECTOR_FACE, x,y, x+w, y+h])
+                data.append({DETECTOR_FACE : [x,y, x+w, y+h]})
                 face = img[y:y+h, x:x+w]
                 eyes = self.__eyeModel.detectMultiScale(face, 1.1, 3)
                 for index,(ex, ey, ew, eh) in enumerate(eyes):
