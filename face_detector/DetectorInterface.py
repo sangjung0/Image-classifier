@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from project_constants import DETECTOR_FACE, DETECTOR_NOSE, DETECTOR_MOUTH, DETECTOR_EYE, DETECTOR_FRONT_FACE
 
 class DetectorInterface(ABC):
+    COLOR = None
     __COLORS = {
         DETECTOR_FRONT_FACE : (0, 255, 255),
         DETECTOR_FACE : (255, 0, 0),
@@ -34,14 +35,13 @@ class DetectorInterface(ABC):
     def clear(self) -> None: pass
 
     @abstractmethod
-    def extract(self, scales:list, draw:bool = False, drawFrames:list = None): pass
+    def extract(self, scale:int, draw:bool = False, drawFrames:list = None): pass
 
     # if draw == True then need drawFrame and scale, drawFrame is original frame 
-    def _extract(self, location:list, scales:list, draw:bool, drawFrames:list):
+    def _extract(self, location:list, scale:int, draw:bool, drawFrames:list):
         faceLocations = []
         for idx, lt in enumerate(location):
             faceLocation = []
-            scale = scales[idx]
             for kind, lx, ly, rx, ry in lt:
                 lx *= scale
                 ly *= scale
