@@ -1,6 +1,6 @@
 # To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
 
-opencv-python-headless==4.9.0.80
+opencv-python==4.9.0.80
 pillow==10.2.0
 mtcnn==0.1.1
 numpy==1.26.4
