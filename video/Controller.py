@@ -6,8 +6,7 @@ from video.Buffer import Buffer
 from video.VideoData import VideoData
 from video.VideoData import VideoData
 from video.Loader import Loader
-from video.processor.VisionProcessor import VisionProcessor
-from video.processor.DetectProcessor import DetectProcessor
+from video.processor import *
 from video.Distributor import Distributor
 from project_constants import PROCESSOR_PAUSE
 from util.util import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
@@ -21,33 +20,45 @@ class Controller:
 
     @staticmethod
     def startAndGetVideoLoader(
-        fileName:str, visionProcessorNumber:int = 1, detectProcessorNumber:int=1,  detectFrameCount:int = 1, scale:int = 1, cfl:int = 50, bufSize:int = 64,
+        fileName:str, visionProcessorNumber:int = 1, detectProcessorNumber:int=1,  trackerProcessorNumber:int=1, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, bufSize:int = 64,
         transceiver:TransceiverInterface = Transceiver(PickleSerializer(), UnCompressor()), compressor: Type[CompressorInterface] = None,
         filter = None, detector:Type[DetectorInterface] = None, tracker:Type[TrackerInterface] = None, sceneDetector:Type[object] = None, draw:bool = False
         ):
 
         videoData = VideoData(fileName)
-        buffer = Buffer()
+        colors = set()
+
+        if detector is not None: colors.add(detector.COLOR)
+        if tracker is not None: colors.add(tracker.COLOR)
+        
         visionProcessors = []
         detectProcessors = []
+        trackerProcessors = []
+        
         distributorToVision = Queue()
         visionToDetector = Queue()
+        detectorToTracker = Queue()
         result = Queue()
         flag = Value('i',PROCESSOR_PAUSE)
         lastIndex = Value('i', 0)
 
+        distributor = Distributor(videoData, detectFrameCount, cfl, bufSize)
+        vision = VisionProcessor(filter, sceneDetector, videoData.width, videoData.height, scale, colors, draw)
+        detector_ = DetectProcessor(detector, scale, draw)
+        tracker_ = TrackerProcessor(tracker, scale, draw)
+        buffer = Buffer()
+    
         videoDistributorProcess = Process(
-            target=Distributor(videoData, scale, detectFrameCount, cfl, bufSize, filter), 
+            target=distributor, 
             args=(distributorToVision, flag, lastIndex, transceiver, compressor)
             )
         videoDistributorProcess.start()
 
         for _ in range(visionProcessorNumber):
             p = Process(
-                target=VisionProcessor(tracker, sceneDetector, draw), 
+                target=vision, 
                 args=(
-                    distributorToVision, visionToDetector, flag, transceiver, 
-                    AllProcessIsTerminated([videoDistributorProcess]).allProcessIsTerminated
+                    distributorToVision, visionToDetector, flag, transceiver
                     )
                 )
             p.start()
@@ -55,20 +66,30 @@ class Controller:
 
         for _ in range(detectProcessorNumber):
             p = Process(
-                target=DetectProcessor(detector, draw),
+                target=detector_,
                 args=(
-                    visionToDetector, result, flag, transceiver,
-                    AllProcessIsTerminated(visionProcessors).allProcessIsTerminated,
+                    visionToDetector, detectorToTracker, flag, transceiver
                 )
             )
             p.start()
             detectProcessors.append(p)
 
-        videoBufferThread = Thread(target=buffer, args=(result, flag, AllProcessIsTerminated(detectProcessors).allProcessIsTerminated, transceiver))
+        for _ in range(trackerProcessorNumber):
+            p = Process(
+                target=tracker_,
+                args=(
+                    detectorToTracker, result, flag, transceiver
+                )
+            )
+            p.start()
+            trackerProcessors.append(p)
+
+
+        videoBufferThread = Thread(target=buffer, args=(result, flag, AllProcessIsTerminated(trackerProcessors).allProcessIsTerminated, transceiver))
         videoBufferThread.start()
 
         return Loader(
             videoData, buffer, flag, lastIndex, 
-            AllProcessIsTerminated(visionProcessors + detectProcessors +[videoDistributorProcess, videoBufferThread]),
-            AllTransmissionMediumIsTerminated([distributorToVision, visionToDetector, result]).wait
+            AllProcessIsTerminated(visionProcessors + detectProcessors + trackerProcessors +[videoDistributorProcess, videoBufferThread]),
+            AllTransmissionMediumIsTerminated([distributorToVision, visionToDetector, detectorToTracker, result]).wait
             )
