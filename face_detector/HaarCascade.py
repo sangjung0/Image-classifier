@@ -4,7 +4,9 @@ from face_detector.DetectorInterface import DetectorInterface
 from project_constants import DETECTOR_FACE, DETECTOR_EYE, HAARCASCADE_EYE_MODEL, HAARCASCADE_FACE_MODEL
 
 class HaarCascade(DetectorInterface):
-    def __init__(self, color = cv2.COLOR_BGR2GRAY):
+    COLOR = cv2.COLOR_BGR2GRAY
+
+    def __init__(self, color = COLOR):
         super().__init__()
         self.__faceModel = cv2.CascadeClassifier(HAARCASCADE_FACE_MODEL)
         self.__eyeModel = cv2.CascadeClassifier(HAARCASCADE_EYE_MODEL)
@@ -21,8 +23,8 @@ class HaarCascade(DetectorInterface):
     def clear(self):
         self.__batch.clear()
     
-    def extract(self, scales:list, draw:bool = False, drawFrames:list = None):
-        return super()._extract(self.detect(), scales, draw, drawFrames)
+    def extract(self, scale:int, draw:bool = False, drawFrames:list = None):
+        return super()._extract(self.detect(), scale, draw, drawFrames)
     
     def detect(self):
         imgs = []

@@ -6,7 +6,9 @@ from face_detector.DetectorInterface import DetectorInterface
 from project_constants import DETECTOR_FACE, DETECTOR_FRONT_FACE, DETECTOR_NOSE, DETECTOR_EYE, DETECTOR_MOUTH
 
 class MyMTCNN(DetectorInterface):
-    def __init__(self, color = cv2.COLOR_BGR2RGB, min_face_size = 40, margin = 1.2, front = 0.3):
+    COLOR = cv2.COLOR_BGR2RGB
+
+    def __init__(self, color = COLOR, min_face_size = 40, margin = 1.2, front = 0.3):
         super().__init__()
         self.__mtcnn = MTCNN(min_face_size=min_face_size)
         self.__color = color
@@ -27,8 +29,8 @@ class MyMTCNN(DetectorInterface):
     def combine(self):
         return np.vstack(tuple(img for img in self.__batch))
     
-    def extract(self, scales:list, draw:bool = False, drawFrames:list = None):
-        return super()._extract(self.detect(), scales, draw, drawFrames)
+    def extract(self, scale:int, draw:bool = False, drawFrames:list = None):
+        return super()._extract(self.detect(), scale, draw, drawFrames)
 
     def detect(self):
         margin = self.__margin

@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from project_constants import FRAME_SCALE
 
 class TrackerInterface(ABC):
+    COLOR = None
 
     @property
     def colorConstant(self):

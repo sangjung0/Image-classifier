@@ -6,8 +6,9 @@ from face_tracker.TrackerInterface import TrackerInterface
 #https://bkshin.tistory.com/entry/OpenCV-31-%EA%B4%91%ED%95%99-%ED%9D%90%EB%A6%84Optical-Flow
 class LucasKanade(TrackerInterface):
     TERMCRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03)
+    COLOR = cv2.COLOR_BGR2GRAY
 
-    def __init__(self, pointNumber = 300, color = cv2.COLOR_BGR2GRAY):
+    def __init__(self, pointNumber = 300, color = COLOR):
             super().__init__()
             self.__colorAry = np.random.randint(0,255,(pointNumber,3))
             self.__color = color
