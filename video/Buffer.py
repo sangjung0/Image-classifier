@@ -48,5 +48,6 @@ class Buffer:
                             flag.value = PROCESSOR_STOP
         except Exception as e:
             loger("버퍼 쓰레드 오류",e) # loger
+            flag.value = PROCESSOR_STOP
         loger("버퍼 쓰레드 종료", option='terminate') # loger
         return
