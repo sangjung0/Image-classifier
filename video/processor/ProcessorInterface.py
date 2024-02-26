@@ -83,6 +83,7 @@ class ProcessorInterface(ABC):
                         loger("데이터 수신 후 압축 해제", option=timer) # loger
                         if ret:
                             self.append(buffer, data_)
+                    else: time.sleep(0.01)
                     if len(resultBuffer) > 0:
                         timer.start() # timer
                         transceiver.send(result, self.pop(resultBuffer))

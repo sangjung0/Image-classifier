@@ -50,6 +50,8 @@ class Distributor:
                                     timer.start() # timer
                             except StopIteration:
                                 break
+                        else:
+                            time.sleep(0.01)
                     elif flag.value == PROCESSOR_STOP:
                         break
                     elif flag.value == PROCESSOR_PAUSE:

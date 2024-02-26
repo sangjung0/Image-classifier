@@ -46,6 +46,7 @@ class Buffer:
                             loger("버퍼에 담김", option=timer) # loger
                         elif finish():
                             flag.value = PROCESSOR_STOP
+                    else: time.sleep(0.01)
         except Exception as e:
             loger("버퍼 쓰레드 오류",e) # loger
             flag.value = PROCESSOR_STOP
