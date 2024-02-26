@@ -39,18 +39,23 @@ class ProcessorInterface(ABC):
         loger = Loger(self.__name+"-thread")
         loger("start") # loger
         timer = Timer() # timer
-        while True:
-            if flag.value == PROCESSOR_PAUSE:
-                time.sleep(0.1)
-            elif flag.value == PROCESSOR_STOP:
-                break
-            else:
-                if len(data) > 0:
-                    dt = self.pop(data)
-                    timer.start() # timer
-                    self.append(result, self.processing(dt))
-                    timer.end() # timer
-                    loger(dt.index, "데이터 연산 완료", option=timer) # loger
+        try:
+            while True:
+                if flag.value == PROCESSOR_PAUSE:
+                    time.sleep(0.1)
+                elif flag.value == PROCESSOR_STOP:
+                    break
+                else:
+                    if len(data) > 0:
+                        dt = self.pop(data)
+                        timer.start() # timer
+                        self.append(result, self.processing(dt))
+                        timer.end() # timer
+                        loger(dt.index, "데이터 연산 완료", option=timer) # loger
+        except Exception as e:
+            flag.value = PROCESSOR_STOP
+            loger(os.getpid(), "연산 프로세서  오류", e)
+
 
     def __call__(self, data: Queue, result: Queue, flag: Value, transceiver:TransceiverInterface): # type: ignore
         loger = Loger(self.__name) # logger
