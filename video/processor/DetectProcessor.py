@@ -4,8 +4,9 @@ import cv2
 from video.model import Section
 from face_detector import DetectorInterface
 from video.processor.ProcessorInterface import ProcessorInterface
+from video.model import Face
 
-from project_constants import DETECTOR_FACE, DETECTOR_NOSE,DETECTOR_RIGHT_MOUTH, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE,  DETECTOR_FRONT_FACE, DETECTOR_EYE
+from project_constants import DETECTOR_FACE, DETECTOR_NOSE,DETECTOR_RIGHT_MOUTH, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE,  DETECTOR_FRONT_FACE
 
 class DetectProcessor(ProcessorInterface):
     __COLORS = {
@@ -15,8 +16,7 @@ class DetectProcessor(ProcessorInterface):
         DETECTOR_RIGHT_MOUTH : (0, 0, 255),
         DETECTOR_LEFT_MOUTH : (0, 0, 255),
         DETECTOR_LEFT_EYE : (255,255,0),
-        DETECTOR_RIGHT_EYE : (255,255,0),
-        DETECTOR_EYE : (255,255,0)
+        DETECTOR_RIGHT_EYE : (255,255,0)
     }
     __WEIGHT = {
         DETECTOR_FRONT_FACE : 4,
@@ -25,8 +25,7 @@ class DetectProcessor(ProcessorInterface):
         DETECTOR_RIGHT_MOUTH : 3,
         DETECTOR_LEFT_MOUTH : 3,
         DETECTOR_LEFT_EYE : 3,
-        DETECTOR_RIGHT_EYE : 3,
-        DETECTOR_EYE : 3
+        DETECTOR_RIGHT_EYE : 3
     }
 
     def __init__(self, detector: Type[DetectorInterface], scale:int, draw:bool):
@@ -76,7 +75,19 @@ class DetectProcessor(ProcessorInterface):
         if draw: self.draw(faceLocation, frames)
 
         for frame, face in zip(frames, faceLocation):
-            frame.face = face
+            faces = []
+            index = frame.index
+            for f in face:
+                faces.append(Face(
+                    index, 
+                    f.get(DETECTOR_FACE, None),
+                    f.get(DETECTOR_NOSE, None),
+                    f.get(DETECTOR_LEFT_EYE, None),
+                    f.get(DETECTOR_RIGHT_EYE, None),
+                    f.get(DETECTOR_LEFT_MOUTH, None),
+                    f.get(DETECTOR_RIGHT_MOUTH, None)
+                ))
+            frame.face = faces
             section.compress(frame)
 
         return section
