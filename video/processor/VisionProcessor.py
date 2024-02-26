@@ -9,8 +9,10 @@ class VisionProcessor(ProcessorInterface):
         super().__init__("VisionProcessor")
         self.__filter = filter
         self.__sceneDetector = sceneDetector
-        self.__width = width // scale
-        self.__height = height // scale
+        self.__width = width 
+        self.__height = height 
+        self.__rWidth = width // scale
+        self.__rHeight = height // scale
         self.__colors = colors
         self.__draw = draw
 
@@ -24,16 +26,17 @@ class VisionProcessor(ProcessorInterface):
         sceneDetector = self.__sceneDetector
         width = self.__width
         height = self.__height
+        rWidth = self.__rWidth
+        rHeight = self.__rHeight
         draw = self.__draw
         colors = self.__colors
 
         for frame in section:
-            f = frame.frame
+            f = cv2.resize(frame.frame, (rWidth, rHeight))
+            cf = filter(f) if filter is not None else f
             if draw:
-                cf = filter(f) if filter is not None else f
-                f[:] = cf
-                frame.setFrame(cv2.resize(cf,(width, height)))
-            else: frame.setFrame(filter(cv2.resize(f, (width, height))) if filter is not None else cv2.resize(f,width,height))
+                frame.frame[:] = cv2.resize(cf,(width, height))
+            frame.setFrame(cf)
             for c in colors:
                 frame.setFrame(cv2.cvtColor(frame.getFrame(), c), cv2Constant = c)
             if sceneDetector is not None:
