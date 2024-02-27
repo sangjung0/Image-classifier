@@ -33,14 +33,12 @@ class LucasKanade(TrackerInterface):
         if self.__prevPt is None:
             self.__prevImg = img
             self.__prevPt = cv2.goodFeaturesToTrack(img, self.__pointNumber, 0.01, 10)
-            return []
+            return None, self.__prevPt
         nextPt, status, err = cv2.calcOpticalFlowPyrLK(self.__prevImg, img, self.__prevPt, None, criteria=LucasKanade.TERMCRITERIA)
+        if nextPt is None:
+            return self.tracking(img, True)
         self.__prevImg = img
-        if nextPt is not None:
-            prevMv = self.__prevPt[status==1]
-            nextMv = nextPt[status==1]
-            self.__prevPt = nextMv.reshape(-1, 1, 2)
-            result = list(zip(prevMv, nextMv))
-            return result
-        self.__prevPt = None
-        return []
+        prevMv = self.__prevPt[status==1]
+        nextMv = nextPt[status==1]
+        self.__prevPt = nextMv.reshape(-1, 1, 2)
+        return prevMv, nextMv
