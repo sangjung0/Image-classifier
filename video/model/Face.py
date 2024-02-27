@@ -10,8 +10,12 @@ class Face:
         self.__lMouth = lMouth
         self.__rMouth = rMouth
         self.__rectColor = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+        self.__points = []
         self.__nextFace = None
 
+    @property
+    def points(self):
+        return self.__points
     @property
     def rectColor(self):
         return self.__rectColor 
@@ -42,6 +46,7 @@ class Face:
 
     @nextFace.setter
     def nextFace(self, value):
+        if self.__nextFace is not None : raise Exception("nextFace is not None")
         if isinstance(value, Face):
             self.__nextFace = value
             value.__rectColor = self.__rectColor
