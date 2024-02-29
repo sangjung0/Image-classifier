@@ -16,7 +16,7 @@ import tkinter
 #video_test.test1(TEST_VIDEO, 2)
 
 # 도커 matplotlib 세팅
-matplotlib.use('TkAgg')
+matplotlib.use('TkAgg') 
 
 if __name__ == "__main__":
     freeze_support()
