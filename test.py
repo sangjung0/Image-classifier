@@ -26,3 +26,5 @@ if __name__ == "__main__":
     #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     video_test.multiProcessPlayTest(TEST_VIDEO)
     #video_test.kMeansTest("./test.npy")
+
+    #video_test.singlePlayTest(TEST_VIDEO)
