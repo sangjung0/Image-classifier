@@ -3,13 +3,13 @@ import numpy as np
 from project_constants import FRAME_SCALE, FRAME_FRAME
 
 class Frame:
-    def __init__(self, index:int, frame:np.ndarray, isDetect:bool):
+    def __init__(self, index:int, frame:np.ndarray, isDetect:bool, isNewScene:bool = False):
         self.__index = index
         self.__isDetect = isDetect
         self.__imgs = {FRAME_FRAME: frame}
         self.__face = []
         self.__points = (None, None)
-        self.__isNewScene = False
+        self.__isNewScene = isNewScene
 
     @property
     def points(self):
