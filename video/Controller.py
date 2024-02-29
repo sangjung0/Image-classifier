@@ -29,6 +29,9 @@ class Controller:
                 Vision(filter, videoData.width, videoData.height, scale, colors, draw)
             ]
         ]
+        pNumbers = []
+        pBufSize = [bufSize]
+        names = ["StartProcess"]
 
         if sceneDetector is not None:
             logics[0].append(SceneDetector(sceneDetector))
@@ -37,17 +40,23 @@ class Controller:
             logics.append([
                 Detector(detector, scale, draw)
             ])
+            names.append("DetectProcess")
+            pNumbers.append(detectProcessorNumber)
+            pBufSize.append(3)
 
         if tracker is not None:
             logics.append([
                 Tracker(tracker, scale, draw)
             ])
+            names.append("TrackerProcess")
+            pNumbers.append(trackerProcessorNumber)
+            pBufSize.append(3)
 
         if visionProcessorNumber != 1:
             raise Exception("이거 아직 안만듬 다시 만드셈")
-        pNumbers = [detectProcessorNumber, trackerProcessorNumber]
-        pBufSize = [bufSize, 3, 3, 3]
-        names = ["StartProcess", "DetectProcess", "TrackerProcess", "EndThread"]
+        
+        names.append("EndThread")
+        pBufSize.append(3)
 
         flag, receiver, allProcess, allTransmissionMedium = PC.get(logics, pNumbers, compressor, transceiver, pBufSize, names)
 
