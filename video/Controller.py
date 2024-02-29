@@ -1,27 +1,19 @@
-from multiprocessing import Process, Queue, Value
-from threading import Thread
 from typing import Type
 
-from video.Buffer import Buffer
-from video.VideoData import VideoData
-from video.VideoData import VideoData
-from video.Loader import Loader
-from video.processor import *
-from video.Distributor import Distributor
-from project_constants import PROCESSOR_PAUSE
-from util.util import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
-from util.compressor import CompressorInterface, UnCompressor
-from util.serializer import PickleSerializer
-from util.transceiver import TransceiverInterface, Transceiver
 from face_detector import DetectorInterface
 from face_tracker import TrackerInterface
 
-class Controller:
+from video.VideoData import VideoData
+from video.logic import Distributor, Vision, Detector, SceneDetector, Tracker
+from video.processor import Controller as PC
+from video.Loader import Loader
+from util import CompressorInterface, UnCompressor, PickleSerializer, TransceiverInterface, Transceiver
 
+class Controller:
     @staticmethod
     def startAndGetVideoLoader(
         fileName:str, visionProcessorNumber:int = 1, detectProcessorNumber:int=1,  trackerProcessorNumber:int=1, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, bufSize:int = 64,
-        transceiver:TransceiverInterface = Transceiver(PickleSerializer(), UnCompressor()), compressor: Type[CompressorInterface] = None,
+        transceiver:TransceiverInterface = Transceiver(PickleSerializer(), UnCompressor()), compressor: Type[CompressorInterface] = UnCompressor(),
         filter = None, detector:Type[DetectorInterface] = None, tracker:Type[TrackerInterface] = None, sceneDetector:Type[object] = None, draw:bool = False
         ):
 
@@ -31,65 +23,32 @@ class Controller:
         if detector is not None: colors.add(detector.COLOR)
         if tracker is not None: colors.add(tracker.COLOR)
         
-        visionProcessors = []
-        detectProcessors = []
-        trackerProcessors = []
-        
-        distributorToVision = Queue()
-        visionToDetector = Queue()
-        detectorToTracker = Queue()
-        result = Queue()
-        flag = Value('i',PROCESSOR_PAUSE)
-        lastIndex = Value('i', 0)
+        logics = [
+            [
+                Distributor(videoData, detectFrameCount, cfl), 
+                Vision(filter, videoData.width, videoData.height, scale, colors, draw)
+            ]
+        ]
 
-        distributor = Distributor(videoData, detectFrameCount, cfl, bufSize)
-        vision = VisionProcessor(filter, sceneDetector, videoData.width, videoData.height, scale, colors, draw)
-        detector_ = DetectProcessor(detector, scale, draw)
-        tracker_ = TrackerProcessor(tracker, scale, draw)
-        buffer = Buffer()
-    
-        videoDistributorProcess = Process(
-            target=distributor, 
-            args=(distributorToVision, flag, lastIndex, transceiver, compressor)
-            )
-        videoDistributorProcess.start()
+        if sceneDetector is not None:
+            logics[0].append(SceneDetector(sceneDetector))
 
-        for _ in range(visionProcessorNumber):
-            p = Process(
-                target=vision, 
-                args=(
-                    distributorToVision, visionToDetector, flag, transceiver
-                    )
-                )
-            p.start()
-            visionProcessors.append(p)
+        if detector is not None:
+            logics.append([
+                Detector(detector, scale, draw)
+            ])
 
-        for _ in range(detectProcessorNumber):
-            p = Process(
-                target=detector_,
-                args=(
-                    visionToDetector, detectorToTracker, flag, transceiver
-                )
-            )
-            p.start()
-            detectProcessors.append(p)
+        if tracker is not None:
+            logics.append([
+                Tracker(tracker, scale, draw)
+            ])
 
-        for _ in range(trackerProcessorNumber):
-            p = Process(
-                target=tracker_,
-                args=(
-                    detectorToTracker, result, flag, transceiver
-                )
-            )
-            p.start()
-            trackerProcessors.append(p)
+        if visionProcessorNumber != 1:
+            raise Exception("이거 아직 안만듬 다시 만드셈")
+        pNumbers = [detectProcessorNumber, trackerProcessorNumber]
+        pBufSize = [bufSize, 3, 3, 3]
+        names = ["StartProcess", "DetectProcess", "TrackerProcess", "EndThread"]
 
+        flag, receiver, allProcess, allTransmissionMedium = PC.get(logics, pNumbers, compressor, transceiver, pBufSize, names)
 
-        videoBufferThread = Thread(target=buffer, args=(result, flag, AllProcessIsTerminated(trackerProcessors).allProcessIsTerminated, transceiver))
-        videoBufferThread.start()
-
-        return Loader(
-            videoData, buffer, flag, lastIndex, 
-            AllProcessIsTerminated(visionProcessors + detectProcessors + trackerProcessors +[videoDistributorProcess, videoBufferThread]),
-            AllTransmissionMediumIsTerminated([distributorToVision, visionToDetector, detectorToTracker, result]).wait
-            )
+        return Loader(videoData, receiver, flag, allProcess, allTransmissionMedium)
