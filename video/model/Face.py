@@ -13,6 +13,12 @@ class Face:
     @property
     def points(self):
         return self.__points
+    @points.setter
+    def points(self, value):
+        if isinstance(value, list):
+            self.__points = value
+        else:
+            raise ValueError("points is must be list")
     @property
     def rectColor(self):
         return self.__rectColor 
