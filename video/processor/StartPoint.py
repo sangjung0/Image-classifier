@@ -55,14 +55,11 @@ class StartPoint:
                     break
                 else:
                     if index - lastIndex.value < bufSize:
-                        data = timer.measure(lambda :self.__logic.processing())
+                        data = timer.measure(lambda :self.__logic.processing(Section(index, [], compressor=compressor)))
                         loger("데이터 연산", option=timer)
+                        index += 1
 
-                        index = data.index
-                        videoSection = Section(index, [], compressor=compressor)
-                        for i in data:
-                            videoSection.append(i)
-                        sender.append(videoSection)
+                        sender.append(data)
                         if self.isFinish:
                             terminationSignal.value += 1
                             break
