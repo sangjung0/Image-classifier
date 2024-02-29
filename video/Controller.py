@@ -6,10 +6,47 @@ from face_tracker import TrackerInterface
 from video.VideoData import VideoData
 from video.logic import Distributor, Vision, Detector, SceneDetector, Tracker, FaceVisualizer, TraceLineVisualizer, FaceTracker
 from video.processor import Controller as PC
-from video.Loader import Loader
+from video.Loader import Loader, SingleLoader
 from util import CompressorInterface, UnCompressor, PickleSerializer, TransceiverInterface, Transceiver
 
 class Controller:
+
+    @staticmethod
+    def startSingleAndGetVideoLoader(
+        fileName:str, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, pointNumber:int = 300,
+        filter = None, detector:Type[DetectorInterface] = None, tracker:Type[TrackerInterface] = None, sceneDetector:Type[object] = None, draw:bool = False
+    ):
+        videoData = VideoData(fileName)
+        colors = set()
+
+        if detector is not None: colors.add(detector.COLOR)
+        if tracker is not None: colors.add(tracker.COLOR)
+
+        logics = [
+            Distributor(videoData, detectFrameCount, cfl), 
+            Vision(filter, videoData.width, videoData.height, scale, colors, draw)
+        ]
+
+        if sceneDetector is not None:
+            logics.append(SceneDetector(sceneDetector))
+
+        if detector is not None:
+            logics.append(Detector(detector, scale))
+
+        if tracker is not None:
+            logics.append(Tracker(tracker, scale))
+            logics.append(FaceTracker())
+
+        if draw:
+            logics.append(FaceVisualizer())
+            logics.append(TraceLineVisualizer(pointNumber))
+
+
+        process = PC.getSingle("singleProcessor", logics)
+
+        return SingleLoader(videoData, process)
+
+
     @staticmethod
     def startAndGetVideoLoader(
         fileName:str, visionProcessorNumber:int = 1, detectProcessorNumber:int=1,  trackerProcessorNumber:int=1, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, bufSize:int = 64, pointNumber:int = 300,
@@ -68,6 +105,6 @@ class Controller:
         names.append("EndThread")
         pBufSize.append(3)
 
-        flag, receiver, allProcess, allTransmissionMedium = PC.get(logics, pNumbers, compressor, transceiver, pBufSize, names)
+        flag, receiver, allProcess, allTransmissionMedium = PC.get(names, logics, pNumbers, pBufSize, compressor, transceiver)
 
         return Loader(videoData, receiver, flag, allProcess, allTransmissionMedium)
