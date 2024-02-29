@@ -16,19 +16,20 @@ class Controller:
 
     #logics First element is must be StartPointInterface
     @staticmethod
-    def getSingle(logics:list[object], name:str, compressor:Type[CompressorInterface]):
+    def getSingle(name:str, logics:list[object]):
         """ 
         Logics First element is must be StartPointInterface, Another elements is must be StopOverPointInterface
         """
-        return SinglePoint(name,StartPointLogics(logics), compressor=compressor())
+        return SinglePoint(name,StartPointLogics(logics))
 
     @staticmethod
-    def get(logics:list[list[object]], 
-            pNumbers:list[int], 
+    def get(
+            names:list[str],
+            logics:list[list[object]], 
+            pNumbers:list[int],
+            pBufSize:list[int], 
             compressor: Type[CompressorInterface],
-            transceiver: Type[TransceiverInterface],
-            pBufSize:list[int],
-            names:list[str]
+            transceiver: Type[TransceiverInterface]
         ):
         """ 
         Logics First element is must be StartPointInterface, Another elements is must be StopOverPointInterface
