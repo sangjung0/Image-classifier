@@ -1,14 +1,13 @@
 from typing import Type
 import cv2
 
-from video.model import Section
 from face_detector import DetectorInterface
-from video.processor.ProcessorInterface import ProcessorInterface
-from video.model import Face
+from video.model import Section, Face
+from video.logic import StopOverPointInterface
 
 from project_constants import DETECTOR_FACE, DETECTOR_NOSE,DETECTOR_RIGHT_MOUTH, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE,  DETECTOR_FRONT_FACE
 
-class DetectProcessor(ProcessorInterface):
+class Detector(StopOverPointInterface):
     __COLORS = {
         DETECTOR_FRONT_FACE : (0, 255, 255),
         DETECTOR_FACE : (255, 0, 0),
@@ -29,13 +28,12 @@ class DetectProcessor(ProcessorInterface):
     }
 
     def __init__(self, detector: Type[DetectorInterface], scale:int, draw:bool):
-        super().__init__("DetectProcessor")
         self.__detector = detector
         self.__draw = draw
         self.__scale = scale
 
-    def __prepare__(self):
-        if self.__detector is not None: self.__detector = self.__detector()
+    def prepare(self):
+        self.__detector = self.__detector()
 
     def draw(self, locations: list, frames: list):
         scale = self.__scale
@@ -50,12 +48,11 @@ class DetectProcessor(ProcessorInterface):
                     cv2.rectangle(
                         frame.frame, 
                         (lx, ly), (rx, ry), 
-                        DetectProcessor.__COLORS[key], DetectProcessor.__WEIGHT[key]
+                        Detector.__COLORS[key], Detector.__WEIGHT[key]
                         )
 
 
     def processing(self, section:Section):
-        if self.__detector is None: return section
 
         detector = self.__detector
         draw = self.__draw
@@ -80,7 +77,7 @@ class DetectProcessor(ProcessorInterface):
             for f in face:
                 faces.append(Face(
                     index, 
-                    f.get(DETECTOR_FACE, None),
+                    f[DETECTOR_FACE],
                     f.get(DETECTOR_NOSE, None),
                     f.get(DETECTOR_LEFT_EYE, None),
                     f.get(DETECTOR_RIGHT_EYE, None),
