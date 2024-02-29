@@ -17,6 +17,5 @@ class SceneDetector(StopOverPointInterface):
             isNewScene = sceneDetector.isNewScene(frame.getFrame())
             if isNewScene : frame.isDetect = isNewScene
             frame.isNewScene = isNewScene
-            section.compress(frame)
 
         return section

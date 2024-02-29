@@ -6,6 +6,8 @@ from face_tracker import TrackerInterface
 from video.model import Section, Face
 from video.logic import StopOverPointInterface
 
+from project_constants import DETECTOR_FACE, DETECTOR_NOSE,DETECTOR_RIGHT_MOUTH, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE,  DETECTOR_FRONT_FACE
+
 class Tracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래커하고 나눠보자
     def __init__(self, tracker: Type[TrackerInterface], scale:int, draw:bool) -> None:
         self.__tracker = tracker
@@ -73,16 +75,12 @@ class Tracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래커�
                             nLen = len(pfNPoints)
                             px , py = sum(px)/ pLen , sum(py)/pLen
                             nx , ny = sum(nx)/nLen, sum(ny)/nLen
-                            dx , dy = nx - px, ny - py
-                            temp = lambda lx,ly,rx,ry : (lx + dx, ly + dy, rx + dx, ry + dy)
-                            newFace = Face(index, 
-                                            temp(*pf.face), 
-                                            temp(*pf.nose), 
-                                            temp(*pf.lEye), 
-                                            temp(*pf.rEye), 
-                                            temp(*pf.lMouth), 
-                                            temp(*pf.rMouth)
-                                            )
+                            dx , dy = int(nx - px), int(ny - py)
+                            fd = {}
+                            for k in pf.faceData:
+                                lx, ly, rx, ry = pf.faceData[k]
+                                fd[k] = (lx + dx, ly + dy, rx + dx, ry + dy)
+                            newFace = Face(index, fd)
                             pf.nextFace = newFace
                             faces.append(newFace) # 구조가 조금 별로움 변경 필요
                 
@@ -93,6 +91,5 @@ class Tracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래커�
                         self.clear(frame.frame) #만약 그리는게 이상하면 이거 수정
                     else:
                         self.draw(prevPt, nextPt, frame.frame)
-            section.compress(frame)
         return section
 

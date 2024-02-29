@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Iterable
+
+from video.model import Section
 
 class StopOverPointInterface(ABC):
     @abstractmethod
     def prepare(self) -> None:pass
 
     @abstractmethod
-    def processing(self, source:Iterable) -> Iterable:pass
+    def processing(self, section:Section) -> Section:pass

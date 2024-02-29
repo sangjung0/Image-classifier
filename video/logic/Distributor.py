@@ -16,9 +16,8 @@ class Distributor(StartPointInterface):
         self.__iter = self.__videoData.__enter__()
         self.__setIsFinish = setIsFinish
 
-    def processing(self) -> Section:
+    def processing(self, section:Section) -> Section:
         it = self.__iter
-        section = Section(self.__index, [])
         self.__index += 1
         isDetect = self.__isDetect
         cfl = self.__cfl

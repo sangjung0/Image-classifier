@@ -35,6 +35,5 @@ class Vision(StopOverPointInterface):
             frame.setFrame(cf)
             for c in colors:
                 frame.setFrame(cv2.cvtColor(frame.getFrame(), c), cv2Constant = c)
-            section.compress(frame)
 
         return section
