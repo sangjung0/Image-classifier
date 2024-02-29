@@ -1,6 +1,6 @@
 from typing import Type
 from face_tracker import TrackerInterface
-from video.model import Section, Face
+from video.model import Section
 from video.logic import StopOverPointInterface
 
 class Tracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래커하고 나눠보자
