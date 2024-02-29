@@ -54,3 +54,25 @@ class Loader:
             self.__iter = iter(section)
             self.__index += 1
             return self.__next__()
+        
+class SingleLoader:
+    def __init__(self, videoData:VideoData, process:object):
+        self.__data = videoData
+        self.__process = process
+        self.__iter = iter([])
+
+    @property
+    def videoData(self):
+        return self.__data
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        try:
+            frame = next(self.__iter)
+            return PROCESSOR_RUN, True, frame
+        except StopIteration:
+            section = self.__process.get()
+            self.__iter = iter(section)
+            return self.__next__()
