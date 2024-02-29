@@ -14,8 +14,6 @@ class FaceTracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래
             index = frame.index
             prevPt, nextPt = frame.points
 
-            frame.face
-
             if nextPt is not None:
                 faces = frame.face
                 for f in faces: #일단 얼굴만 트래킹하자
@@ -36,7 +34,7 @@ class FaceTracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래
                         pfLen = len(pfNPoints)
                         if pfLen == 0: continue
                         for f in faces:
-                            if len(set(pfNPoints + f.points)) <= pfLen:
+                            if len(set(pfNPoints + f.points)) <= pfLen + 20:
                                 pf.nextFace = f
                                 break
                         else:
@@ -57,7 +55,6 @@ class FaceTracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래
                             faces.append(newFace) # 구조가 조금 별로움 변경 필요
                 self.__prevFaces = faces
             
-            frame.face
             frame.points = (prevPt, nextPt)
         return section
 
