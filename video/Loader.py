@@ -1,28 +1,27 @@
 from multiprocessing import Value
-import cv2
 from typing import Type
 
-from project_constants import PROCESSOR_PAUSE, PROCESSOR_RUN, PROCESSOR_STOP
-from video.model import Frame
-from video.Buffer import Buffer
+from video.buffer import Interface
+from video.VideoData import VideoData
 from util.util import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
+from project_constants import PROCESSOR_PAUSE, PROCESSOR_RUN, PROCESSOR_STOP
 
 class Loader:
-    def __init__(self, videoData, buffer:Buffer, flag: Value, lastIndex: Value, isRun: Type[AllProcessIsTerminated], mediumJoin: Type[AllTransmissionMediumIsTerminated.wait]): # type: ignore
+    def __init__(self, data:VideoData, buffer:Interface, flag: Value, processes: Type[AllProcessIsTerminated], mediums: Type[AllTransmissionMediumIsTerminated]): # type: ignore
+        self.__data = data
         self.__buffer = buffer
-        self.__videoData = videoData
-        self.__lastIndex = lastIndex
         self.__flag = flag
-        self.__videoSectionIter = iter([])
-        self.__isRun = isRun
-        self.__mediumJoin = mediumJoin
+        self.__processes = processes
+        self.__mediums = mediums
+        self.__iter = iter([])
+        self.__index = 0
 
     @property
     def videoData(self):
-        return self.__videoData
+        return self.__data
     
     def isFinish(self):
-        if self.__flag.value == PROCESSOR_STOP or self.__isRun.allProcessIsTerminated():
+        if self.__flag.value == PROCESSOR_STOP or self.__processes.allProcessIsTerminated():
             return True
         return False
 
@@ -31,8 +30,8 @@ class Loader:
 
     def stop(self):
         self.__flag.value = PROCESSOR_STOP
-        self.__isRun.wait()
-        self.__mediumJoin()
+        self.__processes.wait()
+        self.__mediums.wait()
 
     def run(self):
         if self.__flag.value != PROCESSOR_STOP:
@@ -44,83 +43,14 @@ class Loader:
     
     def __next__(self):
         try:
-            frame = next(self.__videoSectionIter)
+            frame = next(self.__iter)
             return PROCESSOR_RUN, True, frame
         except StopIteration:
-            section = self.__buffer.get(self.__lastIndex.value)
+            section = self.__buffer.get(self.__index)
             if section is None:
                 if self.__flag ==  PROCESSOR_STOP:
                     raise StopIteration
                 return PROCESSOR_RUN, False, None
-            self.__videoSectionIter = iter(section)
-            self.__lastIndex.value += 1
+            self.__iter = iter(section)
+            self.__index += 1
             return self.__next__()
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def singleLoader(self):
-        frameAry = []
-        videoSectionIndex = 0
-        videoProcessor = VideoProcessor(VideoSection(-1,[]), self.__detector, self.__tracker, True, self.__sceneDetector)
-        width = self.videoData.width
-        height = self.videoData.height
-        rWidth = width//self.scale
-        rHeight = height//self.scale
-        delay = int(1000/self.__videoData.fps)
-        with self.__videoData as v:
-            for index, frame in v:
-                if len(frameAry) >= self.__cfl:
-                    videoSection = VideoSection(videoSectionIndex, frameAry)
-                    frameAry = []
-                    videoSectionIndex += 1
-                    videoProcessor.videoSection = videoSection
-                    print("전처리 완")
-                    for f in videoProcessor.processing().frameAry:
-                        cv2.imshow(self.fileName, f.getFrame())
-                        if cv2.waitKey(delay) & 0xFF == ord('q'):
-                            cv2.destroyAllWindows()
-                            return 
-                    print("로딩")
-                
-                frameAry.append(Frame(index, frame, width, height, rWidth, rHeight, self.scale, index % self.detectFrameCount == 0, self.__filter))
-            
-        cv2.destroyAllWindows()
