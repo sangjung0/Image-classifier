@@ -24,7 +24,7 @@ class Distributor(StartPointInterface):
         try:
             while True:
                 index, frame = next(it)
-                section.append(Frame(index, frame, isDetect(index % cfl)))
+                section.append(Frame(index, frame, isDetect(index % cfl), index % cfl == 0))
                 if len(section) >= cfl:
                     break
         except StopIteration:
