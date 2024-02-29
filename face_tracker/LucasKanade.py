@@ -8,7 +8,7 @@ class LucasKanade(TrackerInterface):
     TERMCRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03)
     COLOR = cv2.COLOR_BGR2GRAY
 
-    def __init__(self, pointNumber = 300, color = COLOR) -> None:
+    def __init__(self, pointNumber = 1000, color = COLOR) -> None:
             super().__init__()
             self.__color = color
             
