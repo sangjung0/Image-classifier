@@ -1,6 +1,7 @@
 from multiprocessing import Queue, Value
 import time
 
+from video.model import Section
 from video.buffer.Interface import Interface
 from util.util import Loger, Timer
 from util import TransceiverInterface
@@ -19,6 +20,7 @@ class Receiver(Interface):
     def __call__(self, order:int, terminationSignal:Value, flag:Value, inputQ:Queue, transceiver:TransceiverInterface) -> None: # type: ignore
         loger = Loger(self.__name, self.__logerIsPrint) # loger
         timer = Timer() # timer
+        imgTimer = Timer() # timer
         loger("start", option="start") # loger
         try:
             while True:
@@ -36,11 +38,14 @@ class Receiver(Interface):
                     else:
                         ret, data = timer.measure(lambda :transceiver.receive(inputQ))
                         loger("데이터 수신 후 압축 해제", option=timer)
-                        if ret: self.append(data)
+                        if ret: 
+                            imgTimer.measure(lambda: data.deCompress())
+                            self.append(data)
         except Exception as e:
             loger("쓰레드 오류",e, option="error") # loger
             flag.value = PROCESSOR_STOP
         loger("쓰레드 종료", option='terminate') # loger
         loger(f"데이서 수신 후 압축 해제 평균 속도 {timer.average}", option='result')
+        loger(f"이미지 압축 해제 평균 속도 {imgTimer.average}", option='result')
         return
 
