@@ -47,7 +47,7 @@ class VideoData:
                 if ret:
                     self.__index += 1
                     return self.__index, frame
-            return StopIteration
+            raise StopIteration
 
     @staticmethod
     def read(fileName):
