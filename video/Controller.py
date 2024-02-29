@@ -4,7 +4,7 @@ from face_detector import DetectorInterface
 from face_tracker import TrackerInterface
 
 from video.VideoData import VideoData
-from video.logic import Distributor, Vision, Detector, SceneDetector, Tracker, DetectorVisualizer
+from video.logic import Distributor, Vision, Detector, SceneDetector, Tracker, FaceVisualizer, TraceLineVisualizer, FaceTracker
 from video.processor import Controller as PC
 from video.Loader import Loader
 from util import CompressorInterface, UnCompressor, PickleSerializer, TransceiverInterface, Transceiver
@@ -12,7 +12,7 @@ from util import CompressorInterface, UnCompressor, PickleSerializer, Transceive
 class Controller:
     @staticmethod
     def startAndGetVideoLoader(
-        fileName:str, visionProcessorNumber:int = 1, detectProcessorNumber:int=1,  trackerProcessorNumber:int=1, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, bufSize:int = 64,
+        fileName:str, visionProcessorNumber:int = 1, detectProcessorNumber:int=1,  trackerProcessorNumber:int=1, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, bufSize:int = 64, pointNumber:int = 300,
         transceiver:TransceiverInterface = Transceiver(PickleSerializer(), UnCompressor()), compressor: Type[CompressorInterface] = UnCompressor(),
         filter = None, detector:Type[DetectorInterface] = None, tracker:Type[TrackerInterface] = None, sceneDetector:Type[object] = None, draw:bool = False
         ):
@@ -38,7 +38,7 @@ class Controller:
 
         if detector is not None:
             logics.append([
-                Detector(detector)
+                Detector(detector, scale)
             ])
             names.append("DetectProcess")
             pNumbers.append(detectProcessorNumber)
@@ -46,7 +46,8 @@ class Controller:
 
         if tracker is not None:
             logics.append([
-                Tracker(tracker, scale, draw)
+                Tracker(tracker, scale),
+                FaceTracker()
             ])
             names.append("TrackerProcess")
             pNumbers.append(trackerProcessorNumber)
@@ -54,7 +55,8 @@ class Controller:
 
         if draw:
             logics.append([
-                DetectorVisualizer(scale)
+                FaceVisualizer(),
+                TraceLineVisualizer(pointNumber)
             ])
             names.append("Drawers")
             pNumbers.append(1)
