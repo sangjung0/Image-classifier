@@ -25,22 +25,35 @@ class AllTransmissionMediumIsTerminated:
             m.join_thread()
 
 class Timer:
-    def __init__(self):
+    def __init__(self, round = 5):
         self.__startTime = None
         self.__endTime = None
         self.__duration = None
+        self.__avg = None
+        self.__round = round
 
     @property
     def startTime(self):
-        return self.__startTime
+        return round(self.__startTime, self.__round)
 
     @property
     def endTime(self):
-        return self.__endTime
+        return round(self.__endTime, self.__round)
     
     @property
     def duration(self):
-        return self.__duration
+        return round(self.__duration, self.__round)
+    
+    @property    
+    def average(self):
+        if self.__avg is None: return 0
+        return round(self.__avg, self.__round)
+    
+    def measure(self, func:callable):
+        self.start()
+        result = func()
+        self.end()
+        return result
 
     def start(self):
         self.__startTime = timeit.default_timer()
@@ -51,9 +64,11 @@ class Timer:
         if self.__startTime is None: raise Exception("타이머 시작 안함")
         self.__endTime = timeit.default_timer()
         self.__duration = self.__endTime - self.__startTime
+        self.__avg = self.__duration if self.__avg is None else (self.__avg + self.__duration) / 2
+
 
     def __str__(self):
-        return f"Time: {round(self.duration, 5)}s"
+        return f"Time: {self.duration}s"
     
 class Loger:
     def __init__(self, name, isPrint = True):
