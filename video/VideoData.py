@@ -28,16 +28,15 @@ class VideoData:
 
     def __enter__(self):
         self.__cap = VideoData.read(self.fileName)
-        return VideoData.__FrameIter(self.__cap, self.width, self.height)
+        return VideoData.__FrameIter(self.__cap)
     
-    def __exit__(self, exc_type, exc_value, trace):
+    def __exit__(self):
         self.__cap.release()
 
     class __FrameIter:
-        def __init__(self, cap:cv2.VideoCapture, width:int, height:int):
+        def __init__(self, cap:cv2.VideoCapture):
             self.__cap = cap
             self.__index = -1
-            self.__prevFrame = np.zeros((width, height, 1))
 
         def __iter__(self):
             return self
@@ -45,10 +44,9 @@ class VideoData:
         def __next__(self):
             if self.__cap.isOpened():
                 ret, frame = self.__cap.read()
-                frame = frame if ret else self.__prevFrame
-                self.__prevFrame = frame
-                self.__index += 1
-                return self.__index, frame
+                if ret:
+                    self.__index += 1
+                    return self.__index, frame
             return StopIteration
 
     @staticmethod
