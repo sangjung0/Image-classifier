@@ -1,5 +1,6 @@
 from multiprocessing import Process, Queue, Value
-from typing import Type, Iterable
+from typing import Type
+from video.model import Section
 
 from video.processor.EndPoint import EndPoint
 from video.processor.SinglePoint import SinglePoint
@@ -86,15 +87,10 @@ class StartPointLogics(StartPointInterface):
             else:
                 logic.prepare()
 
-    def processing(self) -> Iterable:
-        data = None
-        logics = self.__logics
-        for logic in logics:
-            if logic is logics[0]:
-                data = logic.processing()
-            else:
-                data = logic.processing(data)
-        return data
+    def processing(self, section:Section) -> Section:
+        for logic in self.__logics:
+            section = logic.processing(section)
+        return section
         
     
 class StopOverPointLogics(StopOverPointInterface):
@@ -105,7 +101,7 @@ class StopOverPointLogics(StopOverPointInterface):
         for logic in self.__logics:
             logic.prepare()
 
-    def processing(self, source:Iterable) -> Iterable:
+    def processing(self, section:Section) -> Section:
         for logic in self.__logics:
-            source = logic.processing(source)
-        return source
+            section = logic.processing(section)
+        return section
