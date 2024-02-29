@@ -30,7 +30,7 @@ class TraceLineVisualizer(StopOverPointInterface):
 
         for frame in section:
             prevPt, nextPt = frame.points
-            if prevPt is None: self.clear(frame.frame)
+            if prevPt is None or frame.isNewScene: self.clear(frame.frame)
             else: self.draw(prevPt, nextPt, frame.frame)
 
         return section
