@@ -55,7 +55,7 @@ def multiProcessPlayTest(fileName):
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True, transceiver=Transceiver(PickleSerializer(), GZipCompressor()))
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True, transceiver=Transceiver(PickleSerializer(), GZipCompressor()))
-    vl = Controller.startAndGetVideoLoader(fileName, cfl=120,scale=2, compressor=JpgCompressor, detector=MyMTCNN, tracker=LucasKanade, sceneDetector=CalcHistogram, draw=True)
+    vl = Controller.startAndGetVideoLoader(fileName, cfl=200, bufSize=4, scale=2, compressor=JpgCompressor, detector=MyMTCNN, tracker=LucasKanade, sceneDetector=CalcHistogram, draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), filter = deblurFilters.wienerFiltering, detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=1, cfl=50)
