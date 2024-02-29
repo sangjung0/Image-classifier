@@ -1,7 +1,6 @@
 from multiprocessing import Queue, Value
 import time
 
-from video.model import Section
 from video.buffer.Interface import Interface
 from util.util import Loger, Timer
 from util import TransceiverInterface
@@ -30,7 +29,7 @@ class Receiver(Interface):
                     time.sleep(0.1)
                 else:
                     if inputQ.empty():
-                        if terminationSignal.value == order:
+                        if terminationSignal.value >= order:
                             break
                         time.sleep(0.01)
                     elif self.isFull():

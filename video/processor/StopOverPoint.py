@@ -37,7 +37,7 @@ class StopOverPoint:
                     break
                 else:
                     if receiver.empty():
-                        if terminationSignal.value == order:
+                        if terminationSignal.value >= order:
                             terminationSignal.value += 1
                             break
                         time.sleep(0.01)

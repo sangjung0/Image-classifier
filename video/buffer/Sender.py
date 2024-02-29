@@ -25,7 +25,7 @@ class Sender(Interface):
                     time.sleep(0.1)
                 else:
                     if self.empty():
-                        if terminationSignal.value == order:
+                        if terminationSignal.value >= order:
                             break
                         time.sleep(0.01)
                     else:
