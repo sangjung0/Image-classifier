@@ -8,7 +8,18 @@ class Frame:
         self.__isDetect = isDetect
         self.__imgs = {FRAME_FRAME: frame}
         self.__face = []
+        self.__points = (None, None)
         self.__isNewScene = False
+
+    @property
+    def points(self):
+        return self.__points
+    @points.setter
+    def points(self, value):
+        if isinstance(value, tuple):
+            self.__points = value
+        else:
+            raise ValueError("points is must be list")
 
     @property
     def isNewScene(self):
