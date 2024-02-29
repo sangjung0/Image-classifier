@@ -4,7 +4,7 @@ from face_detector import DetectorInterface
 from face_tracker import TrackerInterface
 
 from video.VideoData import VideoData
-from video.logic import Distributor, Vision, Detector, SceneDetector, Tracker
+from video.logic import Distributor, Vision, Detector, SceneDetector, Tracker, DetectorVisualizer
 from video.processor import Controller as PC
 from video.Loader import Loader
 from util import CompressorInterface, UnCompressor, PickleSerializer, TransceiverInterface, Transceiver
@@ -38,7 +38,7 @@ class Controller:
 
         if detector is not None:
             logics.append([
-                Detector(detector, scale, draw)
+                Detector(detector)
             ])
             names.append("DetectProcess")
             pNumbers.append(detectProcessorNumber)
@@ -50,6 +50,14 @@ class Controller:
             ])
             names.append("TrackerProcess")
             pNumbers.append(trackerProcessorNumber)
+            pBufSize.append(3)
+
+        if draw:
+            logics.append([
+                DetectorVisualizer(scale)
+            ])
+            names.append("Drawers")
+            pNumbers.append(1)
             pBufSize.append(3)
 
         if visionProcessorNumber != 1:
