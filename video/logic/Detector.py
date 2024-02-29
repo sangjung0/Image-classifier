@@ -5,8 +5,9 @@ from video.model import Section, Face
 from video.logic import StopOverPointInterface
 
 class Detector(StopOverPointInterface):
-    def __init__(self, detector: Type[DetectorInterface]):
+    def __init__(self, detector: Type[DetectorInterface], scale:int):
         self.__detector = detector
+        self.__scale = scale
 
     def prepare(self):
         self.__detector = self.__detector()
@@ -14,6 +15,7 @@ class Detector(StopOverPointInterface):
     def processing(self, section:Section):
 
         detector = self.__detector
+        scale = self.__scale
         frames = []
 
         for frame in section.frames:
@@ -30,6 +32,8 @@ class Detector(StopOverPointInterface):
             faces = []
             index = frame.index
             for f in face:
+                for k in f:
+                    f[k] = tuple(s * scale for s in f[k])
                 faces.append(Face(index, f))
             frame.face = faces
 
