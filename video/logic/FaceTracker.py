@@ -11,6 +11,8 @@ class FaceTracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래
     def processing(self, section:Section) -> Section:
 
         for frame in section:
+            if frame.isNewScene:
+                self.__prevFaces.clear()
             index = frame.index
             prevPt, nextPt = frame.points
 
