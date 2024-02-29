@@ -1,5 +1,3 @@
-from typing import Callable
-
 from video.model import Frame, Section
 from video.VideoData import VideoData
 from video.logic.StartPointInterface import StartPointInterface
@@ -13,7 +11,7 @@ class Distributor(StartPointInterface):
         self.__setIsFinish = None
         self.__index = 0
 
-    def prepare(self, setIsFinish:Callable) -> None:
+    def prepare(self, setIsFinish:callable) -> None:
         self.__isDetect = lambda x: x % self.__detectFrameCount == 0
         self.__iter = self.__videoData.__enter__()
         self.__setIsFinish = setIsFinish

@@ -1,5 +1,5 @@
 from multiprocessing import Queue, Value
-from threading import Thread
+from threading import Thread, Lock
 from typing import Type
 import os
 import time
@@ -17,12 +17,23 @@ class StartPoint:
         self.__isFinish = False
         self.__bufSize = bufSize
         self.__logic = logic
+        self.__lock = Lock()
 
-    def setIsFinish(self, value):
-        if isinstance(value, bool):
-            self.__isFinish = value
-        else:
-            raise ValueError("isFinish is must be boolean")
+    @property
+    def isFinish(self):
+        with self.__lock:
+            return self.__isFinish
+    
+    @isFinish.setter
+    def isFinish(self, value: bool):
+        with self.__lock:
+            if isinstance(value, bool):
+                    self.__isFinish = value
+            else:
+                raise ValueError("isFinish is must be boolean")
+            
+    def setIsFinish(self, value: bool):
+        self.isFinish = value
 
     def __call__(self, terminationSignal:Value, flag: Value, lastIndex:Value, outputQ: Queue, transceiver:TransceiverInterface, compressor: Type[CompressorInterface]): # type: ignore
         loger = Loger(self.__name) # logger
@@ -52,7 +63,7 @@ class StartPoint:
                         for i in data:
                             videoSection.append(i)
                         sender.append(videoSection)
-                        if self.__isFinish:
+                        if self.isFinish:
                             terminationSignal.value += 1
                             break
                     else:
