@@ -9,6 +9,7 @@ from video.logic.Distributor import Distributor
 from video.logic.Tracker import Tracker
 from video.logic.Vision import Vision
 from video.logic.SceneDetector import SceneDetector
+from video.logic.DetectorVisualizer import DetectorVisualizer
 
-__all__ = ['StartPointInterface', 'StopOverPointInterface', 'Detector', 'Distributor', 'Tracker', 'Vision', 'SceneDetector']
+__all__ = ['StartPointInterface', 'StopOverPointInterface', 'Detector', 'Distributor', 'Tracker', 'Vision', 'SceneDetector','DetectorVisualizer']
 __version__='0.1'
