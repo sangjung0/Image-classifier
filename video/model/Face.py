@@ -1,14 +1,11 @@
 import random
 
+from project_constants import DETECTOR_FACE, DETECTOR_NOSE,DETECTOR_RIGHT_MOUTH, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE,  DETECTOR_FRONT_FACE
+
 class Face:
-    def __init__(self, frameIndex, face, nose, lEye, rEye, lMouth, rMouth):
+    def __init__(self, frameIndex, faceData):
         self.__frameIndex = frameIndex
-        self.__face = face
-        self.__nose = nose
-        self.__lEye = lEye
-        self.__rEye = rEye
-        self.__lMouth = lMouth
-        self.__rMouth = rMouth
+        self.__faceData = faceData
         self.__rectColor = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         self.__points = []
         self.__nextFace = None
@@ -23,23 +20,26 @@ class Face:
     def frameIndex(self):
         return self.__frameIndex
     @property
+    def faceData(self):
+        return self.__faceData
+    @property
     def face(self):
-        return self.__face
+        return self.__faceData[DETECTOR_FACE]
     @property
     def nose(self):
-        return self.__nose
+        return self.__faceData.get(DETECTOR_NOSE,None)
     @property
     def lEye(self):
-        return self.__lEye
+        return self.__faceData.get(DETECTOR_LEFT_EYE, None)
     @property
     def rEye(self):
-        return self.__rEye
+        return self.__faceData.get(DETECTOR_RIGHT_EYE, None)
     @property
     def lMouth(self):
-        return self.__lMouth
+        return self.__faceData.get(DETECTOR_LEFT_MOUTH, None)
     @property
     def rMouth(self):
-        return self.__rMouth
+        return self.__faceData.get(DETECTOR_RIGHT_MOUTH, None)
     @property
     def nextFace(self):
         return self.__nextFace
