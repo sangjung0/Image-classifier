@@ -3,27 +3,6 @@ import timeit
 import numpy as np
 import matplotlib.pyplot as plt
 
-class AllProcessIsTerminated:
-    def __init__(self, processes):
-        self.__processes = processes
-
-    def allProcessIsTerminated(self):
-        return not any(p.is_alive() for p in self.__processes)
-    
-    def wait(self):
-        for p in self.__processes:
-            p.join(1)
-            if p.is_alive(): p.terminate()
-
-class AllTransmissionMediumIsTerminated:
-    def __init__(self, mediums):
-        self.__mediums = mediums
-    
-    def wait(self):
-        for m in self.__mediums:
-            m.close()
-            m.join_thread()
-
 class Timer:
     def __init__(self, round = 5):
         self.__startTime = None
@@ -79,12 +58,6 @@ class Loger:
         if self.__isPrint:
             print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] - {self.__name.ljust(20)} - {str(option if option else None).ljust(20)}: ", " ".join(str(i) for i in msg))
 
-class DetectFrame:
-    def __init__(self, detectFrameCount):
-        self.__detectFrameCount = detectFrameCount
-    
-    def isDetect(self, x):
-        return x % self.__detectFrameCount == 0
 
 def showImages(ary, ratio=1):
     n = len(ary)

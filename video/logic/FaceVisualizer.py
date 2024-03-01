@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
 
+from video.logic.StopOverPointInterface import StopOverPointInterface
+
 from video.model import Section, Face
-from video.logic import StopOverPointInterface
 
 from project_constants import DETECTOR_FACE, DETECTOR_NOSE,DETECTOR_RIGHT_MOUTH, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE,  DETECTOR_FRONT_FACE
 

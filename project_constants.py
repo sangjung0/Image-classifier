@@ -13,8 +13,8 @@ DETECTOR_RIGHT_MOUTH = 'right_mouth'
 DETECTOR_LEFT_EYE = 'left_eye'
 DETECTOR_RIGHT_EYE = 'right_eye'
 
-HAARCASCADE_FACE_MODEL = './face_detector/model/haarcascade_frontalface_default.xml'
-HAARCASCADE_EYE_MODEL = './face_detector/model/haarcascade_eye.xml'
+HAARCASCADE_FACE_MODEL = './video/face_detector/model/haarcascade_frontalface_default.xml'
+HAARCASCADE_EYE_MODEL = './video/face_detector/model/haarcascade_eye.xml'
 
 PROCESSOR_RUN = 100
 PROCESSOR_STOP = 0

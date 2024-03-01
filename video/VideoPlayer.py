@@ -1,6 +1,7 @@
 import cv2
 
 from video.Loader import Loader
+
 from project_constants import PROCESSOR_STOP
 
 class VideoPlayer:
@@ -18,7 +19,7 @@ class VideoPlayer:
             elif flag == PROCESSOR_STOP: # Stop 처리는 안해도 될 듯
                 break
                 
-            if cv2.waitKey(delay//10) & 0xFF == ord('q'):
+            if cv2.waitKey(delay) & 0xFF == ord('q'):
                 break
         cv2.destroyAllWindows()
         self.__loader.stop()

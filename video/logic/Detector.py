@@ -1,8 +1,9 @@
 from typing import Type
 
-from face_detector import DetectorInterface
+from video.logic.StopOverPointInterface import StopOverPointInterface
+
+from video.face_detector import DetectorInterface
 from video.model import Section, Face
-from video.logic import StopOverPointInterface
 
 class Detector(StopOverPointInterface):
     def __init__(self, detector: Type[DetectorInterface], scale:int):

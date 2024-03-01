@@ -1,5 +1,6 @@
 from video.model.Frame import Frame
-from util.compressor import CompressorInterface
+
+from video.compressor import CompressorInterface
 
 class Section:
     def __init__(self, index:int, frames:list = [], compressor:CompressorInterface = None):

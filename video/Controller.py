@@ -1,20 +1,22 @@
 from typing import Type
 
-from face_detector import DetectorInterface
-from face_tracker import TrackerInterface
-
+from video.face_detector import DetectorInterface
+from video.tracker import TrackerInterface
 from video.VideoData import VideoData
 from video.logic import Distributor, Vision, Detector, SceneDetector, Tracker, FaceVisualizer, TraceLineVisualizer, FaceTracker
 from video.processor import Controller as PC
 from video.Loader import Loader, SingleLoader
-from util import CompressorInterface, UnCompressor, PickleSerializer, TransceiverInterface, Transceiver
+from video.compressor import CompressorInterface, UnCompressor
+from video.serializer import PickleSerializer
+from video.transceiver import TransceiverInterface, Transceiver
+from video.scene_detector import Interface
 
 class Controller:
 
     @staticmethod
     def startSingleAndGetVideoLoader(
         fileName:str, detectFrameCount:int = 1, scale:int = 1, cfl:int = 200, pointNumber:int = 1000,
-        filter = None, detector:Type[DetectorInterface] = None, tracker:Type[TrackerInterface] = None, sceneDetector:Type[object] = None, draw:bool = False
+        filter = None, detector:Type[DetectorInterface] = None, tracker:Type[TrackerInterface] = None, sceneDetector:Type[Interface] = None, draw:bool = False
     ):
         videoData = VideoData(fileName)
         colors = set()

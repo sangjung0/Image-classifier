@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from multiprocessing import Queue, Value
 from threading import Thread
 import os
@@ -6,9 +5,11 @@ import time
 
 from video.buffer import Sender, Receiver
 from video.logic import StopOverPointInterface
-from util import TransceiverInterface
-from util.util import Timer, Loger
+from video.transceiver import TransceiverInterface
+
 from project_constants import PROCESSOR_STOP, PROCESSOR_PAUSE
+
+from util.util import Timer, Loger
 
 class StopOverPoint:
     def __init__(self, name: str, bufSize:int, logic:StopOverPointInterface):

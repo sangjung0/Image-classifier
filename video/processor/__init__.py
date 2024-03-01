@@ -2,7 +2,7 @@
 연산 프로세서 
 """
 
-from video.processor.Controller import Controller
+from video.processor.Controller import Controller, AllTransmissionMediumIsTerminated, AllProcessIsTerminated
 
-__all__ = ['Controller']
+__all__ = ['Controller', "AllTransmissionMediumIsTerminated", "AllProcessIsTerminated"]
 __version__='0.1'

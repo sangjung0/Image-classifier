@@ -1,10 +1,12 @@
 from typing import Type
 
-from video.model import Section
 from video.logic.StopOverPointInterface import StopOverPointInterface
 
+from video.model import Section
+from video.scene_detector import Interface
+
 class SceneDetector(StopOverPointInterface):
-    def __init__(self, sceneDetector: Type[object]):
+    def __init__(self, sceneDetector: Type[Interface]):
         self.__sceneDetector = sceneDetector
 
     def prepare(self) -> None:

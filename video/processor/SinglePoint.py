@@ -2,6 +2,7 @@ import os
 
 from video.model import Section
 from video.logic import StartPointInterface
+
 from util.util import Timer, Loger
 
 class SinglePoint:

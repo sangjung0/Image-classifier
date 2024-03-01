@@ -2,9 +2,12 @@ from multiprocessing import Queue, Value
 import time
 
 from video.buffer.Interface import Interface
-from util.util import Loger, Timer
-from util import TransceiverInterface
+
+from video.transceiver import TransceiverInterface
+
 from project_constants import PROCESSOR_STOP, PROCESSOR_PAUSE
+
+from util.util import Loger, Timer
 
 class Sender(Interface):
     def __init__(self, name:str, requiresSorting: bool = False, logerIsPrint: bool = False) -> None:

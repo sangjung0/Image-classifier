@@ -3,9 +3,11 @@ from threading import Thread
 import os
 
 from video.buffer import Receiver
-from util.transceiver import TransceiverInterface
-from util.util import Loger
+from video.transceiver import TransceiverInterface
+
 from project_constants import PROCESSOR_STOP
+
+from util.util import Loger
 
 class EndPoint:
     def __init__(self, name: str, bufSize:int):

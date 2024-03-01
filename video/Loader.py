@@ -3,7 +3,8 @@ from typing import Type
 
 from video.buffer import Interface
 from video.VideoData import VideoData
-from util.util import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
+from video.processor import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
+
 from project_constants import PROCESSOR_PAUSE, PROCESSOR_RUN, PROCESSOR_STOP
 
 class Loader:

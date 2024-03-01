@@ -1,6 +1,7 @@
+from video.logic.StartPointInterface import StartPointInterface
+
 from video.model import Frame, Section
 from video.VideoData import VideoData
-from video.logic.StartPointInterface import StartPointInterface
 
 class Distributor(StartPointInterface):
     def __init__(self, videoData:VideoData, detectFrameCount:int, cfl:int):
@@ -34,3 +35,10 @@ class Distributor(StartPointInterface):
             self.__videoData.__exit__()
             raise e
         return section
+
+class DetectFrame:
+    def __init__(self, detectFrameCount):
+        self.__detectFrameCount = detectFrameCount
+    
+    def isDetect(self, x):
+        return x % self.__detectFrameCount == 0

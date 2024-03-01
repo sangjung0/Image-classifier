@@ -7,9 +7,12 @@ import time
 from video.buffer import Sender
 from video.model import Section
 from video.logic import StartPointInterface
-from util import CompressorInterface, TransceiverInterface
-from util.util import Timer, Loger
+from video.compressor import CompressorInterface
+from video.transceiver import TransceiverInterface
+
 from project_constants import PROCESSOR_STOP, PROCESSOR_PAUSE
+
+from util.util import Timer, Loger
 
 class StartPoint:
     def __init__(self, name: str, bufSize:int, logic:StartPointInterface):

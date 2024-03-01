@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
 
+from video.logic.StopOverPointInterface import StopOverPointInterface
+
 from video.model import Section
-from video.logic import StopOverPointInterface
 
 class TraceLineVisualizer(StopOverPointInterface):
     def __init__(self, pointNumber:int) -> None:

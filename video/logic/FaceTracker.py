@@ -1,5 +1,6 @@
+from video.logic.StopOverPointInterface import StopOverPointInterface
+
 from video.model import Section, Face
-from video.logic import StopOverPointInterface
 
 class FaceTracker(StopOverPointInterface): #일반 트래커하고 얼굴 트래커하고 나눠보자
     def __init__(self) -> None:

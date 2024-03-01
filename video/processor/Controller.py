@@ -6,11 +6,12 @@ from video.processor.EndPoint import EndPoint
 from video.processor.SinglePoint import SinglePoint
 from video.processor.StartPoint import StartPoint
 from video.processor.StopOverPoint import StopOverPoint
-from video.logic import StopOverPointInterface, StartPointInterface
-from util import CompressorInterface, TransceiverInterface
-from util.util import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
-from project_constants import PROCESSOR_PAUSE
 
+from video.logic import StopOverPointInterface, StartPointInterface
+from video.compressor import CompressorInterface
+from video.transceiver import TransceiverInterface
+
+from project_constants import PROCESSOR_PAUSE
 
 class Controller:
 
@@ -106,3 +107,25 @@ class StopOverPointLogics(StopOverPointInterface):
         for logic in self.__logics:
             section = logic.processing(section)
         return section
+
+class AllProcessIsTerminated:
+    def __init__(self, processes):
+        self.__processes = processes
+
+    def allProcessIsTerminated(self):
+        return not any(p.is_alive() for p in self.__processes)
+    
+    def wait(self):
+        for p in self.__processes:
+            p.join(1)
+            if p.is_alive(): p.terminate()
+
+class AllTransmissionMediumIsTerminated:
+    def __init__(self, mediums):
+        self.__mediums = mediums
+    
+    def wait(self):
+        for m in self.__mediums:
+            m.close()
+            m.join_thread()
+

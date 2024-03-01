@@ -1,8 +1,9 @@
 from typing import Type
 import cv2
 
-from video.model import Section
 from video.logic.StopOverPointInterface import StopOverPointInterface
+
+from video.model import Section
 
 class Vision(StopOverPointInterface):
     def __init__(self, filter:Type[object], width:int, height:int, scale:int, colors:set, draw:bool):

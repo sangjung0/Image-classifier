@@ -1,9 +1,11 @@
 from video import Controller, VideoPlayer
-from imageProcessor import blurFilters, deblurFilters
-from face_detector import MyMTCNN, HaarCascade
-from face_tracker import LucasKanade, GunnerFarneback
-from util import CalcHistogram, CalcEdge
-from util import Transceiver, GZipCompressor, PickleSerializer, JpgCompressor
+from video.imageProcessor import blurFilters, deblurFilters
+from video.face_detector import MyMTCNN, HaarCascade
+from video.tracker import LucasKanade, GunnerFarneback
+from video.scene_detector import CalcHistogram, CalcEdge
+from video.compressor import GZipCompressor, JpgCompressor
+from video.serializer import PickleSerializer
+from video.transceiver import Transceiver
 from test.ImgTable import ImgTable
 from test.SaveImg import SaveImg
 from face_recognizer import KMeans
@@ -55,7 +57,7 @@ def multiProcessPlayTest(fileName):
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True, transceiver=Transceiver(PickleSerializer(), GZipCompressor()))
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True, transceiver=Transceiver(PickleSerializer(), GZipCompressor()))
-    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1,cfl=100, bufSize=3, scale=2, compressor=JpgCompressor, tracker=LucasKanade,detector=MyMTCNN, sceneDetector=CalcHistogram, draw=True)
+    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=10,cfl=100, bufSize=3, scale=2, compressor=JpgCompressor, tracker=LucasKanade,detector=MyMTCNN, sceneDetector=CalcHistogram, draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), filter = deblurFilters.wienerFiltering, detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=1, cfl=50)
