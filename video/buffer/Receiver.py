@@ -17,7 +17,7 @@ class Receiver(Interface):
         self.__name = name
 
     def isFull(self) -> bool:
-        return len(self._datas) == self.__bufSize
+        return len(self) == self.__bufSize
 
     def __call__(self, order:int, terminationSignal:Value, flag:Value, inputQ:Queue, transceiver:TransceiverInterface) -> None: # type: ignore
         loger = Loger(self.__name, self.__logerIsPrint) # loger
