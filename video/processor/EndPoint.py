@@ -14,12 +14,12 @@ class EndPoint:
         self.__name = name
         self.__bufSize = bufSize
 
-    def __call__(self, order:int, terminationSignal:Value, flag: Value, lastIndex:Value, inputQ: Queue, transceiver:TransceiverInterface): # type: ignore
+    def __call__(self, order:int, terminationSignal:Value, flag: Value, lastIndex:Value, inputQ: Queue, transceiver:TransceiverInterface, requiresSorting:bool): # type: ignore
         loger = Loger(self.__name) # logger
         loger("start") # loger
         try:
 
-            receiver = EndReceiver(self.__name+"-Receiver", self.__bufSize, lastIndex, logerIsPrint=True)
+            receiver = EndReceiver(self.__name+"-Receiver", self.__bufSize, lastIndex, logerIsPrint=True, requiresSorting = requiresSorting)
             receiverTh = Thread(target=receiver, args=(order, terminationSignal, flag, inputQ, transceiver))
             receiverTh.start()
 

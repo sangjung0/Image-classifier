@@ -17,13 +17,13 @@ class StopOverPoint:
         self.__bufSize = bufSize
         self.__logic = logic
 
-    def __call__(self, order:int, terminationSignal:Value, flag: Value, inputQ: Queue, outputQ: Queue, transceiver:TransceiverInterface): # type: ignore
+    def __call__(self, order:int, terminationSignal:Value, flag: Value, inputQ: Queue, outputQ: Queue, transceiver:TransceiverInterface, requiresSorting:bool): # type: ignore
         loger = Loger(self.__name) # logger
         timer = Timer() # timer
         loger("start") # loge
         self.__logic.prepare()
         try:
-            receiver = Receiver(self.__name+"-Receiver", self.__bufSize, logerIsPrint=True)
+            receiver = Receiver(self.__name+"-Receiver", self.__bufSize, logerIsPrint=True, requiresSorting=requiresSorting)
             receiverTh = Thread(target=receiver, args=(order, terminationSignal, flag, inputQ, transceiver))
             receiverTh.start()
 

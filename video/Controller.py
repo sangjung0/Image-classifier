@@ -3,7 +3,7 @@ from typing import Type
 from video.face_detector import DetectorInterface
 from video.tracker import TrackerInterface
 from video.VideoData import VideoData
-from video.logic import Distributor, Vision, Detector, SceneDetector, Tracker, FaceVisualizer, TraceLineVisualizer, FaceTracker
+from video.logic import *
 from video.processor import Controller as PC
 from video.Loader import Loader, SingleLoader
 from video.compressor import CompressorInterface, UnCompressor
@@ -71,6 +71,7 @@ class Controller:
         ]
         pNumbers = []
         pBufSize = [bufSize]
+        bufSort = []
         names = ["StartProcess"]
 
         if sceneDetector is not None:
@@ -83,6 +84,7 @@ class Controller:
             names.append("DetectProcess")
             pNumbers.append(detectProcessorNumber)
             pBufSize.append(3)
+            bufSort.append(True)
 
         # if tracker is not None:
         #     logics.append([
@@ -96,12 +98,14 @@ class Controller:
         if draw:
             logics.append([
                 FaceTracker(),
+                FaceFilter(videoData.width, videoData.height, 0),
                 FaceVisualizer(),
                 TraceLineVisualizer(pointNumber)
             ])
             names.append("Drawers")
             pNumbers.append(1)
             pBufSize.append(3)
+            bufSort.append(True)
 
         if visionProcessorNumber != 1:
             raise Exception("이거 아직 안만듬 다시 만드셈")
@@ -109,6 +113,6 @@ class Controller:
         names.append("EndThread")
         pBufSize.append(3)
 
-        flag, receiver, allProcess, allTransmissionMedium = PC.get(names, logics, pNumbers, pBufSize, compressor, transceiver)
+        flag, receiver, allProcess, allTransmissionMedium = PC.get(names, logics, pNumbers, pBufSize, bufSort, compressor, transceiver)
 
         return Loader(videoData, receiver, flag, allProcess, allTransmissionMedium)

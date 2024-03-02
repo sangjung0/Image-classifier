@@ -28,7 +28,8 @@ class Controller:
             names:list[str],
             logics:list[list[object]], 
             pNumbers:list[int],
-            pBufSize:list[int], 
+            pBufSize:list[int],
+            bufSort:list[bool],
             compressor: Type[CompressorInterface],
             transceiver: Type[TransceiverInterface]
         ):
@@ -54,7 +55,7 @@ class Controller:
         )
         
         stopOverProcess = []
-        for logic, pb, n, pn in zip(logics, pBufSize, names, pNumbers):
+        for logic, pb, bs, n, pn in zip(logics, pBufSize, bufSort, names, pNumbers):
             queues.append(Queue())
             stopOverPoint = StopOverPoint(n, pb, StopOverPointLogics(logic))
             for _ in range(pn):
@@ -62,7 +63,7 @@ class Controller:
                 stopOverProcess.append(
                     Process(
                         target=stopOverPoint,
-                        args=(terminationOrder, terminationSignal, flag, queues[-2],queues[-1], transceiver)
+                        args=(terminationOrder, terminationSignal, flag, queues[-2],queues[-1], transceiver, bs)
                     )
                 )
         
@@ -70,7 +71,7 @@ class Controller:
 
         startProcess.start()
         for p in stopOverProcess: p.start()
-        receiver, receiverTh = endPoint(terminationOrder + 1, terminationSignal, flag, lastIndex, queues[-1], transceiver)
+        receiver, receiverTh = endPoint(terminationOrder + 1, terminationSignal, flag, lastIndex, queues[-1], transceiver, True)
 
         allProcess = AllProcessIsTerminated([startProcess, receiverTh] + stopOverProcess)
         allTransmissionMedium = AllTransmissionMediumIsTerminated(queues)
