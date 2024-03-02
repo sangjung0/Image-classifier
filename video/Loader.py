@@ -15,7 +15,6 @@ class Loader:
         self.__processes = processes
         self.__mediums = mediums
         self.__iter = iter([])
-        self.__index = 0
 
     @property
     def videoData(self):
@@ -47,13 +46,12 @@ class Loader:
             frame = next(self.__iter)
             return PROCESSOR_RUN, True, frame
         except StopIteration:
-            section = self.__buffer.get(self.__index)
+            section = self.__buffer.get()
             if section is None:
-                if self.__flag ==  PROCESSOR_STOP:
+                if self.isFinish():
                     raise StopIteration
                 return PROCESSOR_RUN, False, None
             self.__iter = iter(section)
-            self.__index += 1
             return self.__next__()
         
 class SingleLoader:
