@@ -9,13 +9,11 @@ from project_constants import DETECTOR_FACE, DETECTOR_NOSE, DETECTOR_LEFT_EYE, D
 class MyMTCNN(DetectorInterface):
     COLOR = cv2.COLOR_BGR2RGB
 
-    def __init__(self, color = COLOR, min_face_size = 40, margin = 1.2, front = 0.3):
+    def __init__(self, color = COLOR, min_face_size = 40):
         super().__init__()
         self.__mtcnn = MTCNN(min_face_size=min_face_size)
         self.__color = color
         self.__batch = []
-        self.__margin = margin
-        self.__front = front
 
     @property
     def colorConstant(self):
@@ -31,8 +29,6 @@ class MyMTCNN(DetectorInterface):
         return np.vstack(tuple(img for img in self.__batch))
 
     def detect(self):
-        margin = self.__margin
-        front = self.__front
         length = len(self.__batch)
 
         source = self.combine()
@@ -64,10 +60,10 @@ class MyMTCNN(DetectorInterface):
             # isFrontFace = temp['nose'][0] - temp['left_eye'][0] > thrashold and temp['right_eye'][0] - temp['nose'][0] > thrashold
             #DETECTOR_FRONT_FACE if isFrontFace else DETECTOR_FACE
             face[DETECTOR_FACE] = ( #얼굴
-                f['box'][0] - int(f['box'][2] * ((margin - 1)/2)), 
-                f['box'][1] - minHeight - int(f['box'][3] * ((margin - 1)/2)),
-                f['box'][0] + int(f['box'][2] * margin),
-                f['box'][1] - minHeight + int(f['box'][3] * margin)
+                f['box'][0], 
+                f['box'][1] - minHeight,
+                f['box'][0] + f['box'][2],
+                f['box'][1] - minHeight + f['box'][3]
             )
 
             face[DETECTOR_NOSE] = ( #코
