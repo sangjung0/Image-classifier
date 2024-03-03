@@ -37,8 +37,13 @@ class FaceVisualizer(StopOverPointInterface):
                 cv2.rectangle(
                     frame, 
                     (lx, ly), (rx, ry), 
-                    FaceVisualizer.__COLORS[key], FaceVisualizer.__WEIGHT[key]
+                    face.rectColor if key == DETECTOR_FACE else FaceVisualizer.__COLORS[key], FaceVisualizer.__WEIGHT[key]
                     )
+                if key == DETECTOR_FACE:
+                    name = face.name.get()
+                    if name:
+                        cv2.rectangle(frame, (lx, ly), (lx+30, ly-30), face.rectColor, cv2.FILLED)
+                        cv2.putText(frame, name, (lx, ly),  cv2.FONT_HERSHEY_SIMPLEX, 1, tuple((255 - i) for i in face.rectColor), 4)
     
     def processing(self, section: Section) -> Section:
 
