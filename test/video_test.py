@@ -7,7 +7,8 @@ from video.compressor import GZipCompressor, JpgCompressor
 from video.serializer import PickleSerializer
 from video.transceiver import Transceiver
 from test.ImgTable import ImgTable
-from test.SaveImg import SaveImg
+from test.ExtractFace import ExtractFace
+from test.SaveFace import SaveFace, LoadFace
 from face_recognizer import KMeans
 
 
@@ -57,7 +58,7 @@ def multiProcessPlayTest(fileName):
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True, transceiver=Transceiver(PickleSerializer(), GZipCompressor()))
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=8, bufSize=8, cfl=60,scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True, transceiver=Transceiver(PickleSerializer(), GZipCompressor()))
-    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=10,cfl=100, bufSize=3, scale=2, compressor=JpgCompressor, tracker=LucasKanade,detector=MyMTCNN, sceneDetector=CalcHistogram, draw=True)
+    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1,cfl=120, bufSize=3, scale=2, compressor=JpgCompressor, tracker=LucasKanade,detector=MyMTCNN, sceneDetector=CalcHistogram, draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), filter = deblurFilters.wienerFiltering, detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, scale=2, tracker=LucasKanade(), detector=FaceDetectorFilter(HaarCascade()),sceneDetector=CalcHistogram(), draw=True)
     #vl = Controller.startAndGetVideoLoader(fileName, processorNumber=1, cfl=50)
@@ -70,13 +71,27 @@ def pltTest(fileName):
     vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1, visionProcessorNumber=1, detectProcessorNumber=1, bufSize=16, cfl=200,scale=2, compressor=JpgCompressor, detector=MyMTCNN,sceneDetector=CalcHistogram, draw=False)
     ImgTable(vl).show()
 
-def saveTest(fileName):
-    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1, visionProcessorNumber=1, detectProcessorNumber=1, bufSize=16, cfl=200,scale=2, compressor=JpgCompressor, detector=MyMTCNN,sceneDetector=CalcHistogram, draw=False)
-    SaveImg(vl).save()
-
-def kMeansTest(fileName):
-    KMeans(fileName, (50, 50, 3)).run()
-
 def singlePlayTest(fileName):
     vl = Controller.startSingleAndGetVideoLoader(fileName, detectFrameCount=10,cfl=400, scale=2, tracker=LucasKanade,detector=MyMTCNN, sceneDetector=CalcHistogram, draw=True)
     VideoPlayer(vl).play()
+
+def saveTest(fileName):
+    vl = Controller.startAndGetVideoLoader(fileName, detectFrameCount=1,cfl=120, bufSize=3, scale=2, compressor=JpgCompressor, tracker=LucasKanade,detector=MyMTCNN, sceneDetector=CalcHistogram, draw=True)
+    SaveFace(vl).save()
+    print("종료")
+
+def loadTest(videoFileName, fileName):
+    faces = LoadFace(fileName).load()
+    vl = Controller.playSingleFromFaces(videoFileName, faces, draw=True)
+    VideoPlayer(vl).play()
+
+def kMeansTest(videoFileName, fileName):
+    faces = LoadFace(fileName).load()
+    vl = Controller.playSingleFromFaces(videoFileName, faces, cfl=1000)
+    names = KMeans(ExtractFace(vl).extract(), (50, 50, 3)).run()
+    for f, n in zip(faces, names):
+        f.name.add(str(n))
+    vl = Controller.playSingleFromFaces(videoFileName, faces, cfl=1000, draw=True)
+    VideoPlayer(vl).play()
+    
+    

@@ -19,7 +19,7 @@ class VideoPlayer:
             elif flag == PROCESSOR_STOP: # Stop 처리는 안해도 될 듯
                 break
                 
-            if cv2.waitKey(delay) & 0xFF == ord('q'):
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         cv2.destroyAllWindows()
         self.__loader.stop()

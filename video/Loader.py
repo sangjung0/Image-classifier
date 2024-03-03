@@ -69,6 +69,9 @@ class SingleLoader:
     def run(self):
         return
     
+    def stop(self):
+        return 
+    
     def __iter__(self):
         return self
     

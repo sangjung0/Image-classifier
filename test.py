@@ -23,8 +23,9 @@ if __name__ == "__main__":
     #os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = '/usr/local/lib/python3.9/site-packages/cv2/qt/plugins'
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     #video_test.saveTest(TEST_VIDEO)
+    #video_test.loadTest(TEST_VIDEO, "./faces.pkl")
     #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-    video_test.multiProcessPlayTest(TEST_VIDEO)
-    #video_test.kMeansTest("./test.npy")
+    #video_test.multiProcessPlayTest(TEST_VIDEO)
+    video_test.kMeansTest(TEST_VIDEO, "./faces.pkl")
 
     #video_test.singlePlayTest(TEST_VIDEO)
