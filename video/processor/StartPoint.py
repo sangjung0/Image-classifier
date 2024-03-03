@@ -71,7 +71,7 @@ class StartPoint:
         except Exception as e:
             flag.value = PROCESSOR_STOP
             loger(os.getpid(), "오류", e)
-        loger(os.getpid(), "종료", option="terminate")
         loger(f"연산 평균 속도 {timer.average}", option='result')
         th.join()
+        loger(os.getpid(), "종료", option="terminate")
         return
