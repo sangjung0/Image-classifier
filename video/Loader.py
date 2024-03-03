@@ -1,4 +1,5 @@
 from multiprocessing import Value
+from threading import Thread
 from typing import Type
 
 from video.buffer import Interface
@@ -8,9 +9,10 @@ from video.processor import AllProcessIsTerminated, AllTransmissionMediumIsTermi
 from project_constants import PROCESSOR_PAUSE, PROCESSOR_RUN, PROCESSOR_STOP
 
 class Loader:
-    def __init__(self, data:VideoData, buffer:Interface, flag: Value, processes: Type[AllProcessIsTerminated], mediums: Type[AllTransmissionMediumIsTerminated]): # type: ignore
+    def __init__(self, data:VideoData, buffer:Interface, bufferTh:Thread, flag: Value, processes: Type[AllProcessIsTerminated], mediums: Type[AllTransmissionMediumIsTerminated]): # type: ignore
         self.__data = data
         self.__buffer = buffer
+        self.__bufferTh = bufferTh
         self.__flag = flag
         self.__processes = processes
         self.__mediums = mediums
@@ -21,7 +23,7 @@ class Loader:
         return self.__data
     
     def isFinish(self):
-        if self.__flag.value == PROCESSOR_STOP or self.__processes.allProcessIsTerminated():
+        if self.__flag.value == PROCESSOR_STOP or self.__processes.allProcessIsTerminated() or not self.__bufferTh.is_alive():
             return True
         return False
 
@@ -63,6 +65,9 @@ class SingleLoader:
     @property
     def videoData(self):
         return self.__data
+    
+    def run(self):
+        return
     
     def __iter__(self):
         return self
