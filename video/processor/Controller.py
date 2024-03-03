@@ -73,10 +73,10 @@ class Controller:
         for p in stopOverProcess: p.start()
         receiver, receiverTh = endPoint(terminationOrder + 1, terminationSignal, flag, lastIndex, queues[-1], transceiver, True)
 
-        allProcess = AllProcessIsTerminated([startProcess, receiverTh] + stopOverProcess)
+        allProcess = AllProcessIsTerminated([startProcess] + stopOverProcess)
         allTransmissionMedium = AllTransmissionMediumIsTerminated(queues)
 
-        return flag, receiver, allProcess, allTransmissionMedium
+        return flag, receiver, receiverTh, allProcess, allTransmissionMedium
 
 class StartPointLogics(StartPointInterface):
     def __init__(self, logics:list[object]):
