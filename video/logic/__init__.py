@@ -11,9 +11,10 @@ from video.logic.TraceLineVisualizer import TraceLineVisualizer
 from video.logic.Tracker import Tracker
 from video.logic.Vision import Vision
 from video.logic.FaceFilter import FaceFilter
+from video.logic.InsertFace import InsertFace
 
 from video.logic.StartPointInterface import StartPointInterface
 from video.logic.StopOverPointInterface import StopOverPointInterface
 
-__all__ = ['StartPointInterface', 'FaceTracker','StopOverPointInterface', 'Detector', 'Distributor', 'Tracker', 'Vision', 'SceneDetector','FaceVisualizer', 'TraceLineVisualizer', 'FaceFilter']
+__all__ = ['StartPointInterface', 'FaceTracker','StopOverPointInterface', 'Detector', 'Distributor', 'Tracker', 'Vision', 'SceneDetector','FaceVisualizer', 'TraceLineVisualizer', 'FaceFilter', 'InsertFace']
 __version__='0.1'
