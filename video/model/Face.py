@@ -15,7 +15,7 @@ class Face:
 
     @property
     def name(self):
-        return self.__name.get()
+        return self.__name
 
     @property
     def points(self):
