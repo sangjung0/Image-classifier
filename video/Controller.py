@@ -10,8 +10,22 @@ from video.compressor import CompressorInterface, UnCompressor
 from video.serializer import PickleSerializer
 from video.transceiver import TransceiverInterface, Transceiver
 from video.scene_detector import Interface
+from video.model import Face
 
 class Controller:
+
+    @staticmethod
+    def playSingleFromFaces(fileName:str, faces:list[Face], cfl:int= 200):
+        videoData = VideoData(fileName)
+        logics = [
+            Distributor(videoData, 1, cfl),
+            InsertFace(faces),
+            FaceVisualizer()
+        ]
+
+        process = PC.getSingle("singleProcessor", logics)
+
+        return SingleLoader(videoData, process)
 
     @staticmethod
     def startSingleAndGetVideoLoader(
@@ -113,6 +127,6 @@ class Controller:
         names.append("EndThread")
         pBufSize.append(3)
 
-        flag, receiver, allProcess, allTransmissionMedium = PC.get(names, logics, pNumbers, pBufSize, bufSort, compressor, transceiver)
+        flag, receiver, receiverTh, allProcess, allTransmissionMedium = PC.get(names, logics, pNumbers, pBufSize, bufSort, compressor, transceiver)
 
-        return Loader(videoData, receiver, flag, allProcess, allTransmissionMedium)
+        return Loader(videoData, receiver, receiverTh, flag, allProcess, allTransmissionMedium)
