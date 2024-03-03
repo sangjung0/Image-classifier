@@ -13,7 +13,9 @@ class InsertFace(StopOverPointInterface):
     def processing(self, section: Section) -> Section:
         faces = self.__faces
         for frame in section:
-            if faces and faces[-1].frameIndex == frame.index:
-                frame.face.append(faces.pop())
+            while True:
+                if faces and faces[-1].frameIndex == frame.index:
+                    frame.face.append(faces.pop())
+                else: break
         
         return section
