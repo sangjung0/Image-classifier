@@ -15,13 +15,15 @@ from video.model import Face
 class Controller:
 
     @staticmethod
-    def playSingleFromFaces(fileName:str, faces:list[Face], cfl:int= 200):
+    def playSingleFromFaces(fileName:str, faces:list[Face], cfl:int= 200, draw:bool = False):
         videoData = VideoData(fileName)
         logics = [
             Distributor(videoData, 1, cfl),
-            InsertFace(faces),
-            FaceVisualizer()
+            InsertFace(faces)
         ]
+
+        if draw:
+            logics.append(FaceVisualizer())
 
         process = PC.getSingle("singleProcessor", logics)
 
