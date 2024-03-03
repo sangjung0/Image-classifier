@@ -78,5 +78,6 @@ class SingleLoader:
             return PROCESSOR_RUN, True, frame
         except StopIteration:
             section = self.__process.get()
+            if section is None: raise StopIteration
             self.__iter = iter(section)
             return self.__next__()
