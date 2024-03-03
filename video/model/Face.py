@@ -1,5 +1,7 @@
 import random
 
+from video.model.Name import Name
+
 from project_constants import DETECTOR_FACE, DETECTOR_NOSE,DETECTOR_RIGHT_MOUTH, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE,  DETECTOR_FRONT_FACE
 
 class Face:
@@ -9,6 +11,11 @@ class Face:
         self.__rectColor = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         self.__points = []
         self.__nextFace = None
+        self.__name = Name()
+
+    @property
+    def name(self):
+        return self.__name.get()
 
     @property
     def points(self):
@@ -56,6 +63,7 @@ class Face:
         if isinstance(value, Face):
             self.__nextFace = value
             value.__rectColor = self.__rectColor
+            value.__name = self.__name
         else:
             raise ValueError("nextFace is must be Face")
     
