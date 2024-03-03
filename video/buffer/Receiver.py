@@ -46,8 +46,8 @@ class Receiver(Interface):
         except Exception as e:
             loger("쓰레드 오류",e, option="error") # loger
             flag.value = PROCESSOR_STOP
+        loger(f"데이서 수신 후 압축 해제 평균 속도 {timer.average}", option='result') # loger
+        loger(f"이미지 압축 해제 평균 속도 {imgTimer.average}", option='result') # loger
         loger("쓰레드 종료", option='terminate') # loger
-        loger(f"데이서 수신 후 압축 해제 평균 속도 {timer.average}", option='result')
-        loger(f"이미지 압축 해제 평균 속도 {imgTimer.average}", option='result')
         return
 
