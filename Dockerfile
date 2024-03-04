@@ -10,7 +10,11 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0
 RUN apt-get install -y busybox
 RUN apt-get install -y libgtk2.0-dev pkg-config
-RUN apt-get install -y python3-tk
+RUN apt-get install -y qtbase5-dev
+RUN apt-get install -y qt5-qmake
+RUN apt-get install -y cmake 
+RUN apt-get install -y libxkbcommon-x11-0
+
 
 # Install pip requirements
 COPY requirements.txt .
