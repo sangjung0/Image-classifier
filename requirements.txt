@@ -10,3 +10,4 @@ scikit-image==0.22.0
 matplotlib==3.8.3
 scikit-learn==1.4.1.post1
 pyqt5==5.15.10
+PyOpenGl==3.1.7
