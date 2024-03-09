@@ -6,12 +6,9 @@ from process.logic.StopOverPointInterface import StopOverPointInterface
 from process.model import Section
 
 class Vision(StopOverPointInterface):
-    def __init__(self, filter:Type[object], width:int, height:int, scale:int, colors:set, draw:bool):
+    def __init__(self, filter:Type[object], scale:int, colors:set, draw:bool):
         self.__filter = filter
-        self.__width = width 
-        self.__height = height 
-        self.__rWidth = width // scale
-        self.__rHeight = height // scale
+        self.__scale = scale
         self.__colors = colors
         self.__draw = draw
 
@@ -21,20 +18,17 @@ class Vision(StopOverPointInterface):
     def processing(self, section:Section) -> Section:
 
         filter = self.__filter
-        width = self.__width
-        height = self.__height
-        rWidth = self.__rWidth
-        rHeight = self.__rHeight
+        scale = self.__scale
         draw = self.__draw
         colors = self.__colors
 
-        for frame in section:
-            f = cv2.resize(frame.frame, (rWidth, rHeight))
+        for img in section:
+            f = cv2.resize(img.source, (img.width // scale, img.height // scale))
             cf = filter(f) if filter is not None else f
             if draw:
-                frame.frame[:] = cv2.resize(cf,(width, height))
-            frame.setFrame(cf)
+                img.source[:] = cv2.resize(cf,(img.width, img.height))
+            img.setImage(cf)
             for c in colors:
-                frame.setFrame(cv2.cvtColor(frame.getFrame(), c), cv2Constant = c)
+                img.setImage(cv2.cvtColor(img.getImage(), c), c)
 
         return section
