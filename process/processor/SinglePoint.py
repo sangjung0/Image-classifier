@@ -6,7 +6,7 @@ from process.logic import StartPointInterface
 from util.util import Timer, Loger
 
 class SinglePoint:
-    def __init__(self, name: str, logic:StartPointInterface):
+    def __init__(self, name: str, logic:StartPointInterface) -> None:
         self.__loger = Loger(name) # logger
         self.__timer = Timer() # timer
         self.__isFinish = False
@@ -15,13 +15,13 @@ class SinglePoint:
         self.__index = 0
         self.__loger("start") # loger
 
-    def setIsFinish(self, value):
+    def setIsFinish(self, value) -> None:
         if isinstance(value, bool):
             self.__isFinish = value
         else:
             raise ValueError("isFinish is must be boolean")
 
-    def get(self):
+    def get(self) -> Section:
         loger = self.__loger # logger
         timer = self.__timer # timer
         try:

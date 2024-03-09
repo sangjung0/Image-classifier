@@ -9,12 +9,21 @@ from project_constants import PROCESSOR_STOP
 
 from util.util import Loger
 
+class EndReceiver(Receiver):
+    def __init__(self, name:str, bufSize: int, lastIndex:Value, requiresSorting: bool = False, logerIsPrint: bool = False) -> None: # type: ignore
+        super().__init__(name, bufSize, requiresSorting, logerIsPrint)
+        self.__lastIndex = lastIndex
+
+    def append(self, value: object) -> None:
+        super().append(value)
+        self.__lastIndex.value = value.index
+        
 class EndPoint:
-    def __init__(self, name: str, bufSize:int):
+    def __init__(self, name: str, bufSize:int) -> None:
         self.__name = name
         self.__bufSize = bufSize
 
-    def __call__(self, order:int, terminationSignal:Value, flag: Value, lastIndex:Value, inputQ: Queue, transceiver:TransceiverInterface, requiresSorting:bool): # type: ignore
+    def __call__(self, order:int, terminationSignal:Value, flag: Value, lastIndex:Value, inputQ: Queue, transceiver:TransceiverInterface, requiresSorting:bool) -> tuple[EndReceiver, Thread]: # type: ignore
         loger = Loger(self.__name) # logger
         loger("start") # loger
         try:
@@ -31,11 +40,4 @@ class EndPoint:
         receiverTh.join()
         return
     
-class EndReceiver(Receiver):
-    def __init__(self, name:str, bufSize: int, lastIndex:Value, requiresSorting: bool = False, logerIsPrint: bool = False) -> None: # type: ignore
-        super().__init__(name, bufSize, requiresSorting, logerIsPrint)
-        self.__lastIndex = lastIndex
 
-    def append(self, value: object) -> None:
-        super().append(value)
-        self.__lastIndex.value = value.index
