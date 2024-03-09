@@ -5,6 +5,7 @@
 from process.VideoPlayer import VideoPlayer
 from process.Loader import Loader
 from process.Controller import Controller
+from process.PathData import PathData
 
-__all__ = ['VideoPlayer', 'Controller', 'Loader', "face_detector", "tracker"]
+__all__ = ['VideoPlayer', 'Controller', 'Loader', 'PathData' ]
 __version__='0.1'
