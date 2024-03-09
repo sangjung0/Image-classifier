@@ -4,5 +4,5 @@
 
 from process.imageProcessor import blurFilters,deblurFilters
 
-__all__ = ['BlurFilter','deblurFilter']
+__all__ = ['blurFilters','deblurFilters']
 __version__ = '0.1'
