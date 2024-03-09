@@ -1,1 +1,1 @@
-TEST_VIDEO = './test/resources/test_video_4.mp4'
+TEST_PATH = "/workspaces/Image-classifier/test/resource/DD"

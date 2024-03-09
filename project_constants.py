@@ -1,7 +1,7 @@
-PROJECT_NAME = 'Facial Classifier'
+PROJECT_NAME = 'Image Classifier'
 PROJECT_VERSION = '0.1'
-PROJECT_DESCRIPTION = 'Facial classifier using machine learning'
-PROJECT_URL = 'https://github.com/sangjung0/Facial_Classifier'
+PROJECT_DESCRIPTION = 'Image classifier using machine learning'
+PROJECT_URL = 'https://github.com/sangjung0/Image-classifier'
 PROJECT_AUTHOR = 'sangjung'
 PROJECT_AUTHOR_EMAIL = 'sangjung245@gmail.com'
 
@@ -20,5 +20,5 @@ PROCESSOR_RUN = 100
 PROCESSOR_STOP = 0
 PROCESSOR_PAUSE = 101
 
-FRAME_SCALE = 'scale'
-FRAME_FRAME = 'frame'
+IMAGE_SCALE = 'scale'
+IMAGE_SOURCE = 'source'
