@@ -17,25 +17,19 @@ class Detector(StopOverPointInterface):
 
         detector = self.__detector
         scale = self.__scale
-        frames = []
 
-        for frame in section.frames:
-            if frame.isDetect:
-                frames.append(frame)
-                detector.batch(frame.getFrame(detector.colorConstant))
-
-        if len(frames) == 0: return section
+        for img in section:
+            detector.batch(img.getImage(detector.colorConstant))
 
         faceLocation = detector.detect()
         detector.clear()
 
-        for frame, face in zip(frames, faceLocation):
+        for img, face in zip(section, faceLocation):
             faces = []
-            index = frame.index
             for f in face:
                 for k in f:
                     f[k] = tuple(s * scale for s in f[k])
-                faces.append(Face(index, f))
-            frame.face = faces
+                faces.append(Face(f))
+            img.face = faces
 
         return section
