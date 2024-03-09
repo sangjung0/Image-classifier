@@ -1,51 +1,44 @@
-from process.model.Frame import Frame
+from process.model.Image import Image
 
 from process.compressor import CompressorInterface
 
 class Section:
-    def __init__(self, index:int, frames:list = [], compressor:CompressorInterface = None):
+    def __init__(self, index:int, imgs:list = [], compressor:CompressorInterface = None):
         self.__index = index
-        self.__frames = frames
+        self.__imgs = imgs
         self.__compressor = compressor
 
     @property
-    def index(self):
+    def index(self) -> int:
         return self.__index
 
     @property
-    def frames(self):
-        return self.__frames
-
-    def next(self):
-        self.__index = self.__index + 1
-        self.__frames.clear()
+    def imgs(self) -> list[Image]:
+        return self.__imgs
     
-    def append(self, frame:Frame):
-        self.__frames.append(frame)
+    def append(self, img:Image) -> None:
+        self.__imgs.append(img)
 
-    def compress(self):
-        if self.__compressor is not None:
-            for f in self.__frames:
-                imgs = f.imgs
-                for key in imgs:
-                    if isinstance(imgs[key], bytes):
-                        raise Exception("This frame is already compressed")
-                    imgs[key] = self.__compressor.compress(imgs[key])
+    def compress(self) -> None:
+        self.__cps(self.__compressor.compress, "This frame is already compressed", True)
 
-    def deCompress(self):
+    def deCompress(self) -> None:
+        self.__cps(self.__compressor.decompress, "This frame is already deCompressed", False)
+
+    def __cps(self, logic:callable, msg:str, isCompress:bool) -> None:
         if self.__compressor is not None:
-            for f in self.__frames:
-                imgs = f.imgs
-                for key in imgs:
-                    if not isinstance(imgs[key], bytes):
-                        raise Exception("This frame is already deCompressed")
-                    imgs[key] = self.__compressor.decompress(imgs[key])
+            for f in self.__imgs:
+                data = f.data
+                for key in data:
+                    if isinstance(data[key], bytes) == isCompress:
+                        raise Exception(msg)
+                    data[key] = logic(data[key])
     
     def __lt__(self, other):
         return self.index < other.index
     
     def __len__(self):
-        return len(self.__frames)
+        return len(self.__imgs)
     
     def __iter__(self):
-        return iter(self.__frames)
+        return iter(self.__imgs)
