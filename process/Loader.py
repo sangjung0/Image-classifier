@@ -1,15 +1,16 @@
-from multiprocessing import Value
+from multiprocessing.sharedctypes import SynchronizedBase
 from threading import Thread
 from typing import Type
 
+from process.model import Image
 from process.buffer import Interface
-from process.VideoData import VideoData
+from process.PathData import PathData
 from process.processor import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
 
 from project_constants import PROCESSOR_PAUSE, PROCESSOR_RUN, PROCESSOR_STOP
 
 class Loader:
-    def __init__(self, data:VideoData, buffer:Interface, bufferTh:Thread, flag: Value, processes: Type[AllProcessIsTerminated], mediums: Type[AllTransmissionMediumIsTerminated]): # type: ignore
+    def __init__(self, data:PathData, buffer:Interface, bufferTh:Thread, flag: SynchronizedBase, processes: Type[AllProcessIsTerminated], mediums: Type[AllTransmissionMediumIsTerminated]) -> None:
         self.__data = data
         self.__buffer = buffer
         self.__bufferTh = bufferTh
@@ -19,23 +20,23 @@ class Loader:
         self.__iter = iter([])
 
     @property
-    def videoData(self):
+    def data(self) -> PathData:
         return self.__data
     
-    def isFinish(self):
+    def isFinish(self) -> bool:
         if self.__flag.value == PROCESSOR_STOP or self.__processes.allProcessIsTerminated() or not self.__bufferTh.is_alive():
             return True
         return False
 
-    def pause(self):
+    def pause(self) -> None:
         self.__flag.value = PROCESSOR_PAUSE
 
-    def stop(self):
+    def stop(self) -> None:
         self.__flag.value = PROCESSOR_STOP
         self.__processes.wait()
         self.__mediums.wait()
 
-    def run(self):
+    def run(self) -> None:
         if self.__flag.value != PROCESSOR_STOP:
             self.__flag.value = PROCESSOR_RUN
         else: raise Exception("프로세서 종료됨")
@@ -43,10 +44,10 @@ class Loader:
     def __iter__(self):
         return self
     
-    def __next__(self):
+    def __next__(self) -> tuple[int, bool, Image]:
         try:
-            frame = next(self.__iter)
-            return PROCESSOR_RUN, True, frame
+            img = next(self.__iter)
+            return PROCESSOR_RUN, True, img
         except StopIteration:
             section = self.__buffer.get()
             if section is None:
@@ -57,8 +58,8 @@ class Loader:
             return self.__next__()
         
 class SingleLoader:
-    def __init__(self, videoData:VideoData, process:object):
-        self.__data = videoData
+    def __init__(self, data:PathData, process:object):
+        self.__data = data
         self.__process = process
         self.__iter = iter([])
 
