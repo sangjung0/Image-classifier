@@ -9,14 +9,14 @@ from project_constants import DETECTOR_FACE, DETECTOR_NOSE, DETECTOR_LEFT_EYE, D
 class MyMTCNN(DetectorInterface):
     COLOR = cv2.COLOR_BGR2RGB
 
-    def __init__(self, color = COLOR, min_face_size = 40):
+    def __init__(self, color:int = COLOR, min_face_size:int = 20) -> None:
         super().__init__()
         self.__mtcnn = MTCNN(min_face_size=min_face_size)
         self.__color = color
-        self.__batch = []
+        self.__batch:list[np.ndarray] = []
 
     @property
-    def colorConstant(self):
+    def colorConstant(self) -> int:
         return self.__color
     
     def batch(self, img: np.ndarray) -> None:
@@ -25,83 +25,84 @@ class MyMTCNN(DetectorInterface):
     def clear(self) -> None:
         self.__batch.clear()
 
-    def combine(self):
-        return np.vstack(tuple(img for img in self.__batch))
+    def combine(self) -> np.ndarray:
+        maxWidth = max(self.__batch, key= lambda x:x.shape[1]).shape[1]
+        temp = []
+        for img in self.__batch:
+            padding = np.zeros((img.shape[0], maxWidth - img.shape[1], img.shape[2]))
+            temp.append(np.hstack((img, padding)))
 
-    def detect(self):
-        length = len(self.__batch)
+        return np.vstack(tuple(img for img in temp))
 
-        source = self.combine()
-        height = source.shape[0] // length
-
-        destination = self.__mtcnn.detect_faces(source)
+    def detect(self) -> list[list[dict[int,tuple[int,int,int,int]]]]:
+        destination = self.__mtcnn.detect_faces(self.combine())
         destination.sort(key=lambda x: x['box'][1] + x['box'][3]//2)
 
+        if not destination: return []
+
+        imgsFaces = []
+        desIter = iter(destination)
+        f = next(desIter)
         minHeight = 0
-        maxHeight = height
-        boxs = []
-        imgs = []
+        maxHeight = 0
+        height = 0
+        for img in self.__batch:
+            faces = []
+            minHeight += height
+            height = img.shape[0]
+            maxHeight += height
+            while desIter:
+                try:
+                    if f['box'][1] + f['box'][3]/2 > maxHeight:
+                        imgsFaces.append(faces)
+                        break
+                    face = {}
+                    temp = f['keypoints']
 
-        idx = 0
-        maxIdx = len(destination)
-        while idx < maxIdx:
-            f = destination[idx]
-            if (f['box'][1] + f['box'][3]//2) > maxHeight:
-                imgs.append(boxs)
-                boxs = []
-                minHeight += height
-                maxHeight += height
-                continue
-            idx+=1
-            face = {}
-            temp = f['keypoints']
+                    face[DETECTOR_FACE] = ( #얼굴
+                        f['box'][0], 
+                        f['box'][1] - minHeight,
+                        f['box'][0] + f['box'][2],
+                        f['box'][1] - minHeight + f['box'][3]
+                    )
 
-            # thrashold = abs(temp['right_eye'][0] - temp['left_eye'][0])//2 * front 
-            # isFrontFace = temp['nose'][0] - temp['left_eye'][0] > thrashold and temp['right_eye'][0] - temp['nose'][0] > thrashold
-            #DETECTOR_FRONT_FACE if isFrontFace else DETECTOR_FACE
-            face[DETECTOR_FACE] = ( #얼굴
-                f['box'][0], 
-                f['box'][1] - minHeight,
-                f['box'][0] + f['box'][2],
-                f['box'][1] - minHeight + f['box'][3]
-            )
+                    face[DETECTOR_NOSE] = ( #코
+                        temp['nose'][0] - 1,
+                        temp['nose'][1] - minHeight - 1,
+                        temp['nose'][0] + 1,
+                        temp['nose'][1] - minHeight + 1,
+                    )
 
-            face[DETECTOR_NOSE] = ( #코
-                temp['nose'][0] - 1,
-                temp['nose'][1] - minHeight - 1,
-                temp['nose'][0] + 1,
-                temp['nose'][1] - minHeight + 1,
-            )
+                    face[DETECTOR_LEFT_EYE] = ( #왼쪽 눈
+                        temp['left_eye'][0] - 1,
+                        temp['left_eye'][1] - minHeight - 1,
+                        temp['left_eye'][0] + 1,
+                        temp['left_eye'][1] - minHeight + 1,
+                    )
 
-            face[DETECTOR_LEFT_EYE] = ( #왼쪽 눈
-                temp['left_eye'][0] - 1,
-                temp['left_eye'][1] - minHeight - 1,
-                temp['left_eye'][0] + 1,
-                temp['left_eye'][1] - minHeight + 1,
-            )
+                    face[DETECTOR_RIGHT_EYE]=(#오른쪽 눈
+                        temp['right_eye'][0] - 1,
+                        temp['right_eye'][1] - minHeight - 1,
+                        temp['right_eye'][0] + 1,
+                        temp['right_eye'][1] - minHeight + 1,
+                    )
 
-            face[DETECTOR_RIGHT_EYE]=(#오른쪽 눈
-                temp['right_eye'][0] - 1,
-                temp['right_eye'][1] - minHeight - 1,
-                temp['right_eye'][0] + 1,
-                temp['right_eye'][1] - minHeight + 1,
-            )
+                    face[DETECTOR_LEFT_MOUTH]=( #왼쪽 입
+                        temp['mouth_left'][0] - 1,
+                        temp['mouth_left'][1] - minHeight - 1,
+                        temp['mouth_left'][0] + 1,
+                        temp['mouth_left'][1] - minHeight + 1,
+                    )
 
-            face[DETECTOR_LEFT_MOUTH]=( #왼쪽 입
-                temp['mouth_left'][0] - 1,
-                temp['mouth_left'][1] - minHeight - 1,
-                temp['mouth_left'][0] + 1,
-                temp['mouth_left'][1] - minHeight + 1,
-            )
+                    face[DETECTOR_RIGHT_MOUTH] = ( #오른쪽 입
+                        temp['mouth_right'][0] - 1,
+                        temp['mouth_right'][1] - minHeight - 1,
+                        temp['mouth_right'][0] + 1,
+                        temp['mouth_right'][1] - minHeight + 1,
+                    )
+                    faces.append(face)
+                    f = next(desIter)
+                except StopIteration:
+                    break
 
-            face[DETECTOR_RIGHT_MOUTH] = ( #오른쪽 입
-                temp['mouth_right'][0] - 1,
-                temp['mouth_right'][1] - minHeight - 1,
-                temp['mouth_right'][0] + 1,
-                temp['mouth_right'][1] - minHeight + 1,
-            )
-            boxs.append(face)
-
-        for _ in range(length - len(imgs)):
-            imgs.append([])
-        return imgs
+        return imgsFaces
