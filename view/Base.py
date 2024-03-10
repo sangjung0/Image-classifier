@@ -1,6 +1,6 @@
 from pathlib import Path
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QGraphicsView, QPushButton, QLabel
+from PyQt5.QtWidgets import QMainWindow, QGraphicsView, QPushButton, QLabel, QVBoxLayout, QScrollArea, QWidget
 from threading import Thread
 from datetime import datetime
 
@@ -23,6 +23,10 @@ class Base(QMainWindow):
         self.fileNameLabel:QLabel
         self.filePathLabel:QLabel
         self.gpsLabel:QLabel
+        self.rightCenter:QVBoxLayout
+        self.addButton:QPushButton
+        self.scrollArea:QScrollArea
+        self.scrollAreaWidgetContents:QWidget
 
         self.fileNameLabel.setWordWrap(True)
         self.filePathLabel.setWordWrap(True)
