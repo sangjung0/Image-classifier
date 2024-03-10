@@ -26,6 +26,7 @@ class PathController(Base):
             self.pathLabel.setText(str(fname))
             self.allImgPath = [i for i in PathData(fname)]
             self._totalFiles = len(self.allImgPath)
+            self._index = -1
             if not self._totalFiles:
                 return #역시나 에러처리 해야 됨
             self.loger(f"파일 경로 설정 됨: {self.path}")
