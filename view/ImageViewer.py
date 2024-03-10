@@ -28,9 +28,9 @@ class ImageViewer(Base):
         self.datetimeLabel.setText("datetime")
 
     def __setEvent(self):
-        self.nextButton.clicked.connect(self.__setImage)
-        self.prevButton.clicked.connect(self.__setImage)
-        self.openFolderButton.clicked.connect(self.__setImage)
+        self.nextButton.clicked.connect(self._setImage)
+        self.prevButton.clicked.connect(self._setImage)
+        self.openFolderButton.clicked.connect(self._setImage)
 
     def showEvent(self, a0: QShowEvent | None) -> None:
         self.__onResize()
@@ -44,9 +44,9 @@ class ImageViewer(Base):
         self.__width = self.graphicsView.width()
         self.__height = self.graphicsView.height()
         self.scene.setSceneRect(0,0,self.__width, self.__height)
-        self.__setImage()
+        self._setImage()
 
-    def __setImage(self):
+    def _setImage(self):
         if not self.allImgPath:
             return
         while True:
