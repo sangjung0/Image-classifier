@@ -1,17 +1,9 @@
-import sys
-import pathlib
-from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
-
-from util.util import Loger
-from process import Controller, PathData
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from view.PathController import PathController
-from view.ImageController import ImageController
-from view.ImageViewer import ImageViewer
-from view.Base import Base
+from view.FolderController import FolderController
 
-class Main(ImageViewer, ImageController, PathController):
+class Main(FolderController, PathController):
     def __init__(self, uiPath:str, bufSize:int = 20) -> None:
         super().__init__(uiPath = uiPath, bufSize = bufSize)
 
