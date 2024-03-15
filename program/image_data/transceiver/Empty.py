@@ -1,6 +1,6 @@
-from process.transceiver import TransceiverInterface
+from image_data.transceiver import Interface
 
-class EmptyTransceiver(TransceiverInterface):
+class Empty(Interface):
 
     def send(self, destination, value):
         destination.put(value)

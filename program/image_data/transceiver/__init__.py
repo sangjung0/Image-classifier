@@ -3,9 +3,9 @@
 """
 
 
-from process.transceiver.TransceiverInterface import TransceiverInterface
-from process.transceiver.Transceiver import Transceiver
-from process.transceiver.EmptyTransceiver import EmptyTransceiver
+from image_data.transceiver.Interface import Interface
+from image_data.transceiver.Queue import Queue
+from image_data.transceiver.Empty import Empty
 
-__all__ = ['TransceiverInterface', 'Transceiver', 'EmptyTransceiver']
+__all__ = ['Interface', 'Queue', 'Empty']
 __version__ = '0.1'
