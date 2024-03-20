@@ -1,9 +1,9 @@
 from multiprocessing import Queue, Value
 import time
 
-from process.buffer.Interface import Interface
+from image_data.buffer.Interface import Interface
 
-from process.transceiver import TransceiverInterface
+from image_data.transceiver import TransceiverInterface
 
 from project_constants import PROCESSOR_STOP, PROCESSOR_PAUSE
 

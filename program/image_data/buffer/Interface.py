@@ -1,7 +1,7 @@
 from threading import Lock
 import bisect
 
-from process.model import Section
+from image_data.model import Section
 
 class Interface:
     def __init__(self, requiresSorting:bool = False) -> None:
