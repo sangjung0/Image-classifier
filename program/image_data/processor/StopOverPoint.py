@@ -1,11 +1,11 @@
-from multiprocessing import Queue, Value
+from multiprocessing.sharedctypes import SynchronizedBase
 from threading import Thread
 import os
 import time
 
-from process.buffer import Sender, Receiver
-from process.logic import StopOverPointInterface
-from process.transceiver import TransceiverInterface
+from image_data.buffer import Sender, Receiver
+from image_data.logic import StopOverPointInterface
+from image_data.transceiver import Interface as TI
 
 from project_constants import PROCESSOR_STOP, PROCESSOR_PAUSE
 
@@ -17,18 +17,18 @@ class StopOverPoint:
         self.__bufSize = bufSize
         self.__logic = logic
 
-    def __call__(self, order:int, terminationSignal:Value, flag: Value, inputQ: Queue, outputQ: Queue, transceiver:TransceiverInterface, requiresSorting:bool): # type: ignore
+    def __call__(self, order:int, terminationSignal:SynchronizedBase, flag:SynchronizedBase, senderTransceiver:TI, receiverTransceiver:TI): # type: ignore
         loger = Loger(self.__name) # logger
         timer = Timer() # timer
         loger("start") # loge
         self.__logic.prepare()
         try:
-            receiver = Receiver(self.__name+"-Receiver", self.__bufSize, logerIsPrint=True, requiresSorting=requiresSorting)
-            receiverTh = Thread(target=receiver, args=(order, terminationSignal, flag, inputQ, transceiver))
+            receiver = Receiver(self.__name+"-Receiver", self.__bufSize, logerIsPrint=True)
+            receiverTh = Thread(target=receiver, args=(order, terminationSignal, flag, receiverTransceiver))
             receiverTh.start()
 
             sender = Sender(self.__name+"-Sender", logerIsPrint=True)
-            senderTh = Thread(target=sender, args=(order+1, terminationSignal, flag, outputQ, transceiver))
+            senderTh = Thread(target=sender, args=(order+1, terminationSignal, flag, senderTransceiver))
             senderTh.start()
 
             while True:

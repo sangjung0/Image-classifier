@@ -1,14 +1,12 @@
-from multiprocessing import Queue, Value
-from threading import Thread, Lock
-from typing import Type
+from multiprocessing.sharedctypes import SynchronizedBase 
+from threading import Thread
 import os
 import time
 
-from process.buffer import Sender
-from process.model import Section
-from process.logic import StartPointInterface
-from process.compressor import CompressorInterface
-from process.transceiver import TransceiverInterface
+from image_data.buffer import Sender
+from image_data.model import Section
+from image_data.logic import StartPointInterface
+from image_data.transceiver import Interface as TI
 
 from project_constants import PROCESSOR_STOP, PROCESSOR_PAUSE
 
@@ -27,17 +25,16 @@ class StartPoint:
         else:
             raise ValueError("isFinish is must be boolean")
 
-    def __call__(self, terminationSignal:Value, flag: Value, lastIndex:Value, outputQ: Queue, transceiver:TransceiverInterface, compressor: Type[CompressorInterface]) -> None: # type: ignore
+    def __call__(self, order:int, terminationSignal:SynchronizedBase, flag: SynchronizedBase, lastIndex:SynchronizedBase, transceiver:TI) -> None: 
         loger = Loger(self.__name) # logger
         timer = Timer() # timer
         loger("start") # loger
         self.__logic.prepare(self.setIsFinish)
         index = 0
         bufSize = self.__bufSize
-        compressor = compressor()
         try:
             sender = Sender(self.__name+"-Sender", logerIsPrint=True)
-            th = Thread(target=sender, args=(1, terminationSignal, flag, outputQ, transceiver))
+            th = Thread(target=sender, args=(order+1, terminationSignal, flag, transceiver))
             th.start()
 
             while True:
@@ -47,7 +44,7 @@ class StartPoint:
                     break
                 else:
                     if index - lastIndex.value < bufSize:
-                        data = timer.measure(lambda :self.__logic.processing(Section(index, [], compressor=compressor)))
+                        data = timer.measure(lambda :self.__logic.processing(Section(index, [])))
                         loger("데이터 연산", option=timer)
                         index += 1
 

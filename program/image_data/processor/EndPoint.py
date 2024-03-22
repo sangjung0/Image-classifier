@@ -1,35 +1,26 @@
-from multiprocessing import Queue, Value
+from multiprocessing.sharedctypes import SynchronizedBase
 from threading import Thread
 import os
 
-from process.buffer import Receiver
-from process.transceiver import TransceiverInterface
+from image_data.buffer import Receiver
+from image_data.transceiver import Interface as TI
 
 from project_constants import PROCESSOR_STOP
 
 from util.util import Loger
-
-class EndReceiver(Receiver):
-    def __init__(self, name:str, bufSize: int, lastIndex:Value, requiresSorting: bool = False, logerIsPrint: bool = False) -> None: # type: ignore
-        super().__init__(name, bufSize, requiresSorting, logerIsPrint)
-        self.__lastIndex = lastIndex
-
-    def append(self, value: object) -> None:
-        super().append(value)
-        self.__lastIndex.value = value.index
         
 class EndPoint:
     def __init__(self, name: str, bufSize:int) -> None:
         self.__name = name
         self.__bufSize = bufSize
 
-    def __call__(self, order:int, terminationSignal:Value, flag: Value, lastIndex:Value, inputQ: Queue, transceiver:TransceiverInterface, requiresSorting:bool) -> tuple[EndReceiver, Thread]: # type: ignore
+    def __call__(self, order:int, terminationSignal:SynchronizedBase, flag: SynchronizedBase, transceiver:TI) -> tuple[Receiver, Thread]:
         loger = Loger(self.__name) # logger
         loger("start") # loger
         try:
 
-            receiver = EndReceiver(self.__name+"-Receiver", self.__bufSize, lastIndex, logerIsPrint=True, requiresSorting = requiresSorting)
-            receiverTh = Thread(target=receiver, args=(order, terminationSignal, flag, inputQ, transceiver))
+            receiver = Receiver(self.__name+"-Receiver", self.__bufSize, logerIsPrint=True)
+            receiverTh = Thread(target=receiver, args=(order, terminationSignal, flag, transceiver))
             receiverTh.start()
 
             return receiver, receiverTh
