@@ -2,9 +2,9 @@ import numpy as np
 from PIL import Image
 import io
 
-from process.compressor.CompressorInterface import CompressorInterface
+from image_data.compressor.Interface import Interface
 
-class JpgCompressor(CompressorInterface):
+class Jpg(Interface):
     
     def compress(self, value:np.ndarray):
         byteIo = io.BytesIO()

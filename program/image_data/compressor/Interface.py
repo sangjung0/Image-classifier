@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class CompressorInterface(ABC):
+class Interface(ABC):
 
     @abstractmethod
     def compress(self, value: bytes) -> bytes: pass

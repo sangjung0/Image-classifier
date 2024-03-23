@@ -1,6 +1,6 @@
-from process.compressor.CompressorInterface import CompressorInterface
+from image_data.compressor.Interface import Interface
 
-class UnCompressor(CompressorInterface):
+class UnCompressor(Interface):
 
     def compress(self, value: bytes) -> bytes: 
         return value

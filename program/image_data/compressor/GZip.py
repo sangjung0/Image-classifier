@@ -1,9 +1,9 @@
 import gzip
 import io
 
-from process.compressor.CompressorInterface import CompressorInterface
+from image_data.compressor.Interface import Interface
 
-class GZipCompressor(CompressorInterface):
+class GZip(Interface):
 
     def compress(self, value):
         with io.BytesIO() as buf:
