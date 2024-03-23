@@ -2,9 +2,6 @@ from multiprocessing import Queue as Q
 
 from image_data.transceiver import Interface
 
-from image_data.compressor import CompressorInterface
-from image_data.serializer import SerializerInterface
-
 class Empty(Interface):
 
     def __init__(self, source:Q, destination:Q):
