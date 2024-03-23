@@ -1,8 +1,8 @@
 import pickle
 
-from process.serializer.SerializerInterface import SerializerInterface
+from image_data.serializer.Interface import Interface
 
-class PickleSerializer(SerializerInterface):
+class Pickle(Interface):
     def serialization(self, value):
         return pickle.dumps(value)
 

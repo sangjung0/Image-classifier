@@ -3,8 +3,8 @@
 """
 
 
-from process.serializer.PickleSerializer import PickleSerializer
-from process.serializer.SerializerInterface import SerializerInterface
+from image_data.serializer.Pickle import Pickle
+from image_data.serializer.Interface import Interface
 
-__all__ = ['PickleSerializer', 'SerializerInterface']
+__all__ = ['Pickle', 'Interface']
 __version__ = '0.1'

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class SerializerInterface(ABC):
+class Interface(ABC):
     @abstractmethod
     def serialization(self, value: object) -> bytes: pass
 
