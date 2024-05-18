@@ -3,7 +3,8 @@
 {
 	"name": "Image Classifier",
 	"runArgs": [
-		"--gpus=all"
+		"--gpus=all",
+		"--memory=20g"
 	],
 	"build": {
 		// Sets the run context to one level up instead of the .devcontainer folder.
@@ -27,7 +28,7 @@
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
-			"extensions": ["ms-python.vscode-pylance", "ms-python.python", "ms-python.debugpy"]
+			"extensions": ["ms-python.vscode-pylance", "ms-python.python", "ms-python.debugpy","rsip-vision.nvidia-smi-plus"]
 		}
 	}
 
