@@ -1,41 +1,40 @@
 import numpy as np
-from typing import Union
 from pathlib import Path
+from typing import Union
 
-from process.model.Face import Face 
-
-from project_constants import IMAGE_SCALE, IMAGE_SOURCE
+from project_constants import IMAGE_SOURCE, SCALE_EPSILON
 
 class Image:
-    def __init__(self, img:np.ndarray, path:Path) -> None:
+    def __init__(self, index:int, scale:int, path:Path, img:np.ndarray) -> None:
         self.__data = {IMAGE_SOURCE: img}
-        self.__face = []
+        self.__scale = scale
         self.__path = path
-
-        self.__height, self.__width, _ = img.shape
+        self.__index = index
 
     @property
-    def width(self) -> int:
-        return self.__width
+    def index(self) -> int:
+        return self.__index
+
+    @index.setter
+    def index(self, value:int) -> None:
+        self.__index = value
+
+    @property
+    def scale(self) -> float:
+        return self.__scale/SCALE_EPSILON
     
-    @property
-    def height(self) -> int:
-        return self.__height
+    @scale.setter
+    def scale(self, value:float) -> None:
+        self.__scale = int(value * SCALE_EPSILON)
 
     @property
     def path(self) -> Path:
         return self.__path
+    
+    @path.setter
+    def path(self, value:Path) -> None:
+        self.__path = value
 
-    @property
-    def face(self) -> list[Face]:
-        return self.__face
-    @face.setter
-    def face(self, value) -> None:
-        if isinstance(value, list):
-            self.__face = value
-        else:
-            raise ValueError("face is must be list")
-        
     @property
     def data(self) -> dict[Union[int, str], np.ndarray]:
         return self.__data
@@ -43,14 +42,17 @@ class Image:
     def source(self) -> np.ndarray:
         return self.__data[IMAGE_SOURCE]
     
-    def setImage(self, value:np.ndarray, cv2Constant = IMAGE_SCALE) -> None:
+    def getScale(self) -> int:
+        return self.__scale
+    
+    def setImage(self, value:np.ndarray, cv2Constant = IMAGE_SOURCE) -> None:
         if isinstance(value, np.ndarray):
             self.__data[cv2Constant] = value
             return
         raise Exception("value는 이미지이어야 함")
 
     # cv2 COLOR 상수 와야함
-    def getImage(self, cv2Constant = IMAGE_SCALE) -> np.ndarray:
+    def getImage(self, cv2Constant = IMAGE_SOURCE) -> np.ndarray:
         if cv2Constant in self.__data:
             return self.__data[cv2Constant]
         raise Exception("이미지 변환 안됨")

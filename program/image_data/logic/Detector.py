@@ -1,14 +1,13 @@
 from typing import Type
 
-from process.logic.StopOverPointInterface import StopOverPointInterface
+from image_data.logic.StopOverPointInterface import StopOverPointInterface
 
-from process.face_detector import DetectorInterface
-from process.model import Section, Face
+from image_data.face_detector import DetectorInterface
+from image_data.model import Section, Face, MetaData
 
 class Detector(StopOverPointInterface):
-    def __init__(self, detector: Type[DetectorInterface], scale:int):
+    def __init__(self, detector: Type[DetectorInterface]):
         self.__detector = detector
-        self.__scale = scale
 
     def prepare(self):
         self.__detector = self.__detector()
@@ -16,20 +15,20 @@ class Detector(StopOverPointInterface):
     def processing(self, section:Section):
 
         detector = self.__detector
-        scale = self.__scale
 
         for img in section:
-            detector.batch(img.getImage(detector.colorConstant))
+            detector.batch(img.source)
 
         faceLocation = detector.detect()
         detector.clear()
 
-        for img, face in zip(section, faceLocation):
-            faces = []
-            for f in face:
-                for k in f:
-                    f[k] = tuple(s * scale for s in f[k])
-                faces.append(Face(f))
-            img.face = faces
+        for i in range(len(section)):
+            data = section.data[i]
+            scale = data.scale
+            section.data[i] = MetaData(
+                data.index,
+                data.path,
+                [Face({k:tuple(s * scale for s in f[k]) for k in f}) for f in faceLocation[i]]
+            )
 
         return section

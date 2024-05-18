@@ -14,12 +14,12 @@ class EndPoint:
         self.__name = name
         self.__bufSize = bufSize
 
-    def __call__(self, order:int, terminationSignal:SynchronizedBase, flag: SynchronizedBase, transceiver:TI) -> tuple[Receiver, Thread]:
+    def __call__(self, order:int, terminationSignal:SynchronizedBase, flag: SynchronizedBase, transceiver:TI, requiresSorting:bool) -> tuple[Receiver, Thread]:
         loger = Loger(self.__name) # logger
         loger("start") # loger
         try:
 
-            receiver = Receiver(self.__name+"-Receiver", self.__bufSize, logerIsPrint=True)
+            receiver = Receiver(self.__name+"-Receiver", self.__bufSize, logerIsPrint=True, requiresSorting=requiresSorting)
             receiverTh = Thread(target=receiver, args=(order, terminationSignal, flag, transceiver))
             receiverTh.start()
 
