@@ -1,7 +1,7 @@
 import cv2
 from numpy import ndarray
 
-from process.face_detector.DetectorInterface import DetectorInterface
+from image_data.face_detector.DetectorInterface import DetectorInterface
 
 from project_constants import DETECTOR_FACE, DETECTOR_LEFT_EYE, DETECTOR_RIGHT_EYE, HAARCASCADE_EYE_MODEL, HAARCASCADE_FACE_MODEL
 

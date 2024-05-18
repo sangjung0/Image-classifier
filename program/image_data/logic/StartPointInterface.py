@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from process.model import Section
+from image_data.model import Section
 
 class StartPointInterface(ABC):
     @abstractmethod

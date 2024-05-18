@@ -1,1 +1,1 @@
-TEST_PATH = "/workspaces/Image-classifier/test/resource/DD"
+TEST_PATH = "/workspaces/Image-Classifier/program/test/resource/DD/"

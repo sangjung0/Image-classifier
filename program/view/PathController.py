@@ -1,7 +1,7 @@
 from pathlib import Path
 from PyQt5.QtWidgets import QFileDialog
 
-from process import PathData
+from image_data import PathData
 
 from view.Base import Base
 

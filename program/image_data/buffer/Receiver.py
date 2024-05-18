@@ -32,8 +32,8 @@ class Receiver(Interface):
                 else:
                     if not self.isFull():
                         ret, data = timer.measure(lambda :transceiver.receive())
-                        loger("데이터 수신 후 압축 해제", option=timer)
                         if ret: 
+                            loger("데이터 수신", option=timer)
                             self.append(data)
                         elif terminationSignal.value >= order:
                             break

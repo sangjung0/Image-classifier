@@ -5,9 +5,9 @@ class PathData:
     def __init__(self, path:str, types:list[str]=['.jpg','.jpeg','.png']) -> None:
         path:pathlib.Path = pathlib.Path(path)
         if not path.exists():
-            return Exception("path is not exists")
+            raise Exception("path is not exists")
         if not path.is_dir():
-            return Exception("path is not dir")
+            raise Exception("path is not dir")
         
         self.__path = path
         self.__types = types

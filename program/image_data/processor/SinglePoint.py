@@ -1,7 +1,7 @@
 import os
 
-from process.model import Section
-from process.logic import StartPointInterface
+from image_data.model import Section
+from image_data.logic import StartPointInterface
 
 from util.util import Timer, Loger
 

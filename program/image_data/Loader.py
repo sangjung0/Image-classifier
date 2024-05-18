@@ -2,10 +2,9 @@ from multiprocessing.sharedctypes import SynchronizedBase
 from threading import Thread
 from typing import Type
 
-from process.model import Image
-from process.buffer import Interface
-from process.PathData import PathData
-from process.processor import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
+from image_data.buffer import Interface
+from image_data.PathData import PathData
+from image_data.processor import AllProcessIsTerminated, AllTransmissionMediumIsTerminated
 
 from project_constants import PROCESSOR_PAUSE, PROCESSOR_RUN, PROCESSOR_STOP
 
@@ -44,10 +43,10 @@ class Loader:
     def __iter__(self):
         return self
     
-    def __next__(self) -> tuple[int, bool, Image]:
+    def __next__(self) -> tuple[int, bool, object]:
         try:
-            img = next(self.__iter)
-            return PROCESSOR_RUN, True, img
+            data = next(self.__iter)
+            return PROCESSOR_RUN, True, data
         except StopIteration:
             section = self.__buffer.get()
             if section is None:
@@ -78,8 +77,8 @@ class SingleLoader:
     
     def __next__(self):
         try:
-            frame = next(self.__iter)
-            return PROCESSOR_RUN, True, frame
+            data = next(self.__iter)
+            return PROCESSOR_RUN, True, data
         except StopIteration:
             section = self.__process.get()
             if section is None: raise StopIteration

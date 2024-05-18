@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from mtcnn import MTCNN
 
-from process.face_detector.DetectorInterface import DetectorInterface
+from image_data.face_detector.DetectorInterface import DetectorInterface
 
 from project_constants import DETECTOR_FACE, DETECTOR_NOSE, DETECTOR_LEFT_EYE, DETECTOR_LEFT_MOUTH, DETECTOR_RIGHT_EYE, DETECTOR_RIGHT_MOUTH
 
