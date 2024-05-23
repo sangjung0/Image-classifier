@@ -1,1 +1,0 @@
-TEST_PATH = "/workspaces/Image-Classifier/program/test/resource/DD/"
