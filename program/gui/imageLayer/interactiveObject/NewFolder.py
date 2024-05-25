@@ -1,4 +1,6 @@
-from program.gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
+from PyQt5.QtWidgets import QWidget
+
+from gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
 
 
 class NewFolder(InteractiveObject):
@@ -7,5 +9,19 @@ class NewFolder(InteractiveObject):
     __WIDTH: int = 200
     __HEIGHT: int = 60
 
-    def __init__(self, callback: callable, x: int = __X, y: int = __Y, width: int = __WIDTH, height: int = __HEIGHT):
-        super().__init__(callback, x, y, width, height)
+    def __init__(self, base:QWidget, callback: callable, x: int = __X, y: int = __Y, width: int = __WIDTH, height: int = __HEIGHT, axes:tuple[int] = (0, 0)):
+        super().__init__("New Folder", base, callback, x, y, width, height, axes)
+        
+        self.setStyleSheet("""
+            QPushButton {
+                background-color: lightgray;
+                color: black;
+                border: 1px solid black;
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QPushButton:pressed {
+                background-color: gray;
+            }            
+        """)
+        
