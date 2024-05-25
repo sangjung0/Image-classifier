@@ -50,6 +50,9 @@ class ImagePanel(QGraphicsView):
         이미지 그리기
         """
         
+        self.__image_item.setPos(0,0)
+        self.fitInView(self.__image_item, Qt.KeepAspectRatio)
+        self.__scale = 0
         self.__image_item.setPixmap(QPixmap.fromImage(QImage(
             self.__image.data,
             self.__image.shape[1],
@@ -57,9 +60,6 @@ class ImagePanel(QGraphicsView):
             self.__image.shape[1] * 3,
             QImage.Format.Format_RGB888
         )))
-        self.__image_item.setPos(0,0)
-        self.fitInView(self.__image_item, Qt.KeepAspectRatio)
-        self.__scale = 1
         
     def resize_image(self, scale_factor: int, pos: QPoint):
         """
