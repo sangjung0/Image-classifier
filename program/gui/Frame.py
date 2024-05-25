@@ -15,7 +15,6 @@ class Frame(QWidget):
     """
     
     __TITLE:str = "Image Classifier"
-    __RESIZE_INTERVAL:int = 100
 
     def __init__(self, x: int, y: int, width: int, height: int):
         """
@@ -31,11 +30,6 @@ class Frame(QWidget):
         self.__height:int = height
         self.__image_panel: ImagePanel = ImagePanel(self)
         self.__image_layer: ImageLayer = None # 생각해보자
-        
-        # 이미지 딜레이 리프레쉬
-        self.__resize_timer = QTimer(self)
-        self.__resize_timer.setSingleShot(True)
-        self.__resize_timer.timeout.connect(self.resize_widget)
         
         self.init_ui()
         
@@ -59,16 +53,10 @@ class Frame(QWidget):
     def resizeEvent(self, event:QResizeEvent):
         size = event.size()
         self.__image_layer.setGeometry(0, 0, size.width(), size.height())
-        self.__resize_timer.start(Frame.__RESIZE_INTERVAL)
+        self.__image_panel.setGeometry(0, 0, size.width(), size.height())
+        self.__image_panel.resize_event()
         super().resizeEvent(event)
         
-    def resize_widget(self):
-        """
-        resize timer event function
-        """
-        size = self.size()
-        self.__image_layer.setGeometry(0, 0, size.width(), size.height())
-        self.__image_panel.draw_image(size = size)
 
 # test code
 def main():
