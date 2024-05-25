@@ -1,4 +1,4 @@
-from program.gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
+from gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
 
 
 class BoundaryBox(InteractiveObject):
