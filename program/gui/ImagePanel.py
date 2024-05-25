@@ -1,10 +1,10 @@
 import numpy as np
 from PIL import Image
-from PyQt5.QtWidgets import QWidget, QLabel
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
+from PyQt5.QtGui import QPixmap, QImage, QResizeEvent
+from PyQt5.QtCore import Qt, QPoint
 
-class ImagePanel(QLabel):
+class ImagePanel(QGraphicsView):
     """
     ImagePanel
     
@@ -14,12 +14,22 @@ class ImagePanel(QLabel):
     __DEFAULT_IMAGE: np.ndarray = np.array(Image.open('./program/resource/test.png').convert('RGB'), dtype=np.uint8)
 
     def __init__(self, base:QWidget):
+        """
+        base -- 부모 위젯
+        """
         super().__init__(base)
-        self.__parent = base
         self.__image: np.ndarray = ImagePanel.__DEFAULT_IMAGE
         self.__scale: float = 1
-        self.setAlignment(Qt.AlignCenter)
-        self.setStyleSheet("background-color: orange;")
+        self.setStyleSheet("background-color: black;")
+        
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.__scene:QGraphicsScene = QGraphicsScene(self)
+        self.__image_item:QGraphicsPixmapItem = QGraphicsPixmapItem()
+        self.__scene.addItem(self.__image_item)
+        self.setScene(self.__scene)
+        
         self.draw_image()
         
     def set_image(self, image: np.ndarray):
@@ -40,79 +50,73 @@ class ImagePanel(QLabel):
         이미지 그리기
         """
         
-        image_scale, _ = self.__resize_image(self.size())
-        image:np.ndarray =  np.array(Image.fromarray(self.__image).resize(image_scale, Image.LANCZOS))
-        self.setPixmap(QPixmap(QImage(
-            image.data,
-            image.shape[1],
-            image.shape[0],
-            image.shape[1] * 3,
+        self.__image_item.setPixmap(QPixmap.fromImage(QImage(
+            self.__image.data,
+            self.__image.shape[1],
+            self.__image.shape[0],
+            self.__image.shape[1] * 3,
             QImage.Format.Format_RGB888
         )))
+        self.__image_item.setPos(0,0)
+        self.fitInView(self.__image_item, Qt.KeepAspectRatio)
+        self.__scale = 1
         
-    def resize_image(self, scale:int = 0, size:QSize = None):
+    def resize_image(self, scale_factor: int, pos: QPoint):
         """
         이미지 리사이즈
         
-        n -- 이미지 확대 축소 비율.
-            n > 0 -> 이미지 확대
-            n < 0 -> 이미지 축소
-            n = 0 -> 그대로
-        size -- QSize 조정하고 싶은 크기
+        scale_factor -- int 이미지 확대 축소 결정.
+            scale_factor > 0 확대
+            scale_facter < 0 축소
+            scale_facter = 0 유지
+        pos -- 마우스 포인터 위치
         """
         
-        scale = self.__scale + scale/1000 
-        if 0.98 < scale < 1.02: scale = 1
-        if scale > 2: scale = 2
-        elif scale < 0.5: scale = 0.5
-        
-        if size is None:
-            if scale == self.__scale: return
-            self.__scale = scale 
-            size = self.__parent.size()
-            
-        image_scale, frame_scale = self.__resize_image(size)
-        self.setGeometry(*frame_scale)
-        image:np.ndarray =  np.array(Image.fromarray(self.__image).resize(image_scale, Image.LANCZOS))
-        self.setPixmap(QPixmap(QImage(
-            image.data,
-            image.shape[1],
-            image.shape[0],
-            image.shape[1] * 3,
-            QImage.Format.Format_RGB888
-        )))
-        
-
-    def __resize_image(self, size:QSize) -> tuple[tuple[int], tuple[int]]:
-        """
-        이미지 크기 조정
-        
-        size -- QSize 조정하고 싶은 크기
-        """
-            
-        height, width, _ = self.__image.shape
-        frame_width, frame_height = size.width(), size.height()
-        
-        if height/frame_height > width/frame_width:
-            width = width/height * frame_height
-            height = frame_height
+        if scale_factor > 0:
+            scale_factor = 1.1
+        elif scale_factor < 0:
+            scale_factor = 0.9
         else:
-            height = height/width * frame_width
-            width = frame_width
-            
-        width = int(width * self.__scale)
-        height = int(height * self.__scale)
-        image_scale = (width, height)
+            return
         
-        x = 0
-        y = 0
-        if width > frame_width:
-            x = (frame_width - width) // 2
-        if height > frame_height:
-            y = (frame_height - height) // 2
-        width = width if frame_width < width else frame_width
-        height = height if frame_height < height else frame_height
-        frame_scale = (x, y, width, height)
+        scale = self.__scale * scale_factor
+        if scale < 1.05:
+            self.__image_item.setPos(0,0)
+            self.fitInView(self.__image_item, Qt.KeepAspectRatio)
+            self.__scale = 1
+            return
+        elif scale > 3:
+            scale_factor = 1
+        else:
+            self.__scale = scale
 
-        return image_scale, frame_scale
+        old_pos = self.mapToScene(pos)
+        self.scale(scale_factor, scale_factor)
+        new_pos = self.mapToScene(pos)
+        if self.__scale > 1:
+            self.__image_item.setPos(self.__image_item.pos() + new_pos - old_pos)
+    
+    def resize_event(self):
+        self.__image_item.setPos(0,0)
+        self.fitInView(self.__image_item, Qt.KeepAspectRatio)
+        self.__scale = 1
         
+    def image_move(self, delta:QPoint):
+        """
+        이미지 이동
+        
+        delta -- QPoint 해당 값 만큼 이동
+        """
+        new_pos = self.__image_item.pos() + delta
+        size = self.size()
+        width = size.width()//2 * 3
+        height = size.height()//2 * 3
+        if new_pos.x() > width:
+            new_pos.setX(width)
+        elif new_pos.x() < -width:
+            new_pos.setX(-width)
+        if new_pos.y() > height:
+            new_pos.setY(height)
+        elif new_pos.y() < -height:
+            new_pos.setY(-height)
+        self.__image_item.setPos(new_pos)
