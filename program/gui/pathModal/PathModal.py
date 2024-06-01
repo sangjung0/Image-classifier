@@ -1,34 +1,34 @@
 import pathlib
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QPushButton, QFileDialog, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QPushButton, QFileDialog, QHBoxLayout, QDialog
 from PyQt5.QtCore import QPoint
 from PyQt5.QtGui import QCloseEvent
 
 from gui.Utils import message_box
 
 
-class PathModal(QWidget):
+class PathModal(QDialog):
     """
     PathModal 경로 지정 모달
     """
     __WIDTH:int = 600
     __HEIGHT:int = 50
-    def __init__(self, center:QPoint, confirm_callback: callable, cancel_callback:callable, confirm_name: str, cancel_name: str):
+    def __init__(self, base:QWidget, confirm_callback: callable, cancel_callback:callable, confirm_name: str, cancel_name: str):
         """
-        center -- QPoint 모달 center 위치
         confirm_callback -- callable 성공시 실행 함수
         cancel_callback -- callable 실패시 실행 함수
         confirm_name -- 성공 버튼 이름
         cancel_name -- 취소 버튼 이름
         """
-        super().__init__()
+        super().__init__(base)
         self.__path_input:QLineEdit = QLineEdit(self)
         self.__confirm_callback:callable = confirm_callback
         self.__cancel_callback: callable = cancel_callback
         self.__status:bool = False
-        
-        self.__init_ui(confirm_name, cancel_name , center)
+                
+        self.setModal(True)
+        self.__init_ui(confirm_name, cancel_name)
     
-    def __init_ui(self, confirm_name:str, cancel_name:str, center:QPoint):
+    def __init_ui(self, confirm_name:str, cancel_name:str):
         """
         Ui 위치 및 이벤트 지정
         """
@@ -59,15 +59,18 @@ class PathModal(QWidget):
         self.setLayout(v_layout)
         self.setWindowTitle("Select Path")
         
-        print(center.x(), center.y())
+    def show(self, center:QPoint):
+        """
+        center -- QPoint 모달 center 위치
+        """
         self.setGeometry(center.x() - PathModal.__WIDTH//2, center.y() - PathModal.__HEIGHT//2, PathModal.__WIDTH, PathModal.__HEIGHT)
+        super().show()
         
     def closeEvent(self, event:QCloseEvent):
         if not self.__status: 
             self.__cancel_callback()
         super().closeEvent(event)
         
-
     def __button_event(self):
         """
         Browse 버튼 이벤트
