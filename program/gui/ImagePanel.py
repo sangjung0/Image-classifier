@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
-from PyQt5.QtGui import QPixmap, QImage, QResizeEvent
+from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtCore import Qt, QPoint
 
 class ImagePanel(QGraphicsView):
@@ -22,8 +22,8 @@ class ImagePanel(QGraphicsView):
         self.__scale: float = 1
         self.setStyleSheet("background-color: black;")
         
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.__scene:QGraphicsScene = QGraphicsScene(self)
         self.__image_item:QGraphicsPixmapItem = QGraphicsPixmapItem()
@@ -51,7 +51,7 @@ class ImagePanel(QGraphicsView):
         """
         
         self.__image_item.setPos(0,0)
-        self.fitInView(self.__image_item, Qt.KeepAspectRatio)
+        self.fitInView(self.__image_item, Qt.AspectRatioMode.KeepAspectRatio)
         self.__scale = 0
         self.__image_item.setPixmap(QPixmap.fromImage(QImage(
             self.__image.data,
@@ -82,7 +82,7 @@ class ImagePanel(QGraphicsView):
         scale = self.__scale * scale_factor
         if scale < 1.05:
             self.__image_item.setPos(0,0)
-            self.fitInView(self.__image_item, Qt.KeepAspectRatio)
+            self.fitInView(self.__image_item, Qt.AspectRatioMode.KeepAspectRatio)
             self.__scale = 1
             return
         elif scale > 3:
@@ -98,7 +98,7 @@ class ImagePanel(QGraphicsView):
     
     def resize_event(self):
         self.__image_item.setPos(0,0)
-        self.fitInView(self.__image_item, Qt.KeepAspectRatio)
+        self.fitInView(self.__image_item, Qt.AspectRatioMode.KeepAspectRatio)
         self.__scale = 1
         
     def image_move(self, delta:QPoint):
