@@ -12,18 +12,15 @@ class PathModal(QDialog):
     """
     __WIDTH:int = 600
     __HEIGHT:int = 50
-    def __init__(self, base:QWidget, confirm_callback: callable, cancel_callback:callable, confirm_name: str, cancel_name: str):
+    def __init__(self, base:QWidget, callback:callable, confirm_name: str, cancel_name: str):
         """
-        confirm_callback -- callable 성공시 실행 함수
-        cancel_callback -- callable 실패시 실행 함수
+        callback -- callable 성공시 실행 함수
         confirm_name -- 성공 버튼 이름
         cancel_name -- 취소 버튼 이름
         """
         super().__init__(base)
         self.__path_input:QLineEdit = QLineEdit(self)
-        self.__confirm_callback:callable = confirm_callback
-        self.__cancel_callback: callable = cancel_callback
-        self.__status:bool = False
+        self.__callback:callable = callback
                 
         self.setModal(True)
         self.__init_ui(confirm_name, cancel_name)
@@ -66,11 +63,6 @@ class PathModal(QDialog):
         self.setGeometry(center.x() - PathModal.__WIDTH//2, center.y() - PathModal.__HEIGHT//2, PathModal.__WIDTH, PathModal.__HEIGHT)
         super().show()
         
-    def closeEvent(self, event:QCloseEvent):
-        if not self.__status: 
-            self.__cancel_callback()
-        super().closeEvent(event)
-        
     def __button_event(self):
         """
         Browse 버튼 이벤트
@@ -87,10 +79,8 @@ class PathModal(QDialog):
         """
         path = pathlib.Path(self.__path_input.text())
         if path.exists() and path.is_dir():
-            self.__status = True
-            self.__confirm_callback(path)
+            self.__callback(path)
             self.close()
         else:
-            self.__status = False
             message_box(self, "Invalid path", "The specified path does not exist or is not a directory. Please try again.")
         
