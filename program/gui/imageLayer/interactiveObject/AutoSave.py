@@ -4,13 +4,13 @@ from gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
 
 
 class AutoSave(InteractiveObject):
-    __X: int = 0
-    __Y: int = 0
+    __X_RATIO: int = 0
+    __Y_RATIO: int = 0
     __WIDTH: int = 200
     __HEIGHT: int = 60
 
-    def __init__(self, base:QWidget, callback: callable, x: int = __X, y: int = __Y, width: int = __WIDTH, height: int = __HEIGHT, axes: tuple[int] = (0, 0)):
-        super().__init__("Auto Save", base, callback, x, y, width, height, axes)
+    def __init__(self, base:QWidget, callback: callable, x_ratio: float = __X_RATIO, y_ratio: float = __Y_RATIO, width: int = __WIDTH, height: int = __HEIGHT, axes: tuple[int] = (0, 0)):
+        super().__init__("Auto Save", base, callback, x_ratio, y_ratio, width, height, axes)
         
         self.setStyleSheet("""
             QPushButton {
