@@ -17,26 +17,27 @@ class MainFrame(Frame):
     __WIDTH: int = 500
     __HEIGHT: int = 500
 
-    def __init__(self, x: int = __X, y: int = __Y, width: int = __WIDTH, height: int = __HEIGHT):
+    def __init__(self, path:pathlib.Path, x: int = __X, y: int = __Y, width: int = __WIDTH, height: int = __HEIGHT):
+        super().__init__(x, y, width, height, MainImageLayer, MainDataController(path))
+        
+        
+    @staticmethod
+    def start():
+        app = QApplication(sys.argv)
+        x:pathlib.Path = None
+        def path_event(path:pathlib.Path):
+            nonlocal x
+            x = path
+        init = Init(path_event)
         center = QDesktopWidget().availableGeometry().center()
-        super().__init__(center.x(), center.y(), width, height)
-    
-        self.init = Init(center, self.__path_event, self.__exit)
-        self.init.show()
+        init.show(center)
+        init.exec_()
         
-    def __path_event(self, path:pathlib.Path):
-        self.set_image_layer(MainDataController(path),MainImageLayer)
-        self.show()
-        
-    def __exit(self):
-        self.close()
-    
-    
-# test code
-def main():
-    app = QApplication(sys.argv)
-    main = MainFrame(100, 100, 500, 500)
-    sys.exit(app.exec())
+        if x is not None:
+            main = MainFrame(x, center.x(), center.y())
+            main.show()
+            
+            sys.exit(app.exec())
     
 if __name__ == "__main__":
     pass
