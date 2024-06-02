@@ -36,7 +36,7 @@ class PathModal(QDialog):
         h_layout.addWidget(self.__path_input, 8)
         
         browse_button = QPushButton("Browse", self)
-        browse_button.clicked.connect(self.__button_event)
+        browse_button.clicked.connect(self.__browse_event)
         h_layout.addWidget(browse_button, 2)
         
         v_layout.addLayout(h_layout)
@@ -44,7 +44,7 @@ class PathModal(QDialog):
         h_layout = QHBoxLayout()
         
         success_button = QPushButton(confirm_name, self)
-        success_button.clicked.connect(self.__set_event)
+        success_button.clicked.connect(self.__confirm_event)
         h_layout.addWidget(success_button, 5)
         
         cancel_button = QPushButton(cancel_name, self)
@@ -63,7 +63,7 @@ class PathModal(QDialog):
         self.setGeometry(center.x() - PathModal.__WIDTH//2, center.y() - PathModal.__HEIGHT//2, PathModal.__WIDTH, PathModal.__HEIGHT)
         super().show()
         
-    def __button_event(self):
+    def __browse_event(self):
         """
         Browse 버튼 이벤트
         """
@@ -73,7 +73,7 @@ class PathModal(QDialog):
         if result:
             self.__path_input.setText(result)
 
-    def __set_event(self):
+    def __confirm_event(self):
         """
         Success Button 이벤트
         """
