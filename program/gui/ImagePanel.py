@@ -13,7 +13,7 @@ class ImagePanel(QGraphicsView):
     
     __DEFAULT_IMAGE: np.ndarray = np.array(Image.open('./program/resource/test.png').convert('RGB'), dtype=np.uint8)
 
-    def __init__(self, base:QWidget):
+    def __init__(self, base:QWidget) -> None:
         """
         base -- 부모 위젯
         """
@@ -32,7 +32,7 @@ class ImagePanel(QGraphicsView):
         
         self.draw_image()
         
-    def set_image(self, image: np.ndarray):
+    def set_image(self, image: np.ndarray) -> None:
         """ 
         이미지는 RGB 순서로 간주함
         
@@ -45,7 +45,7 @@ class ImagePanel(QGraphicsView):
             self.__image = image.astype(np.uint8)
         self.draw_image()
         
-    def draw_image(self):
+    def draw_image(self) -> None:
         """
         이미지 그리기
         """
@@ -61,7 +61,7 @@ class ImagePanel(QGraphicsView):
             QImage.Format.Format_RGB888
         )))
         
-    def resize_image(self, scale_factor: int, pos: QPoint):
+    def resize_image(self, scale_factor: int, pos: QPoint) -> None:
         """
         이미지 리사이즈
         
@@ -96,12 +96,12 @@ class ImagePanel(QGraphicsView):
         if self.__scale > 1:
             self.__image_item.setPos(self.__image_item.pos() + new_pos - old_pos)
     
-    def resize_event(self):
+    def resize_event(self) -> None:
         self.__image_item.setPos(0,0)
         self.fitInView(self.__image_item, Qt.AspectRatioMode.KeepAspectRatio)
         self.__scale = 1
         
-    def image_move(self, delta:QPoint):
+    def image_move(self, delta:QPoint) -> None:
         """
         이미지 이동
         
