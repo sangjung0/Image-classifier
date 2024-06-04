@@ -3,11 +3,11 @@ import numpy as np
 
 class Face:
     def __init__(self, name: int, image: np.ndarray):
-        self.__image: np.ndarray
-        self.__name: int
+        self.__image: np.ndarray = image 
+        self.__name: int = name
 
     def get_image(self) -> np.ndarray:
-        pass
+        return self.__image
 
     def get_name(self) -> int:
-        pass
+        return self.__name
