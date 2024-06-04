@@ -2,19 +2,23 @@ import pathlib
 import numpy as np
 import time
 import threading
+import gc
 
 from core.Searcher import Searcher
 from core.dto import Data, Image
 
 
 class DataController:
+    """
+    Data를 컨트롤하는 클래스 이미지 검색, 이미지 탐색, 이미지 이동 등을 지원
+    """
     
     __CACHE_SIZE:int = 11
     
-    def __init__(self, image_path: list[pathlib.Path], sub_path: dict[int: pathlib.Path], data:Data = Data()):
+    def __init__(self, image_path: list[pathlib.Path], sub_path: dict[int: pathlib.Path], data:Data = Data()) -> None:
         self.__image_path: list[pathlib.Path] = image_path
-        self.__images: Data = data
         self.__sub_path: dict[int:pathlib.Path] = sub_path
+        self.__images: Data = data
         
         self.__searcher: Searcher
         
@@ -29,7 +33,7 @@ class DataController:
         self.__thread.start()
 
 
-    def get_cnt_image(self) -> tuple[Image, np.ndarray]:
+    def get_cnt_image(self) -> np.ndarray:
         if(self._cnt_image_index < 0): return None
         path = self.__image_path[self._cnt_image_index]
         image = self.__images.get_image(path)
@@ -38,14 +42,14 @@ class DataController:
         else:
             ary = image.get_image()
             self.__cache[path] = ary                
-        return image, ary
+        return ary
 
-    def get_next_image(self) -> tuple[Image, np.ndarray]:
+    def get_next_image(self) -> np.ndarray:
         if(self._cnt_image_index < 0): return None
         self._cnt_image_index = self.__image_index(1)
         return self.get_cnt_image()
 
-    def get_prev_image(self) -> tuple[Image, np.ndarray]:
+    def get_prev_image(self) -> np.ndarray:
         if(self._cnt_image_index < 0): return None
         self._cnt_image_index = self.__image_index(-1)
         return self.get_cnt_image()
@@ -54,9 +58,9 @@ class DataController:
 
     def search_face(self) -> 'DataController': pass
 
-    def stop_search(self): pass
+    def stop_search(self) -> None: pass
 
-    def move(self, n: int): 
+    def move(self, n: int) -> None: 
         src = self.__image_path[self._cnt_image_index]
         dest:pathlib.Path = self.__sub_path[n] / src.name
         src.rename(dest)
@@ -75,18 +79,24 @@ class DataController:
             if self.__flag: break
             cnt = self._cnt_image_index
             length = len(self.__image_path)
+            if length == 0: continue
             a = set(self.__image_path[(cnt+i)%length] for i in range(-start, start, 1))
             b = set(self.__cache.keys())
-            a, b = b-a, a-b
+            a, b = list(b-a), list(a-b)
             i = 0
-            while i < len(a):
+            while i < len(a) or i < len(b):
                 if cnt != self._cnt_image_index:
                     break
-                with self.__lock:
-                    del self.__cache[b[i]]
-                image = self.__images.get_image(a[i])
-                with self.__lock:
-                    self.__cache[a[i]] = image
+                if i < len(a):
+                    with self.__lock:
+                        del self.__cache[a[i]]
+                if i < len (b):
+                    image = self.__images.get_image(b[i]).get_image()
+                    with self.__lock:
+                        self.__cache[b[i]] = image
+                i += 1
+            gc.collect()
+            
                     
     def close(self) -> None:
         self.__flag = True
