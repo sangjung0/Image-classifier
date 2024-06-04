@@ -62,3 +62,8 @@ class Data:
     def set_images(self, images: list[Image]) -> None:
         for image in images:
             self.__image[image.get_path()] = image
+            
+    def delete(self, src:pathlib.Path) -> None:
+        with self.__lock:
+            del self.__image[src]
+        
