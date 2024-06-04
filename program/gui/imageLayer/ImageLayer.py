@@ -16,9 +16,11 @@ class ImageLayer(QWidget):
         self.__boundary_boxs: list[BoundaryBox]
         self.__prev:Prev = Prev(self, self.__prev_event, 0, 0.5, 100, 50, (40, -25))
         self.__next:Next = Next(self, self.__next_event, 1, 0.5, 100, 50, (-140, -25))
-        self._data_controller:DataController = data_controller# 종속성 추가
+        self.__data_controller:DataController = data_controller# 종속성 추가
         
         self.setFocus()
+        
+        self.__image_panel.set_image(self.__data_controller.get_cnt_image())
         
         # 이벤트 관련 변수
         self.__ctrl_pressed:bool = False
@@ -27,12 +29,10 @@ class ImageLayer(QWidget):
     
 
     def __next_event(self) -> None:
-        # 테스트
-        print("next")
+        self.__image_panel.set_image(self.__data_controller.get_next_image())
         
     def __prev_event(self) -> None:
-        # 테스트
-        print("prev")
+        self.__image_panel.set_image(self.__data_controller.get_prev_image())
         
     def __set_boundary_box(self) -> None: pass
     def __set_image_data(self) -> None: pass
