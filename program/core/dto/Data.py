@@ -17,19 +17,27 @@ class Data:
         self.__name: dict[int: str] = dict()
         self.__faces: dict[int: list[Face]] = dict()
         self.__lock:threading.Lock = threading.Lock()
+        self.__flag:bool = False
+        self.__thread:threading.Thread = None
 
-    def saerch(self, paths:list[pathlib.Path]):
+    def search(self, paths:list[pathlib.Path]):
         """
         Thread를 통하여 이미지 데이터를 가져옴
         """
-        thread = threading.Thread(target=self, args=(paths,))
-        thread.start()
+        self.__thread = threading.Thread(target=self, args=(paths,))
+        self.__thread.start()
 
     def __call__(self, paths:list[pathlib.Path]):
         for path in paths:
+            if self.__flag: break
             if not path in self.__image:
                 with self.__lock:
-                    self.__image[path] = Image(path)                
+                    self.__image[path] = Image(path)
+                
+    def close(self):
+        self.__flag = True
+        if self.__thread != None:
+            self.__thread.join()
 
     def get_image(self, path: pathlib.Path) -> Image:
         return self.__image[path]
