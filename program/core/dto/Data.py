@@ -31,8 +31,9 @@ class Data:
         for path in paths:
             if self.__flag: break
             if not path in self.__image:
+                image = Image(path)
                 with self.__lock:
-                    self.__image[path] = Image(path)
+                    self.__image[path] = image
                 
     def close(self):
         self.__flag = True
@@ -40,7 +41,12 @@ class Data:
             self.__thread.join()
 
     def get_image(self, path: pathlib.Path) -> Image:
-        return self.__image[path]
+        if path in self.__image:
+            return self.__image[path]
+        image = Image(path)
+        with self.__lock:
+            self.__image[path] = image
+        return image
 
     def get_name(self, name: int) -> str:
         return self.__name[name]
