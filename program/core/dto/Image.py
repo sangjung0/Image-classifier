@@ -17,7 +17,6 @@ class Image:
         self.__path: pathlib.Path = path
         self.__name: str = path.name
 
-        self.__img: PIL.Image.Image = None
         self.__date: datetime.datetime = None
         self.__time: datetime.time = None
         self.__characters: list[Character] = None
@@ -30,22 +29,23 @@ class Image:
         """
         이미지 메타데이터 읽은 후 매개변수 초기화
         """
-        self.__img = PIL.Image.open(self.__path)
-        exif_data = self.__img.getexif()
         
-        if exif_data is not None:
-            exif = {
-                TAGS.get(tag): value
-                for tag, value in exif_data.items()
-                if tag in TAGS
-            }
+        with PIL.Image.open(self.__path) as img:
+            exif_data = img.getexif()
             
-            date_time_str = exif.get('DateTime', 'N/A')
-            
-            if date_time_str != 'N/A':
-                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y:%m:%d %H:%M:%S')
-                self.__date = date_time_obj.date()
-                self.__time = date_time_obj.time()
+            if exif_data is not None:
+                exif = {
+                    TAGS.get(tag): value
+                    for tag, value in exif_data.items()
+                    if tag in TAGS
+                }
+                
+                date_time_str = exif.get('DateTime', 'N/A')
+                
+                if date_time_str != 'N/A':
+                    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y:%m:%d %H:%M:%S')
+                    self.__date = date_time_obj.date()
+                    self.__time = date_time_obj.time()
         
 
     def get_path(self) -> pathlib.Path:
@@ -67,8 +67,13 @@ class Image:
         return self.__hash
 
     def get_image(self) -> np.ndarray:
-        return np.array(self.__img)
-
+        try:
+            with PIL.Image.open(self.__path) as img:
+                image = img.convert('RGB')
+                return np.array(image, dtype=np.uint8)
+        except Exception as e:
+            return None
+        
     def is_detected(self) -> bool:
         return self.__is_detected
 
