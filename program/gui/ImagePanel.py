@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
 from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtCore import Qt, QPoint, QRectF
 
 class ImagePanel(QGraphicsView):
     """
@@ -49,17 +49,16 @@ class ImagePanel(QGraphicsView):
         """
         이미지 그리기
         """
-        
-        self.__image_item.setPos(0,0)
-        self.fitInView(self.__image_item, Qt.AspectRatioMode.KeepAspectRatio)
-        self.__scale = 0
+
+        self.__image_item.setPos(0, 0)
         self.__image_item.setPixmap(QPixmap.fromImage(QImage(
             self.__image.data,
             self.__image.shape[1],
             self.__image.shape[0],
             self.__image.shape[1] * 3,
             QImage.Format.Format_RGB888
-        )))
+        )))        
+        self.resize_event()
         
     def resize_image(self, scale_factor: int, pos: QPoint) -> None:
         """
@@ -81,11 +80,9 @@ class ImagePanel(QGraphicsView):
         
         scale = self.__scale * scale_factor
         if scale < 1.05:
-            self.__image_item.setPos(0,0)
-            self.fitInView(self.__image_item, Qt.AspectRatioMode.KeepAspectRatio)
-            self.__scale = 1
+            self.resize_event()
             return
-        elif scale > 3:
+        elif scale > 5:
             scale_factor = 1
         else:
             self.__scale = scale
@@ -97,9 +94,32 @@ class ImagePanel(QGraphicsView):
             self.__image_item.setPos(self.__image_item.pos() + new_pos - old_pos)
     
     def resize_event(self) -> None:
-        self.__image_item.setPos(0,0)
-        self.fitInView(self.__image_item, Qt.AspectRatioMode.KeepAspectRatio)
-        self.__scale = 1
+
+        self.__scale = 1    
+        v_width = self.width()
+        v_height = self.height()
+        height, width, _ = self.__image.shape
+        x, y = 0, 0
+        scale = 1
+        
+        if height/v_height > width/v_width:
+            if height >= v_height:
+                scale = v_height / height
+                x = (v_width - width*scale)//2
+            else:
+                y = (v_height - height)//2
+                x = (v_width - width)//2
+        else:
+            if width >= v_width:
+                scale = v_width / width
+                y = (v_height - height*scale)//2
+            else:
+                y = (v_height - height)//2
+                x = (v_width - width)//2
+        
+        self.__image_item.setScale(scale)
+        self.__image_item.setPos(x, y)
+        self.__scene.setSceneRect(QRectF(0, 0, v_width, v_height))
         
     def image_move(self, delta:QPoint) -> None:
         """
@@ -107,7 +127,7 @@ class ImagePanel(QGraphicsView):
         
         delta -- QPoint 해당 값 만큼 이동
         """
-        new_pos = self.__image_item.pos() + delta
+        new_pos = self.__image_item.pos() + delta/self.__scale
         size = self.size()
         width = size.width()//2 * 3
         height = size.height()//2 * 3
