@@ -12,10 +12,13 @@ class Converter:
     데이터 송신 전 PacketData의 이미지를 손실 압축
     데이터 수신 후 PacketData의 이미지를 압축 해제 하는 역할.
     """
+    __TIMEOUT:int = 5
+    
     def __init__(self, source: Queue) -> None:
         self.__source: Queue = source
         
     def __compress(self, value:np.ndarray) -> bytes:
+        if value is None: return None
         byteIo = io.BytesIO()
         Image.fromarray(value).save(byteIo, format='JPEG')
         return byteIo.getvalue()
@@ -30,7 +33,7 @@ class Converter:
     def receive(self) -> tuple[bool, Packet]:
         if self.__source.empty():
             return False, None
-        value = self.__source.get()
+        value = self.__source.get(timeout=Converter.__TIMEOUT)
         for i in value: i.set_image(self.__decompress(i.get_image()))
         return True, value
         
