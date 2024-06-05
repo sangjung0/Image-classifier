@@ -33,7 +33,7 @@ class DataController:
         self.__thread.start()
 
 
-    def get_cnt_image(self) -> np.ndarray:
+    def get_cnt_image(self) -> tuple[Image, np.ndarray]:
         if(self._cnt_image_index < 0): return None
         path = self.__image_path[self._cnt_image_index]
         image = self.__images.get_image(path)
@@ -41,15 +41,15 @@ class DataController:
             ary = self.__cache[path]
         else:
             ary = image.get_image()
-            self.__cache[path] = ary                
-        return ary
+            self.__cache[path] = ary
+        return image, ary
 
-    def get_next_image(self) -> np.ndarray:
+    def get_next_image(self) -> tuple[Image, np.ndarray]:
         if(self._cnt_image_index < 0): return None
         self._cnt_image_index = self.__image_index(1)
         return self.get_cnt_image()
 
-    def get_prev_image(self) -> np.ndarray:
+    def get_prev_image(self) -> tuple[Image, np.ndarray]:
         if(self._cnt_image_index < 0): return None
         self._cnt_image_index = self.__image_index(-1)
         return self.get_cnt_image()
