@@ -1,7 +1,7 @@
 import sys
 from typing import Type
 from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtGui import QResizeEvent
+from PyQt5.QtGui import QResizeEvent, QCloseEvent
 
 from gui.imageLayer import ImageLayer
 from gui.ImagePanel import ImagePanel
@@ -17,7 +17,7 @@ class Frame(QWidget):
 
     def __init__(self, x: int, y: int, width: int, height: int, 
                  ImageLayer_:Type[ImageLayer] = ImageLayer, 
-                 data_controller:DataController = DataController([],[])
+                 data_controller:DataController = None
                 ):
         """
         x -- int >= 0
@@ -33,7 +33,7 @@ class Frame(QWidget):
         self.__width:int = width
         self.__height:int = height
         self.__image_panel: ImagePanel = ImagePanel(self)
-        self.__image_layer: ImageLayer = ImageLayer_(self, self.__image_panel, data_controller)
+        self.__image_layer: ImageLayer = ImageLayer_(self, self.__image_panel, DataController([],[]) if data_controller is None else data_controller)
         
         self.init_ui()
         
@@ -55,6 +55,10 @@ class Frame(QWidget):
     def show(self):
         super().show()
         self.__image_panel.resize_event()
+        
+    def closeEvent(self, event:QCloseEvent) -> None:
+        self.__image_layer.closeEvent(event)
+        super().close(event)
         
 
 # test code

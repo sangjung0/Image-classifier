@@ -15,10 +15,10 @@ class DataController:
     
     __CACHE_SIZE:int = 11
     
-    def __init__(self, image_path: list[pathlib.Path], sub_path: dict[int: pathlib.Path], data:Data = Data()) -> None:
+    def __init__(self, image_path: list[pathlib.Path], sub_path: dict[int: pathlib.Path], data:Data = None) -> None:
         self.__image_path: list[pathlib.Path] = image_path
         self.__sub_path: dict[int:pathlib.Path] = sub_path
-        self.__images: Data = data
+        self.__images: Data = Data() if data is None else data 
         
         self.__searcher: Searcher
         
@@ -102,5 +102,5 @@ class DataController:
         self.__flag = True
         if self.__thread != None:
             self.__thread.join()
-                
+        self.__images.close() 
             

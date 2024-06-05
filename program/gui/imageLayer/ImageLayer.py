@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import  QWidget
 from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtGui import QKeyEvent, QMouseEvent, QResizeEvent, QWheelEvent
+from PyQt5.QtGui import QKeyEvent, QMouseEvent, QResizeEvent, QWheelEvent, QCloseEvent
 
 from gui import ImagePanel
 from gui.imageLayer.interactiveObject import *
@@ -26,7 +26,10 @@ class ImageLayer(QWidget):
         self.__ctrl_pressed:bool = False
         self.__prev_pos:QPoint = None
         self.__wheel_pressed:bool = False
-    
+        
+    def closeEvent(self, event:QCloseEvent) -> None:
+        self.__data_controller.close()
+        super().closeEvent(event)    
 
     def __next_event(self) -> None:
         self.__image_panel.set_image(self.__data_controller.get_next_image())
