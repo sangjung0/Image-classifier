@@ -58,7 +58,7 @@ class Frame(QWidget):
         
     def closeEvent(self, event:QCloseEvent) -> None:
         self.__image_layer.closeEvent(event)
-        super().close(event)
+        super().closeEvent(event)
         
 
 # test code

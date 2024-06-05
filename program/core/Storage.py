@@ -1,6 +1,6 @@
 import pathlib
 
-from program.core.dto import Data
+from core.dto import Data
 
 
 class Storage:

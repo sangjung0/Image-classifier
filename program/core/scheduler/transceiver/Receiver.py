@@ -1,5 +1,6 @@
 from multiprocessing.sharedctypes import SynchronizedBase
 from multiprocessing import Queue
+import queue as EQ
 import time
 
 from core.scheduler.transceiver.Transceiver import Transceiver
@@ -34,7 +35,7 @@ class Receiver(Transceiver):
                         loger("데이터 수신 후 압축 해제", option=timer)
                         if ret: 
                             self.append(data)
-                    except Exception as _:
+                    except EQ.Empty:
                         if termination_signal.value >= order:
                             break
         except Exception as e:

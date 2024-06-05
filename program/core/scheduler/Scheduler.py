@@ -5,6 +5,7 @@ from multiprocessing.sharedctypes import SynchronizedBase
 from threading import Thread, Lock
 import time
 import os
+import queue as EQ
 import gc
 
 from core.dto import Data
@@ -180,7 +181,7 @@ class Scheduler:
                                 image.set_hash(i.get_hash())
                                 image.set_is_detected(True)
                             gc.collect()
-                    except Exception as e:
+                    except EQ.Empty:
                         if termination_signal.value >= order:
                             break
         except Exception as e:

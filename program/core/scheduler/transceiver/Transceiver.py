@@ -1,7 +1,7 @@
 from threading import Lock
 from collections import deque
 
-from program.core.scheduler.dto import Packet
+from core.scheduler.dto import Packet
 
 
 class Transceiver:

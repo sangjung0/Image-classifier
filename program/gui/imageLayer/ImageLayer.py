@@ -32,10 +32,12 @@ class ImageLayer(QWidget):
         super().closeEvent(event)    
 
     def __next_event(self) -> None:
-        self.__image_panel.set_image(self.__data_controller.get_next_image())
+        image, ary = self.__data_controller.get_next_image()
+        self.__image_panel.set_image(ary)
         
     def __prev_event(self) -> None:
-        self.__image_panel.set_image(self.__data_controller.get_prev_image())
+        image, ary = self.__data_controller.get_next_image()
+        self.__image_panel.set_image(ary)
         
     def __set_boundary_box(self) -> None: pass
     def __set_image_data(self) -> None: pass

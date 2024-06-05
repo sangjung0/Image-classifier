@@ -1,6 +1,12 @@
-from program.core.scheduler.processor.Processor import Processor
+from core.scheduler.processor.Processor import Processor
 
+from core.scheduler.dto import Packet
 
 class FaceDetector(Processor):
-    def __init__(self, buf_size: int):
-        super().__init__(buf_size)
+    def __init__(self, name:str, loger_is_print:bool = False):
+        super().__init__(name, loger_is_print)
+        
+    def processing(self, value:Packet):
+        
+        
+        return value

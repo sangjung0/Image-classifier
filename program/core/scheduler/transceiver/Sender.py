@@ -1,9 +1,10 @@
 from multiprocessing.sharedctypes import SynchronizedBase
 from multiprocessing import Queue
 import time
+import gc
 
-from program.core.scheduler.transceiver.Transceiver import Transceiver
-from program.core.scheduler.dto import Converter
+from core.scheduler.transceiver.Transceiver import Transceiver
+from core.scheduler.dto import Converter
 from core.scheduler.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE
 
 from utils import Loger, Timer
@@ -28,7 +29,7 @@ class Sender(Transceiver):
                 elif flag.value == PROCESSOR_PAUSE:
                     time.sleep(0.1)
                 else:
-                    if self.empty():
+                    if self.is_empty():
                         if termination_signal.value >= order:
                             break
                         time.sleep(0.01)
@@ -36,6 +37,7 @@ class Sender(Transceiver):
                         data = self.get()
                         timer.measure(lambda :converter.send(data))
                         loger("데이터 압축 후 송신", option=timer)
+                        gc.collect()
         except Exception as e:
             loger("쓰레드 오류",e, option="error") # loger
             flag.value = PROCESSOR_STOP

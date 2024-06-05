@@ -1,6 +1,6 @@
 import pathlib
 
-from program.core.dto import Image
+from core.dto import Image
 
 
 class AutoSave:
@@ -12,3 +12,5 @@ class AutoSave:
     def make_directory_name(self) -> str: pass
 
     def add(self, image: Image): pass
+
+    def organization(self): pass
