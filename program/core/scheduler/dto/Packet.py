@@ -2,18 +2,18 @@ from program.core.scheduler.dto.PacketData import PacketData
 
 
 class Packet:
-    def __init__(self):
-        self.__data: list[PacketData]
+    def __init__(self, datas:list[PacketData] = []):
+        self.__data: list[PacketData] = datas
 
-    def get_data(self) -> list[PacketData]: pass
+    def get_data(self) -> list[PacketData]:
+        return self.__data
 
-    def append(self, data: PacketData): pass
+    def append(self, data: PacketData):
+        self.__data.append(data)
 
-    def compress(self): pass
+    def __iter__(self) -> iter[PacketData]:
+        return iter(self.__data)
 
-    def decompress(self): pass
-
-    def __iter__(self) -> iter: pass
-
-    def __len__(self) -> int: pass
+    def __len__(self) -> int:
+        return len(self.__data)
 
