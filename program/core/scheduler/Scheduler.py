@@ -4,7 +4,6 @@ from multiprocessing import Process, Queue, Value
 from multiprocessing.sharedctypes import SynchronizedBase
 from threading import Thread, Lock
 import time
-import os
 import queue as EQ
 import gc
 
@@ -67,13 +66,33 @@ class Scheduler:
         output_fr_input_sch_queue = Queue(maxsize=buf_size)
         
         termination_order += 1
-        image_hasher = Process(
-            target=ImageHasher("imageHasher", True),
+        image_hasher_1 = Process(
+            target=ImageHasher("imageHasher_1", True),
             args=(termination_order, termination_signal, self.__flag, output_sch_input_ih_queue, output_ih_input_fd_queue)
         )                      
         termination_order += 1
-        face_detector = Process(
-            target = FaceDetector("faceDetector", True),
+        image_hasher_2 = Process(
+            target=ImageHasher("imageHasher_2", True),
+            args=(termination_order, termination_signal, self.__flag, output_sch_input_ih_queue, output_ih_input_fd_queue)
+        )                   
+        termination_order += 1
+        face_detector_1 = Process(
+            target = FaceDetector("faceDetector_1", True),
+            args = (termination_order, termination_signal, self.__flag, output_ih_input_fd_queue, output_fd_input_fc_queue)
+        )
+        termination_order += 1
+        face_detector_2 = Process(
+            target = FaceDetector("faceDetector_2", True),
+            args = (termination_order, termination_signal, self.__flag, output_ih_input_fd_queue, output_fd_input_fc_queue)
+        )
+        termination_order += 1
+        face_detector_3 = Process(
+            target = FaceDetector("faceDetector_3", True),
+            args = (termination_order, termination_signal, self.__flag, output_ih_input_fd_queue, output_fd_input_fc_queue)
+        )
+        termination_order += 1
+        face_detector_4 = Process(
+            target = FaceDetector("faceDetector_4", True),
             args = (termination_order, termination_signal, self.__flag, output_ih_input_fd_queue, output_fd_input_fc_queue)
         )
         termination_order += 1
@@ -82,8 +101,12 @@ class Scheduler:
             args = (termination_order, termination_signal, self.__flag, output_fd_input_fc_queue, output_fr_input_sch_queue)
         )
         
-        image_hasher.start()
-        face_detector.start()
+        image_hasher_1.start()
+        image_hasher_2.start()
+        face_detector_1.start()
+        face_detector_2.start()
+        face_detector_3.start()
+        face_detector_4.start()
         face_classifier.start()
         
         termination_order += 1
@@ -97,8 +120,12 @@ class Scheduler:
         self.__queues.append(output_fd_input_fc_queue)
         self.__queues.append(output_fr_input_sch_queue)
         
-        self.__processes.append(image_hasher)
-        self.__processes.append(face_detector)
+        self.__processes.append(image_hasher_1)
+        self.__processes.append(image_hasher_2)
+        self.__processes.append(face_detector_1)
+        self.__processes.append(face_detector_2)
+        self.__processes.append(face_detector_3)
+        self.__processes.append(face_detector_4)
         self.__processes.append(face_classifier)
         
         self.__threads.append(sender)
@@ -177,13 +204,15 @@ class Scheduler:
                         if ret: 
                             for i in data:
                                 image = self.__data.get_image(i.get_path())
-                                image.set_characters(i.get_chracters())
+                                characters = i.get_characters()
+                                for k in characters:
+                                    image.set_character(k, characters[k])
                                 image.set_hash(i.get_hash())
                                 image.set_is_detected(True)
-                            gc.collect()
                     except EQ.Empty:
                         if termination_signal.value >= order:
                             break
+                    gc.collect()
         except Exception as e:
             loger("쓰레드 오류",e, option="error") # loger
             self.__flag.value = PROCESSOR_STOP
