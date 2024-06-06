@@ -36,7 +36,7 @@ class Scheduler:
 
     def add(self, path: pathlib.Path) -> None:
         with self.__lock:
-            self.__queue.append(path)
+            self.__queue.appendleft(path)
 
     # def peek(self) -> pathlib.Path:
     #     return self.__queue[0]
