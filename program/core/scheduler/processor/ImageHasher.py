@@ -11,6 +11,8 @@ class ImageHasher(Processor):
     
     def __init__(self, name:str, loger_is_print:bool = False):
         super().__init__(name, loger_is_print)
+        
+    def prepare(self): pass
             
     def processing(self, value:Packet):
         for i in value:
@@ -29,10 +31,9 @@ class ImageHasher(Processor):
                             height = ImageHasher.__MAX_SIZE
                     img.resize((width,height), PIL.Image.LANCZOS)
                     image = np.array(img, dtype=np.uint8)
+                    i.set_hash(Histogram.calculate_histogram(image))
+                    i.set_image(image)
             except Exception as _:
                 continue    
-            
-            i.set_image(image)
-            i.set_hash(Histogram.calculate_histogram(image))
         
         return value
