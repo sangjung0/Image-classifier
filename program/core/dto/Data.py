@@ -10,15 +10,24 @@ class Data:
     이미지, 이름, 얼굴 데이터를 가지고 있음.
     """
     
-    __MAX_FACE:int = 10
+    __MAX_FACE:int = 3
     
     def __init__(self):
         self.__image: dict[pathlib.Path: Image] = dict()
         self.__name: dict[int: str] = dict()
         self.__faces: dict[int: list[Face]] = dict()
         self.__lock:threading.Lock = threading.Lock()
+        
         self.__flag:bool = False
         self.__thread:threading.Thread = None
+        
+    @property
+    def faces(self):
+        return self.__faces
+    
+    @property
+    def name(self):
+        return self.__name
 
     def search(self, paths:list[pathlib.Path]):
         """
@@ -48,20 +57,15 @@ class Data:
             self.__image[path] = image
         return image
 
-    def get_name(self, name: int) -> str:
-        return self.__name[name]
-
-    def get_face(self, n: int) -> list[Face]:
-        return self.__faces[n]
-
+    def add_images(self, images: list[Image]) -> None:
+        for image in images: 
+            self.__image[image.get_path()] = image
+        
     def set_face(self, n: int, face: Face) -> None:
-        self.__faces[n].append(face)
+        if n in self.__faces: self.__faces[n].append(face)
+        else: self.__faces[n] = [face]
         if(len(self.__faces[n]) > Data.__MAX_FACE):
             self.__faces[n].pop(0)
-
-    def set_images(self, images: list[Image]) -> None:
-        for image in images:
-            self.__image[image.get_path()] = image
             
     def delete(self, src:pathlib.Path) -> None:
         with self.__lock:

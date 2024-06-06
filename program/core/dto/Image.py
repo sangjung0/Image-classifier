@@ -15,16 +15,61 @@ class Image:
     """
     def __init__(self, path: pathlib.Path):
         self.__path: pathlib.Path = path
-        self.__name: str = path.name
-
         self.__date: datetime.datetime = None
         self.__time: datetime.time = None
-        self.__characters: list[Character] = None
-        self.__hash: bin = None
+
+        self.__histogram: np.ndarray = None
         self.__is_detected: bool = False
+        
+        self.characters: dict[int: Character] = {}
         
         self.__set_data()
         
+    @property
+    def path(self) -> pathlib.Path:
+        return self.__path
+    
+    @property
+    def name(self) -> str:
+        return self.__path.name
+    
+    @property
+    def date(self) -> datetime.datetime:
+        return self.__date
+    
+    @property
+    def time(self) -> datetime.time:
+        return self.__time
+    
+    @property
+    def histogram(self) -> np.ndarray:
+        return self.__histogram
+    
+    @histogram.setter
+    def histogram(self, value:np.ndarray) -> None:
+        if isinstance(value, np.ndarray):
+            self.__histogram = value
+        else: raise TypeError()
+    
+    @property
+    def image(self) -> np.ndarray:
+        try:
+            with PIL.Image.open(self.__path) as img:
+                image = img.convert('RGB')
+                return np.array(image, dtype=np.uint8)
+        except Exception as _:
+            return None
+        
+    @property
+    def is_detected(self) -> bool:
+        return self.__is_detected
+    
+    @is_detected.setter
+    def is_detected(self, value:bool):
+        if isinstance(value, bool):
+            self.__is_detected = value
+        else: raise TypeError()
+                
     def __set_data(self):
         """
         이미지 메타데이터 읽은 후 매개변수 초기화
@@ -46,42 +91,4 @@ class Image:
                     date_time_obj = datetime.datetime.strptime(date_time_str, '%Y:%m:%d %H:%M:%S')
                     self.__date = date_time_obj.date()
                     self.__time = date_time_obj.time()
-        
 
-    def get_path(self) -> pathlib.Path:
-        return self.__path
-
-    def get_name(self) -> str:
-        return self.__name
-
-    def get_date(self) -> datetime.datetime:
-        return self.__date
-
-    def get_time(self) -> datetime.time:
-        return self.__time
-
-    def get_characters(self) -> tuple[Character]:
-        return self.__characters
-
-    def get_hash(self) -> bin:
-        return self.__hash
-
-    def get_image(self) -> np.ndarray:
-        try:
-            with PIL.Image.open(self.__path) as img:
-                image = img.convert('RGB')
-                return np.array(image, dtype=np.uint8)
-        except Exception as e:
-            return None
-        
-    def is_detected(self) -> bool:
-        return self.__is_detected
-
-    def set_characters(self, characters: list[Character]):
-        self.__characters.append(*characters)
-
-    def set_is_detected(self, b: bool):
-        self.__is_detected = b
-
-    def set_hash(self, _hash: bin):
-        self.__hash = _hash
