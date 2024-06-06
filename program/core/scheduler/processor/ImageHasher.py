@@ -29,7 +29,7 @@ class ImageHasher(Processor):
                         else:
                             width = int(width/height*ImageHasher.__MAX_SIZE)
                             height = ImageHasher.__MAX_SIZE
-                    img.resize((width,height), PIL.Image.LANCZOS)
+                    img = img.resize((width,height), PIL.Image.LANCZOS)
                     image = np.array(img, dtype=np.uint8)
                     i.set_hash(Histogram.calculate_histogram(image))
                     i.set_image(image)
