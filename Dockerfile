@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM tensorflow/tensorflow:2.15.0.post1-gpu
+FROM python:3.11.9-bookworm
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -15,10 +15,31 @@ RUN apt-get install -y qt5-qmake
 RUN apt-get install -y cmake 
 RUN apt-get install -y libxkbcommon-x11-0
 
+RUN apt-get install -y build-essential
+RUN apt-get install -y python3-dev
+RUN apt-get install -y git
+RUN apt-get install -y libboost-python-dev
+RUN apt-get install -y libboost-system-dev
+RUN apt-get install -y libopenblas-dev
+RUN apt-get install -y liblapack-dev
+RUN apt-get install -y libx11-dev
+RUN apt-get install -y libgtk-3-dev
+RUN apt-get install -y libavcodec-dev
+RUN apt-get install -y libavformat-dev
+RUN apt-get install -y libswscale-dev
 
 # Install pip requirements
 COPY requirements.txt .
 RUN pip install --upgrade pip && python -m pip install -r requirements.txt
+
+RUN git clone https://github.com/davisking/dlib /tmp/dlib \
+    && mkdir /tmp/dlib/build \
+    && cd /tmp/dlib/build \
+    && cmake .. \
+    && cmake --build . --config Release \
+    && cd /tmp/dlib \
+    && python3 setup.py install \
+    && rm -rf /tmp/dlib
 
 WORKDIR /app
 COPY . /app

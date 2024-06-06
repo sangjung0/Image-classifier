@@ -4,7 +4,7 @@
 	"name": "Image Classifier",
 	"runArgs": [
 		"--gpus=all",
-		"--memory=20g"
+		"--memory=100g"
 	],
 	"build": {
 		// Sets the run context to one level up instead of the .devcontainer folder.
