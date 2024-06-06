@@ -33,10 +33,10 @@ class FaceDetector(Processor):
                     i, 
                     Face(-1, np.array(self.__facerec.compute_face_descriptor(img, self.__sp(img, d))))
                 )
-                x = d.left()
-                y = d.top()
-                width = d.right() - x
-                height = y - d.bottom()
+                x = d.left() * p.get_scale()
+                y = d.top() * p.get_scale()
+                width = d.right() * p.get_scale() - x
+                height = d.bottom() * p.get_scale() - y
                 p.add_character(i, Character(-1, (x, y, width, height)))
                 
         return value
