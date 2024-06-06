@@ -5,14 +5,21 @@ import time
 from core.scheduler.transceiver.Transceiver import Transceiver
 from core.scheduler.dto import Converter
 from core.scheduler.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE
+from core.scheduler.dto import Packet
 
 from utils import Loger, Timer
 
 class Sender(Transceiver):
+    
+    __MAX_BUF_SIZE:int = 2
+    
     def __init__(self, name:str, loger_is_print:bool=False) -> None:
         super().__init__()
         self.__name:str = name
         self.__loger_is_print:bool = loger_is_print
+        
+    def is_full(self) -> bool:
+        return len(self) == Sender.__MAX_BUF_SIZE
 
     def __call__(self, order: int, termination_signal: SynchronizedBase, flag: SynchronizedBase, queue: Queue):
         # --

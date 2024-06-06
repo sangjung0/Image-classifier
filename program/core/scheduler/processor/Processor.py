@@ -40,7 +40,7 @@ class Processor:
             receiver_thread.start()
             
             while True:
-                if flag.value == PROCESSOR_PAUSE:
+                if flag.value == PROCESSOR_PAUSE or sender.is_full():
                     time.sleep(0.1)
                 elif flag.value == PROCESSOR_STOP:
                     break
@@ -55,7 +55,7 @@ class Processor:
                         result = timer.measure(lambda : self.processing(data))
                         loger("데이터 연산", option=timer)
                         sender.append(result)
-                        gc.collect()
+                    gc.collect()
         except Exception as e:
             flag.value = PROCESSOR_STOP
             loger(os.getpid(), "오류", e)
