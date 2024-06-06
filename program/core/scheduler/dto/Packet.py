@@ -3,11 +3,12 @@ from core.scheduler.dto import PacketData
 class Packet:
     def __init__(self, datas:list[PacketData] = []):
         self.__data: list[PacketData] = datas
-
-    def get_data(self) -> list[PacketData]:
+        
+    @property
+    def data(self) -> list[PacketData]:
         return self.__data
 
-    def append(self, data: PacketData):
+    def append(self, data: PacketData) -> None:
         self.__data.append(data)
 
     def __iter__(self) -> iter:

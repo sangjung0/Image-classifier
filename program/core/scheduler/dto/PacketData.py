@@ -6,38 +6,45 @@ from core.dto import Face, Character
 
 class PacketData:
     def __init__(self, path: pathlib.Path) -> None:
-        self.__path: pathlib.Path = path
-        self.__image: np.ndarray = None
-        self.__hash: bin = None
-        self.__faces: list[Face] = []
-        self.__chracters: list[Character] = []
-
-    def get_image(self) -> np.ndarray | bytes:
+        self.path = path
+        self.image = None
+        self.histogram = None
+        self.cale = 1
+        self.faces: dict[int: Face] = {}
+        self.characters: dict[int: Character] = {}
+        
+    @property
+    def image(self) -> np.ndarray | bytes:
         return self.__image
+    @image.setter
+    def image(self, value:np.ndarray | bytes):
+        if isinstance(value, (np.ndarray, bytes, type(None))):
+            self.__image = value
+        else: raise TypeError()
 
-    def get_path(self) -> pathlib.Path:
+    @property
+    def path(self) -> pathlib.Path:
         return self.__path
+    @path.setter
+    def path(self, value: pathlib.Path):
+        if isinstance(value, pathlib.Path):
+            self.__path = value
+        else: raise TypeError()
 
-    def get_hash(self) -> bin:
-        return self.__hash
-
-    def get_faces(self) -> list[Face]:
-        return self.__faces
-
-    def get_chracters(self) -> list[Character]:
-        return self.__chracters
-    
-    def set_path(self, path:pathlib.Path) -> None:
-        self.__path = path
-
-    def set_face(self, face: Face) -> None:
-        self.__faces.append(face)
-
-    def set_character(self, character: Character) -> None:
-        self.__chracters.append(character)
-
-    def set_image(self, image: np.ndarray | bytes) -> None:
-        self.__image = image
-
-    def set_hash(self, hash_: bin) -> None:
-        self.__hash = hash_
+    @property
+    def histogram(self) -> np.ndarray:
+        return self.__histogram
+    @histogram.setter
+    def histogram(self, value:np.ndarray) -> None:
+        if isinstance(value, (np.ndarray, type(None))):
+            self.__histogram = value
+        else: raise TypeError()
+        
+    @property
+    def scale(self) -> float:
+        return self.__scale
+    @scale.setter
+    def scale(self, value:float) -> None:
+        if isinstance(value, float):
+            self.__scale = value
+        else: raise TypeError()
