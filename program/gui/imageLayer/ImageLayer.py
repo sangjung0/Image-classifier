@@ -36,7 +36,7 @@ class ImageLayer(QWidget):
         self.__image_panel.set_image(ary)
         
     def __prev_event(self) -> None:
-        image, ary = self.__data_controller.get_next_image()
+        image, ary = self.__data_controller.get_prev_image()
         self.__image_panel.set_image(ary)
         
     def __set_boundary_box(self) -> None: pass
