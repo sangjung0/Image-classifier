@@ -28,11 +28,11 @@ class Converter:
         return np.array(Image.open(io.BytesIO(value)))
         
     def send(self, value: Packet) -> None:
-        for i in value: i.set_image(self.__compress(i.get_image()))
+        for i in value: i.image = (self.__compress(i.image))
         self.__source.put(value)
 
     def receive(self) -> tuple[bool, Packet]:
         value = self.__source.get(timeout=Converter.__TIMEOUT)
-        for i in value: i.set_image(self.__decompress(i.get_image()))
+        for i in value: i.image = (self.__decompress(i.image))
         return True, value
         

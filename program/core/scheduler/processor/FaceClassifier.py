@@ -26,13 +26,14 @@ class FaceClassifier(Processor):
     def processing(self, value:Packet):
         
         for p in value:
-            for face, character in zip(p.get_faces().values(), p.get_characters().values()):
+            if p.path == None: break
+            for face, character in zip(p.faces.values(), p.characters.values()):
                 name = [0 for _ in range(len(self.__faces))]
-                embedding = face.get_embedding()
+                embedding = face.embedding
                 
                 for i, l in enumerate(self.__faces.values()):
                     for f in l:
-                        if self.compare(embedding, f.get_embedding()):
+                        if self.compare(embedding, f.embedding):
                             name[i] += 1
 
                 id = 0
@@ -45,7 +46,7 @@ class FaceClassifier(Processor):
                 else:
                     self.set_face(id, face)
                 
-                face.set_name(name)
-                character.set_name(name)
+                face.name = id
+                character.name = id
         
         return value

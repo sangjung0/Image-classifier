@@ -16,7 +16,8 @@ class ImageHasher(Processor):
             
     def processing(self, value:Packet):
         for i in value:
-            path = i.get_path()
+            path = i.path
+            if path == None: break
             image = None
             try:
                 with PIL.Image.open(path) as img:
@@ -25,14 +26,16 @@ class ImageHasher(Processor):
                     if max(width, height) > ImageHasher.__MAX_SIZE:
                         if width > height:
                             height = int(height/width*ImageHasher.__MAX_SIZE)
+                            i.scale = width/ImageHasher.__MAX_SIZE
                             width = ImageHasher.__MAX_SIZE
                         else:
                             width = int(width/height*ImageHasher.__MAX_SIZE)
+                            i.scale = height/ImageHasher.__MAX_SIZE
                             height = ImageHasher.__MAX_SIZE
                     img = img.resize((width,height), PIL.Image.LANCZOS)
                     image = np.array(img, dtype=np.uint8)
-                    i.set_hash(Histogram.calculate_histogram(image))
-                    i.set_image(image)
+                    i.histogram = Histogram.calculate_histogram(image)
+                    i.image = image
             except Exception as _:
                 continue    
         

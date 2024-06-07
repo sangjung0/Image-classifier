@@ -72,7 +72,8 @@ class ImagePanel(QGraphicsView):
         for i, face in enumerate(self.__faces.values()):
             if i >= len(self.__face_rect): self.set_face()
             rect = self.__face_rect[i]
-            fx, fy, width, height = face.get_location()
+            fx, fy = face.pos
+            width, height = face.size
             rect.setRect(0, 0, width*self.__image_scale, height*self.__image_scale )
             rect.setPos(fx*self.__image_scale+x, fy*self.__image_scale+y)
     
@@ -186,5 +187,5 @@ class ImagePanel(QGraphicsView):
         scene_pos = self.mapToScene(pos)
         
         for i, rect in enumerate(self.__face_rect):
-            if rect.contains(pos - rect.pos()):
+            if rect.contains(scene_pos - rect.pos()):
                 return i

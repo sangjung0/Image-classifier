@@ -18,7 +18,7 @@ class Processor:
 
     def __call__(self, order: int, termination_signal: SynchronizedBase, flag: SynchronizedBase, input_q:Queue, output_q:Queue):
         # --
-        loger = Loger(self.__name) # logger
+        loger = Loger(self.__name, self.__loger_is_print) # logger
         timer = Timer() # timer
         loger("start") # loge
         # --
@@ -40,10 +40,10 @@ class Processor:
             receiver_thread.start()
             
             while True:
-                if flag.value == PROCESSOR_PAUSE or sender.is_full():
-                    time.sleep(0.1)
-                elif flag.value == PROCESSOR_STOP:
+                if flag.value == PROCESSOR_STOP:
                     break
+                elif flag.value == PROCESSOR_PAUSE or sender.is_full():
+                    time.sleep(0.1)
                 else:
                     if receiver.is_empty():
                         if not receiver_thread.is_alive():

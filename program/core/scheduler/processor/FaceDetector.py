@@ -22,21 +22,20 @@ class FaceDetector(Processor):
     def processing(self, value:Packet):
         
         for p in value:
-            img = p.get_image()
-            p.set_image(None)
+            if p.path == None: break
+            img = p.image
+            p.image = None
             if img is None: continue
-            dets = self.__detector(np.array(Image.fromarray(img).convert('L'), dtype=np.uint8), 1)
+            dets = self.__detector(np.array(Image.fromarray(img).convert('L'), dtype=np.uint8), 2)
             if len(dets) == 0: continue
             
             for i, d in enumerate(dets):
-                p.add_face(
-                    i, 
-                    Face(-1, np.array(self.__facerec.compute_face_descriptor(img, self.__sp(img, d))))
-                )
-                x = d.left() * p.get_scale()
-                y = d.top() * p.get_scale()
-                width = d.right() * p.get_scale() - x
-                height = d.bottom() * p.get_scale() - y
-                p.add_character(i, Character(-1, (x, y, width, height)))
+                p.faces[i] = Face(-1, np.array(self.__facerec.compute_face_descriptor(img, self.__sp(img, d))))
+                
+                x = d.left() * p.scale
+                y = d.top() * p.scale
+                width = d.right() * p.scale - x
+                height = d.bottom() * p.scale - y
+                p.characters[i] = Character(-1, (x, y), (width, height))
                 
         return value
