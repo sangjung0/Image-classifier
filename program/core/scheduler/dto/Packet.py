@@ -1,7 +1,7 @@
 from core.scheduler.dto import PacketData
 
 class Packet:
-    def __init__(self, datas:list[PacketData] = []):
+    def __init__(self, datas:list[PacketData] = []) -> None:
         self.__data: list[PacketData] = datas
         
     @property

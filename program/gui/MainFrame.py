@@ -36,8 +36,10 @@ class MainFrame(Frame):
         if x is not None:
             main = MainFrame(x, center.x(), center.y())
             main.show()
-            
-            sys.exit(app.exec())
+            try:
+                sys.exit(app.exec())
+            except Exception as _:
+                main.close()
     
 if __name__ == "__main__":
     pass

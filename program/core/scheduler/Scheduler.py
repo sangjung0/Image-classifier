@@ -67,17 +67,17 @@ class Scheduler:
         
         termination_order += 1
         image_hasher_1 = Process(
-            target=ImageHasher("imageHasher_1", self.__loger_is_print),
+            target=ImageLoader("imageHasher_1", self.__loger_is_print),
             args=(termination_order, termination_signal, self.__flag, output_sch_input_ih_queue, output_ih_input_fd_queue)
         )                      
         termination_order += 1
         image_hasher_2 = Process(
-            target=ImageHasher("imageHasher_2", self.__loger_is_print),
+            target=ImageLoader("imageHasher_2", self.__loger_is_print),
             args=(termination_order, termination_signal, self.__flag, output_sch_input_ih_queue, output_ih_input_fd_queue)
         )                      
         termination_order += 1
         image_hasher_3 = Process(
-            target=ImageHasher("imageHasher_3", self.__loger_is_print),
+            target=ImageLoader("imageHasher_3", self.__loger_is_print),
             args=(termination_order, termination_signal, self.__flag, output_sch_input_ih_queue, output_ih_input_fd_queue)
         )                   
         termination_order += 1

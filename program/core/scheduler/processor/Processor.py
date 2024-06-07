@@ -12,11 +12,11 @@ from core.scheduler.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE
 from utils import Loger, Timer
 
 class Processor:
-    def __init__(self, name:str, loger_is_print:bool = False):
+    def __init__(self, name:str, loger_is_print:bool = False)->None:
         self.__name:str = name
         self.__loger_is_print:bool = loger_is_print
 
-    def __call__(self, order: int, termination_signal: SynchronizedBase, flag: SynchronizedBase, input_q:Queue, output_q:Queue):
+    def __call__(self, order: int, termination_signal: SynchronizedBase, flag: SynchronizedBase, input_q:Queue, output_q:Queue) -> None:
         # --
         loger = Loger(self.__name, self.__loger_is_print) # logger
         timer = Timer() # timer
@@ -29,8 +29,6 @@ class Processor:
         receiver_thread = None
         
         try:
-            self.prepare()
-            
             sender = Sender(self.__name + "Sender", self.__loger_is_print)
             sender_thread = Thread(target=sender, args=(order+1, termination_signal, flag, output_q))
             sender_thread.start()
@@ -63,9 +61,6 @@ class Processor:
         if sender_thread is not None: sender_thread.join()
         loger(os.getpid(), "종료", option="terminate")
         
-    def processing(self, value:Packet):
-        raise Exception("구현 안됨")
-    
-    def prepare(self):
+    def processing(self, value:Packet) -> Packet:
         raise Exception("구현 안됨")
             

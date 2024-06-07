@@ -5,14 +5,14 @@ from core.scheduler.dto import Packet
 
 
 class Transceiver:
-    def __init__(self):
+    def __init__(self) ->None:
         self.__lock: Lock = Lock()
         self.__data: deque[Packet] = deque()
 
     def __len__(self) -> int:
         return len(self.__data)
 
-    def append(self, value: Packet):
+    def append(self, value: Packet) ->None:
         with self.__lock:
             self.__data.append(value)
 

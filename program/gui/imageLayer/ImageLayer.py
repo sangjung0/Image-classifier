@@ -17,18 +17,17 @@ class ImageLayer(QWidget):
         self.__next:Next = Next(self, self.__next_event, 1, 0.5, 100, 50, (-140, -25))
         self.__data_controller:DataController = data_controller# 종속성 추가
         
-        self.setFocus()
-        self.__next_event()
-        
         # 이벤트 관련 변수
         self.__ctrl_pressed:bool = False
         self.__prev_pos:QPoint = None
         self.__wheel_pressed:bool = False
         self.__move_event:QPoint = None
+        self.__modal_is_exist:bool = False
+        self.__modal:QWidget = None
         
-    def closeEvent(self, event:QCloseEvent) -> None:
-        self.__data_controller.close()
-        super().closeEvent(event)    
+        self.setFocus()
+        self.__next_event()
+        
 
     def __next_event(self) -> None:
         image, ary = self.__data_controller.get_next_image()
@@ -53,12 +52,28 @@ class ImageLayer(QWidget):
                 self.__data_controller.move(2)
             elif dy < -100:
                 self.__data_controller.move(3)
+                        
+    def __search_modal(self, controller:DataController) -> None:
+        if controller is None:
+            print("검색 된 거 없음")
+            return
+        pos = self.pos()
+        size = self.size()
+        try:
+            from gui import Frame
+            self.__modal = Frame(pos.x(), pos.y(), size.width(), size.height(), data_controller=controller)
+            self.__modal.show()
+        except Exception as e:
+            print(e)
+        print("이미지 검색")
                 
-    def __get_data_thread(self) -> None: pass
-    def _set_button_event(self) -> None: pass
-    def _button_rander(self, b:bool) -> None: pass
+    def __button_rander(self, b:bool) -> None: pass
     
     # -- 이벤트 함수 -- #
+    
+    def closeEvent(self, event:QCloseEvent) -> None:
+        self.__data_controller.close()
+        super().closeEvent(event)    
     
     def resizeEvent(self, event:QResizeEvent) -> None:
         size = event.size()
@@ -85,34 +100,8 @@ class ImageLayer(QWidget):
     def mouseDoubleClickEvent(self, a0: QMouseEvent | None) -> None:
         if a0.button() == Qt.MouseButton.LeftButton:
             num = self.__image_panel.click_event(a0.pos())
-            if num == None:
-                controller = self.__data_controller.search_image()
-                if controller is None:
-                    print("검색 된 거 없음")
-                    return
-                pos = self.pos()
-                size = self.size()
-                try:
-                    from gui import Frame
-                    self.modal = Frame(pos.x(), pos.y(), size.width(), size.height(), data_controller=controller)
-                    self.modal.show()
-                except Exception as e:
-                    print(e)
-                print("이미지 검색")
-            else:
-                controller = self.__data_controller.search_face(num)
-                if controller is None:
-                    print("검색 된 거 없음")
-                    return
-                pos = self.pos()
-                size = self.size()
-                try:
-                    from gui import Frame
-                    self.modal = Frame(pos.x(), pos.y(), size.width(), size.height(), data_controller=controller)
-                    self.modal.show()
-                except Exception as e:
-                    print(e)
-                print("얼굴 검색 ", num)  
+            if num == None:self.__search_modal(self.__data_controller.search_image())
+            else: self.__search_modal(self.__data_controller.search_face(num))
         super().mouseDoubleClickEvent(a0)
         
     def mousePressEvent(self, a0: QMouseEvent | None) -> None:

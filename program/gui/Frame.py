@@ -18,7 +18,7 @@ class Frame(QWidget):
     def __init__(self, x: int, y: int, width: int, height: int, 
                  ImageLayer_:Type[ImageLayer] = ImageLayer, 
                  data_controller:DataController = None
-                ):
+                ) -> None:
         """
         x -- int >= 0 \n
         y -- int >= 0 \n
@@ -37,7 +37,7 @@ class Frame(QWidget):
         
         self.init_ui()
         
-    def init_ui(self):
+    def init_ui(self) -> None:
         self.setWindowTitle(self.__TITLE)
         self.setGeometry(self.__x, self.__y, self.__width, self.__height)
         #self.setStyleSheet("background-color: black;")
@@ -45,14 +45,14 @@ class Frame(QWidget):
         self.__image_panel.setGeometry(0,0,self.__width, self.__height)
         self.__image_layer.raise_()
         
-    def resizeEvent(self, event:QResizeEvent):
+    def resizeEvent(self, event:QResizeEvent) -> None:
         size = event.size()
         self.__image_layer.setGeometry(0, 0, size.width(), size.height())
         self.__image_panel.setGeometry(0, 0, size.width(), size.height())
         self.__image_panel.resize_event()
         super().resizeEvent(event)
         
-    def show(self):
+    def show(self) -> None:
         super().show()
         self.__image_panel.resize_event()
         

@@ -23,7 +23,6 @@ class ImagePanel(QGraphicsView):
         self.__image: np.ndarray = ImagePanel.__DEFAULT_IMAGE
         self.__faces: dict[int:Character] = {}
         self.__face_rect: list[QGraphicsRectItem] = []
-        self.__cursor_is_in:bool = True
         self.__scale: float = 1
         self.__image_scale: float = 1
         self.setStyleSheet("background-color: black;")

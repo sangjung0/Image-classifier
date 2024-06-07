@@ -26,14 +26,14 @@ class Image:
         self.__path: pathlib.Path = path
         self.__date: datetime.datetime = None
         self.__time: datetime.time = None
-        
-        self.latitude = None
-        self.longitude = None
-        self.location = None
 
         self.__histogram: np.ndarray = None
         self.is_detected: bool = False
         self.is_scheduled: bool = False
+        
+        self.latitude = None
+        self.longitude = None
+        self.location = None
         
         self.characters: dict[int: Character] = {}
         

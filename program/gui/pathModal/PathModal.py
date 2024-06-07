@@ -12,7 +12,7 @@ class PathModal(QDialog):
     """
     __WIDTH:int = 600
     __HEIGHT:int = 50
-    def __init__(self, base:QWidget, callback:callable, confirm_name: str, cancel_name: str):
+    def __init__(self, base:QWidget, callback:callable, confirm_name: str, cancel_name: str) -> None:
         """
         callback -- callable 성공시 실행 함수
         confirm_name -- 성공 버튼 이름
@@ -24,8 +24,15 @@ class PathModal(QDialog):
                 
         self.setModal(True)
         self.__init_ui(confirm_name, cancel_name)
+        
+    def show(self, center:QPoint) -> None:
+        """
+        center -- QPoint 모달 center 위치
+        """
+        self.setGeometry(center.x() - PathModal.__WIDTH//2, center.y() - PathModal.__HEIGHT//2, PathModal.__WIDTH, PathModal.__HEIGHT)
+        super().show()
     
-    def __init_ui(self, confirm_name:str, cancel_name:str):
+    def __init_ui(self, confirm_name:str, cancel_name:str) -> None:
         """
         Ui 위치 및 이벤트 지정
         """
@@ -56,14 +63,7 @@ class PathModal(QDialog):
         self.setLayout(v_layout)
         self.setWindowTitle("Select Path")
         
-    def show(self, center:QPoint):
-        """
-        center -- QPoint 모달 center 위치
-        """
-        self.setGeometry(center.x() - PathModal.__WIDTH//2, center.y() - PathModal.__HEIGHT//2, PathModal.__WIDTH, PathModal.__HEIGHT)
-        super().show()
-        
-    def __browse_event(self):
+    def __browse_event(self) -> None:
         """
         Browse 버튼 이벤트
         """
@@ -73,7 +73,7 @@ class PathModal(QDialog):
         if result:
             self.__path_input.setText(result)
 
-    def __confirm_event(self):
+    def __confirm_event(self) -> None:
         """
         Success Button 이벤트
         """

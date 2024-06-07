@@ -17,17 +17,16 @@ class MainDataController(DataController):
     __BUF_SIZE:int = 4
     __PACKET_SIZE:int = 4
     
-    def __init__(self, path: pathlib.Path, sub_path:list[pathlib.Path] = []) -> None:
+    def __init__(self, path: pathlib.Path, sub_path:dict[int:pathlib.Path] = {}) -> None:
         paths = list(PathData(path))
         data = Data()
         data.search(paths)
         super().__init__(paths, sub_path, data)
-        self.__sub_path:list[pathlib.Path] = sub_path
+        self.__sub_path:dict[int:pathlib.Path] = sub_path
         
         self.__storage:Storage
         self.__auto_save:AutoSave
         self.__scheduler:Scheduler = Scheduler(data, paths)
-        self.__lock:Lock
         
         self.__scheduler.run(MainDataController.__BUF_SIZE, MainDataController.__PACKET_SIZE)
         

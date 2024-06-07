@@ -14,10 +14,11 @@ class FaceDetector(Processor):
         self.__sp = None
         self.__facerec = None
         
-    def prepare(self):
+    def __call__(self, *arg, **kwargs):
         self.__detector = dlib.get_frontal_face_detector()
         self.__sp = dlib.shape_predictor('./program/resource/dlib-models-master/shape_predictor_68_face_landmarks.dat')
         self.__facerec = dlib.face_recognition_model_v1('./program/resource/dlib-models-master/dlib_face_recognition_resnet_model_v1.dat')
+        super().__call__(*arg, **kwargs)
         
     def processing(self, value:Packet):
         

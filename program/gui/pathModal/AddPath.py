@@ -7,7 +7,7 @@ class AddPath(PathModal):
     __CONFIRM_NAME: str = "Add"
     __CANCEL_NAME: str = "Cancel"
 
-    def __init__(self, base:QWidget, callback: callable):
+    def __init__(self, base:QWidget, callback: callable) -> None:
         """
         base -- QWidget 모달 종속 위젯
         callback -- callable 성공시 실행 함수

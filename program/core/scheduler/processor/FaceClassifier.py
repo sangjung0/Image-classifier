@@ -13,8 +13,6 @@ class FaceClassifier(Processor):
         super().__init__(name, loger_is_print)
         self.__faces:dict[int:list[Face]] = faces
     
-    def prepare(self): pass
-    
     def compare(self, embedding_1:np.ndarray, embedding_2:np.ndarray) -> bool:
         return np.linalg.norm(embedding_1 - embedding_2) < FaceClassifier.__THRESHOLD
     

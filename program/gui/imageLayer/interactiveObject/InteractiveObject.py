@@ -26,7 +26,7 @@ class InteractiveObject(QPushButton):
         self.clicked.connect(callback)
         self.setGeometry(0, 0, self.__width, self.__height)
 
-    def resize_event(self, size:QSize):
+    def resize_event(self, size:QSize) -> None:
         """
         크기에 따라 x, y 값 비율로 위치 조정
         
