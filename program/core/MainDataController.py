@@ -14,8 +14,8 @@ from utils import PathData
 class MainDataController(DataController):
     
     __MAX_PATH_COUNT:int = 4
-    __BUF_SIZE:int = 5
-    __PACKET_SIZE:int = 32
+    __BUF_SIZE:int = 4
+    __PACKET_SIZE:int = 4
     
     def __init__(self, path: pathlib.Path, sub_path:list[pathlib.Path] = []) -> None:
         paths = list(PathData(path))
@@ -33,7 +33,8 @@ class MainDataController(DataController):
         
     def get_cnt_image(self) -> tuple[Image, np.ndarray]:
         image, ary = super().get_cnt_image()
-        self.__scheduler.add(image.get_path())
+        if not image.is_scheduled:
+            self.__scheduler.add(image.path)
         return image, ary
 
     def organization(self) : pass

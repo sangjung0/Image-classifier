@@ -20,7 +20,7 @@ class DataController:
         self.__sub_path: dict[int:pathlib.Path] = sub_path
         self.__images: Data = Data() if data is None else data 
         
-        self.__searcher: Searcher
+        self.__searcher: Searcher = Searcher(self.__images, self.__image_path)
         
         self.__cache: dict[pathlib.Path: np.ndarray] = dict()
         self._cnt_image_index:int = 0
@@ -40,8 +40,15 @@ class DataController:
         if(path in self.__cache):
             ary = self.__cache[path]
         else:
-            ary = image.get_image()
+            ary = image.image
             self.__cache[path] = ary
+            
+        print(f"""
+              name : {image.name}
+              date: {image.date}
+              time: {image.time}
+              hash: {image.is_detected}
+              """)
         return image, ary
 
     def get_next_image(self) -> tuple[Image, np.ndarray]:
@@ -54,20 +61,29 @@ class DataController:
         self._cnt_image_index = self.__image_index(-1)
         return self.get_cnt_image()
 
-    def search_image(self) -> 'DataController': pass
+    def search_image(self) -> 'DataController':
+        cnt = self.get_cnt_image()[0]
+        if cnt.histogram is None: return None
+        paths = self.__searcher.search_image(self.get_cnt_image()[0])
+        if len(paths) == 0: return None
+        return DataController(paths, self.__sub_path, self.__images)
 
-    def search_face(self) -> 'DataController': pass
+    def search_face(self, i:int) -> 'DataController':
+        paths = self.__searcher.search_face(self.get_cnt_image()[0].characters[i].name)
+        if len(paths) == 0: return None
+        return DataController(paths, self.__sub_path, self.__images)
 
     def stop_search(self) -> None: pass
 
-    def move(self, n: int) -> None: 
+    def move(self, n: int) -> bool: 
+        if n >= len(self.__sub_path): return False
         src = self.__image_path[self._cnt_image_index]
         dest:pathlib.Path = self.__sub_path[n] / src.name
         src.rename(dest)
         self.__images.delete(src)
         index = self.__image_path.index(src)
-        self.__image_path[index] = dest
-        
+        self.__image_path[index] = dest   
+        return True
     
     def __image_index(self, value:int) -> None:
         return (self._cnt_image_index + value) % len(self.__image_path)
@@ -91,13 +107,12 @@ class DataController:
                     with self.__lock:
                         del self.__cache[a[i]]
                 if i < len (b):
-                    image = self.__images.get_image(b[i]).get_image()
+                    image = self.__images.get_image(b[i]).image
                     with self.__lock:
                         self.__cache[b[i]] = image
                 i += 1
             gc.collect()
             
-                    
     def close(self) -> None:
         self.__flag = True
         if self.__thread != None:

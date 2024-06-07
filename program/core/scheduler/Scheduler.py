@@ -26,7 +26,7 @@ class Scheduler:
         """
         self.__queue: deque[pathlib.Path] = deque(paths)
         self.__name:str = "scheduler"
-        self.__loger_is_print:bool = True
+        self.__loger_is_print:bool = False
         self.__data:Data = data
         self.__lock:Lock = Lock()
         self.__processes:list[Process] = []
@@ -67,46 +67,46 @@ class Scheduler:
         
         termination_order += 1
         image_hasher_1 = Process(
-            target=ImageHasher("imageHasher_1", True),
+            target=ImageHasher("imageHasher_1", self.__loger_is_print),
             args=(termination_order, termination_signal, self.__flag, output_sch_input_ih_queue, output_ih_input_fd_queue)
         )                      
         termination_order += 1
         image_hasher_2 = Process(
-            target=ImageHasher("imageHasher_2", True),
+            target=ImageHasher("imageHasher_2", self.__loger_is_print),
+            args=(termination_order, termination_signal, self.__flag, output_sch_input_ih_queue, output_ih_input_fd_queue)
+        )                      
+        termination_order += 1
+        image_hasher_3 = Process(
+            target=ImageHasher("imageHasher_3", self.__loger_is_print),
             args=(termination_order, termination_signal, self.__flag, output_sch_input_ih_queue, output_ih_input_fd_queue)
         )                   
         termination_order += 1
         face_detector_1 = Process(
-            target = FaceDetector("faceDetector_1", True),
+            target = FaceDetector("faceDetector_1", self.__loger_is_print),
             args = (termination_order, termination_signal, self.__flag, output_ih_input_fd_queue, output_fd_input_fc_queue)
         )
         termination_order += 1
         face_detector_2 = Process(
-            target = FaceDetector("faceDetector_2", True),
+            target = FaceDetector("faceDetector_2", self.__loger_is_print),
             args = (termination_order, termination_signal, self.__flag, output_ih_input_fd_queue, output_fd_input_fc_queue)
         )
         termination_order += 1
         face_detector_3 = Process(
-            target = FaceDetector("faceDetector_3", True),
-            args = (termination_order, termination_signal, self.__flag, output_ih_input_fd_queue, output_fd_input_fc_queue)
-        )
-        termination_order += 1
-        face_detector_4 = Process(
-            target = FaceDetector("faceDetector_4", True),
+            target = FaceDetector("faceDetector_3", self.__loger_is_print),
             args = (termination_order, termination_signal, self.__flag, output_ih_input_fd_queue, output_fd_input_fc_queue)
         )
         termination_order += 1
         face_classifier = Process(
-            target = FaceClassifier("faceClassifier", True),
+            target = FaceClassifier("faceClassifier", self.__data.faces, self.__loger_is_print),
             args = (termination_order, termination_signal, self.__flag, output_fd_input_fc_queue, output_fr_input_sch_queue)
         )
         
         image_hasher_1.start()
         image_hasher_2.start()
+        image_hasher_3.start()
         face_detector_1.start()
         face_detector_2.start()
         face_detector_3.start()
-        face_detector_4.start()
         face_classifier.start()
         
         termination_order += 1
@@ -122,10 +122,10 @@ class Scheduler:
         
         self.__processes.append(image_hasher_1)
         self.__processes.append(image_hasher_2)
+        self.__processes.append(image_hasher_3)
         self.__processes.append(face_detector_1)
         self.__processes.append(face_detector_2)
         self.__processes.append(face_detector_3)
-        self.__processes.append(face_detector_4)
         self.__processes.append(face_classifier)
         
         self.__threads.append(sender)
@@ -138,12 +138,12 @@ class Scheduler:
         
         self.__flag.value = PROCESSOR_STOP
         
-        for p in self.__processes: p.join()
+        for p in self.__processes: p.join(0.1)
         for q in self.__queues:
             q.close()
             q.join_thread()
         for t in self.__threads:
-            t.join()
+            t.join(0.1)
         
     def __sender(self, packet_size:int, termination_signal: SynchronizedBase, queue:Queue) -> None:
         # --
@@ -153,13 +153,13 @@ class Scheduler:
         # --
         converter = Converter(queue)
         packet = Packet([PacketData(None) for _ in range(packet_size)])
-        packet_ary = packet.get_data()
+        packet_ary = packet.data
         i = 0
         try:
             while True:
                 if self.is_empty():
                     if i == 0: break
-                    for i in range(packet_size): packet_ary[i].set_path(None)
+                    for i in range(packet_size): packet_ary[i].path = None
                     timer.measure(lambda: converter.send(packet))
                     break
                 if self.__flag.value == PROCESSOR_PAUSE:
@@ -168,8 +168,10 @@ class Scheduler:
                     break
                 else:
                     path = self.poll()
-                    if self.__data.get_image(path).is_detected(): continue
-                    packet_ary[i].set_path(path)
+                    image = self.__data.get_image(path)
+                    if image.is_scheduled: continue
+                    image.is_scheduled = True
+                    packet_ary[i].path = path
                     i += 1
                     if i == packet_size:
                         i = 0
@@ -203,12 +205,15 @@ class Scheduler:
                         loger("데이터 수신 후 압축 해제", option=timer)
                         if ret: 
                             for i in data:
-                                image = self.__data.get_image(i.get_path())
-                                characters = i.get_characters()
+                                image = self.__data.get_image(i.path)
+                                characters = i.characters
                                 for k in characters:
-                                    image.set_character(k, characters[k])
-                                image.set_hash(i.get_hash())
-                                image.set_is_detected(True)
+                                    image.characters[k] = characters[k]
+                                faces = i.faces
+                                for k in faces:
+                                    self.__data.set_face(k, faces[k])
+                                image.histogram = i.histogram
+                                image.is_detected = True
                     except EQ.Empty:
                         if termination_signal.value >= order:
                             break
