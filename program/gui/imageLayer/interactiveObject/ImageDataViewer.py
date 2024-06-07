@@ -13,17 +13,6 @@ class ImageDataViewer(InteractiveObject):
 
     def __init__(self, base:QWidget, callback: callable, x_ratio: float = __X_RATIO, y_ratio: float = __Y_RATIO, width: int = __WIDTH, height: int = __HEIGHT, axes:tuple[int] = (0, 0)):
         super().__init__("",base, callback, x_ratio, y_ratio, width, height, axes)
-        
-        self.setStyleSheet("""
-            QPushButton {
-                background-color: lightgray;
-                color: black;
-                border: 1px solid black;
-                border-radius: 5px;
-                padding: 5px;
-            }            
-        """)
-        
         self.set_data("test", datetime.datetime.now(), pathlib.Path("/image/"))
         
 

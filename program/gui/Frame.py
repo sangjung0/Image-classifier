@@ -20,12 +20,12 @@ class Frame(QWidget):
                  data_controller:DataController = None
                 ):
         """
-        x -- int >= 0
-        y -- int >= 0
-        width -- int >= 0 
-        height -- int >= 0
-        ImageLayer_ -- ImageLayer (class. not instance)
-        data_controller -- DataController
+        x -- int >= 0 \n
+        y -- int >= 0 \n
+        width -- int >= 0 \n
+        height -- int >= 0 \n
+        ImageLayer_ -- ImageLayer (class. not instance) \n
+        data_controller -- DataController \n
         """
         super().__init__()
         self.__x:int = x
@@ -40,7 +40,7 @@ class Frame(QWidget):
     def init_ui(self):
         self.setWindowTitle(self.__TITLE)
         self.setGeometry(self.__x, self.__y, self.__width, self.__height)
-        self.setStyleSheet("background-color: black;")
+        #self.setStyleSheet("background-color: black;")
 
         self.__image_panel.setGeometry(0,0,self.__width, self.__height)
         self.__image_layer.raise_()
