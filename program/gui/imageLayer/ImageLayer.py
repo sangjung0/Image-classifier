@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import  QWidget
+from PyQt5.QtWidgets import  QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QKeyEvent, QMouseEvent, QResizeEvent, QWheelEvent, QCloseEvent
 
-from gui import ImagePanel
 from gui.imageLayer.interactiveObject import *
+from gui import ImagePanel
 
 from core import DataController
 
@@ -13,19 +13,18 @@ class ImageLayer(QWidget):
         super().__init__(base)
         self.__image_panel: ImagePanel = image_panel
         self.__image_data_viewer: ImageDataViewer = ImageDataViewer(self, lambda : 0, 0.01, 0.99, 300,100, (0, -100))
-        self.__boundary_boxs: list[BoundaryBox]
         self.__prev:Prev = Prev(self, self.__prev_event, 0, 0.5, 100, 50, (40, -25))
         self.__next:Next = Next(self, self.__next_event, 1, 0.5, 100, 50, (-140, -25))
         self.__data_controller:DataController = data_controller# 종속성 추가
         
         self.setFocus()
-        
-        self.__image_panel.set_image(self.__data_controller.get_cnt_image())
+        self.__next_event()
         
         # 이벤트 관련 변수
         self.__ctrl_pressed:bool = False
         self.__prev_pos:QPoint = None
         self.__wheel_pressed:bool = False
+        self.__move_event:QPoint = None
         
     def closeEvent(self, event:QCloseEvent) -> None:
         self.__data_controller.close()
@@ -33,17 +32,28 @@ class ImageLayer(QWidget):
 
     def __next_event(self) -> None:
         image, ary = self.__data_controller.get_next_image()
-        self.__image_panel.set_image(ary)
+        self.__image_panel.set_image(image.characters, ary)
+        self.__image_data_viewer.set_data(image.name, image.date, image.path)
         
     def __prev_event(self) -> None:
         image, ary = self.__data_controller.get_prev_image()
-        self.__image_panel.set_image(ary)
-        
-    def __set_boundary_box(self) -> None: pass
-    def __set_image_data(self) -> None: pass
-    def __set_mouse_event(self) -> None: pass
-    def __resize_event(self) -> None: pass
-    def __file_move_event(self) -> None: pass
+        self.__image_panel.set_image(image.characters, ary)
+        self.__image_data_viewer.set_data(image.name, image.date, image.path)
+
+    def __file_move_event(self, pos:QPoint) -> None:
+        dx = pos.x()
+        dy = pos.y()
+        if abs(dx) > abs(dy):
+            if dx > 100:
+                self.__data_controller.move(0)
+            elif dx < -100:
+                self.__data_controller.move(1)
+        else:
+            if dy > 100:
+                self.__data_controller.move(2)
+            elif dy < -100:
+                self.__data_controller.move(3)
+                
     def __get_data_thread(self) -> None: pass
     def _set_button_event(self) -> None: pass
     def _button_rander(self, b:bool) -> None: pass
@@ -71,16 +81,53 @@ class ImageLayer(QWidget):
         if self.__ctrl_pressed:
             self.__image_panel.resize_image(a0.angleDelta().y(), a0.pos())
         super().wheelEvent(a0)
+
+    def mouseDoubleClickEvent(self, a0: QMouseEvent | None) -> None:
+        if a0.button() == Qt.MouseButton.LeftButton:
+            num = self.__image_panel.click_event(a0.pos())
+            if num == None:
+                controller = self.__data_controller.search_image()
+                if controller is None:
+                    print("검색 된 거 없음")
+                    return
+                pos = self.pos()
+                size = self.size()
+                try:
+                    from gui import Frame
+                    self.modal = Frame(pos.x(), pos.y(), size.width(), size.height(), data_controller=controller)
+                    self.modal.show()
+                except Exception as e:
+                    print(e)
+                print("이미지 검색")
+            else:
+                controller = self.__data_controller.search_face(num)
+                if controller is None:
+                    print("검색 된 거 없음")
+                    return
+                pos = self.pos()
+                size = self.size()
+                try:
+                    from gui import Frame
+                    self.modal = Frame(pos.x(), pos.y(), size.width(), size.height(), data_controller=controller)
+                    self.modal.show()
+                except Exception as e:
+                    print(e)
+                print("얼굴 검색 ", num)  
+        super().mouseDoubleClickEvent(a0)
         
     def mousePressEvent(self, a0: QMouseEvent | None) -> None:
         if a0.button() == Qt.MouseButton.MiddleButton:
             self.__prev_pos = a0.pos()
             self.__wheel_pressed = True
+        elif a0.button() == Qt.MouseButton.LeftButton:
+            self.__move_event = a0.pos()
         super().mousePressEvent(a0)
         
     def mouseReleaseEvent(self, a0: QMouseEvent | None) -> None:
         if a0.button() == Qt.MouseButton.MiddleButton:
             self.__wheel_pressed = False
+        elif a0.button() == Qt.MouseButton.LeftButton:
+            self.__file_move_event(a0.pos() - self.__move_event)
         super().mouseReleaseEvent(a0)
         
     def mouseMoveEvent(self, a0: QMouseEvent | None) -> None:
