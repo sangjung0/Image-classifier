@@ -33,7 +33,6 @@ class Image:
         
         self.latitude = None
         self.longitude = None
-        self.location = None
         
         self.characters: dict[int: Character] = {}
         
@@ -92,33 +91,33 @@ class Image:
         if isinstance(value, bool):
             self.__is_scheduled = value
         else: raise TypeError()
-                
+        
     def __set_data(self):
         """
         이미지 메타데이터 읽은 후 매개변수 초기화
         """
-        
+        if not self.__path.exists():
+            return
         with IMG.open(self.__path) as img:
-            exif_data = img.getexif()
+            exif_data = img._getexif()
             
             if exif_data is not None:
                 exif = {}
                 
                 for tag, value in exif_data.items():
-                    if tag in TAGS: exif[TAGS[tag]] = value
+                    exif[TAGS.get(tag, tag)] = value
                     
-                if Image.__DATETIME in exif:
-                    date_time_obj = datetime.datetime.strptime(exif[Image.__DATETIME], Image.__STR_TO_DATE)
+                if self.__class__.__DATETIME in exif:
+                    date_time_obj = datetime.datetime.strptime(exif[self.__class__.__DATETIME], self.__class__.__STR_TO_DATE)
                     self.__date = date_time_obj.date()
                     self.__time = date_time_obj.time()
                     
                 # GPS 정보 추출
-                if Image.__GPS_INFO in exif:
+                if self.__class__.__GPS_INFO in exif:
                     gps_data = {}
                     
-                    for tag, value in exif[Image.__GPS_INFO].items():
+                    for tag, value in exif[self.__class__.__GPS_INFO].items():
                         if tag in GPSTAGS: gps_data[GPSTAGS[tag]] = value
                         
-                    self.latitude = ReverseGeocoder.convert_gps_data(gps_data[Image.__GPS_LATITUDE], gps_data[Image.__GPS_LATITUDE_REF])
-                    self.longitude = ReverseGeocoder.convert_gps_data(gps_data[Image.__GPS_LONGITUDE], gps_data[Image.__GPS_LONGITUDE_REF])
-                    self.location = ReverseGeocoder.get_location_name(self.latitude, self.longitude)
+                    self.latitude = ReverseGeocoder.convert_gps_data(gps_data[self.__class__.__GPS_LATITUDE], gps_data[self.__class__.__GPS_LATITUDE_REF])
+                    self.longitude = ReverseGeocoder.convert_gps_data(gps_data[self.__class__.__GPS_LONGITUDE], gps_data[Image.__GPS_LONGITUDE_REF])
