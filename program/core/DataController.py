@@ -6,23 +6,20 @@ import gc
 
 from core.Searcher import Searcher
 from core.dto import Data, Image
+from core.Constant import CACHE_SIZE
 
 
 class DataController:
-    """
-    Data를 컨트롤하는 클래스 이미지 검색, 이미지 탐색, 이미지 이동 등을 지원
-    """
+    """Data를 컨트롤하는 클래스 이미지 검색, 이미지 탐색, 이미지 이동 등을 지원"""
     
-    __CACHE_SIZE:int = 11
-    
-    def __init__(self, image_path: list[pathlib.Path], sub_path: dict[int: pathlib.Path], data:Data = None) -> None:
+    def __init__(self, image_path: list[pathlib.Path], sub_path: dict[int, pathlib.Path], data:Data = None) -> None:
         self.__image_path: list[pathlib.Path] = image_path
         self.__sub_path: dict[int:pathlib.Path] = sub_path
         self.__images: Data = Data() if data is None else data 
         
         self.__searcher: Searcher = Searcher(self.__images, self.__image_path)
         
-        self.__cache: dict[pathlib.Path: np.ndarray] = dict()
+        self.__cache: dict[pathlib.Path, np.ndarray] = dict()
         self._cnt_image_index:int = 0
         
         self.__lock:threading.Lock = threading.Lock()
@@ -59,12 +56,12 @@ class DataController:
         cnt = self.get_cnt_image()[0]
         if cnt.histogram is None: return None
         paths = self.__searcher.search_image(self.get_cnt_image()[0])
-        if len(paths) == 0: return None
+        if len(paths) <= 1: return None
         return DataController(paths, self.__sub_path, self.__images)
 
     def search_face(self, i:int) -> 'DataController':
         paths = self.__searcher.search_face(self.get_cnt_image()[0].characters[i].name)
-        if len(paths) == 0: return None
+        if len(paths) <= 1: return None
         return DataController(paths, self.__sub_path, self.__images)
 
     def move(self, n: int) -> bool: 
@@ -80,7 +77,8 @@ class DataController:
         return (self._cnt_image_index + value) % len(self.__image_path)
         
     def __cache_manager(self) -> None:
-        start = DataController.__CACHE_SIZE//2
+        """현재 사용자가 보고있는 이미지를 기준으로 미리 이미지 로드"""
+        start = CACHE_SIZE//2
         while True:
             time.sleep(0.1)
             if self.__flag: break

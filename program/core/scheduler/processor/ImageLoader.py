@@ -6,13 +6,14 @@ from core.scheduler.dto import Packet
 from core.Histogram import Histogram
 
 class ImageLoader(Processor):
+    """이미지를 읽고, 스케일 조정을 하며 히스토그램 값을 구함."""
     
     __MAX_SIZE:int = 720
     
-    def __init__(self, name:str, loger_is_print:bool = False):
+    def __init__(self, name:str, loger_is_print:bool = False)->None:
         super().__init__(name, loger_is_print)
         
-    def processing(self, value:Packet):
+    def processing(self, value:Packet)->Packet:
         for i in value:
             path = i.path
             if path == None: break

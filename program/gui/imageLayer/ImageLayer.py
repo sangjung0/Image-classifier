@@ -1,20 +1,22 @@
 from PyQt5.QtWidgets import  QWidget
-from PyQt5.QtCore import Qt, QPoint, QTimer
+from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QKeyEvent, QMouseEvent, QResizeEvent, QWheelEvent, QCloseEvent, QEnterEvent
 
 from gui.imageLayer.interactiveObject import *
+from gui.Utils import message_box
 from gui import ImagePanel
+from gui.Constant import DRAG_THRESHOLD
 
 from core import DataController
 
-
 class ImageLayer(QWidget):
+    """여러 이벤트들을 관리하며 매개자 역할을 함"""
     def __init__(self, base:QWidget, image_panel: ImagePanel, data_controller:DataController) -> None:
         super().__init__(base)
         self.__image_panel: ImagePanel = image_panel
-        self.__image_data_viewer: ImageDataViewer = ImageDataViewer(self, 0.01, 0.99, 600, 80, (0, -100))
-        self.__prev:Prev = Prev(self, self.__prev_event, 0, 0.5, 100, 50, (40, -25))
-        self.__next:Next = Next(self, self.__next_event, 1, 0.5, 100, 50, (-140, -25))
+        self.__image_data_viewer: ImageDataViewer = ImageDataViewer(self)
+        self.__prev:Prev = Prev(self, self.__prev_event)
+        self.__next:Next = Next(self, self.__next_event)
         self.__data_controller:DataController = data_controller# 종속성 추가
         
         # 이벤트 관련 변수
@@ -44,19 +46,19 @@ class ImageLayer(QWidget):
         dx = pos.x()
         dy = pos.y()
         if abs(dx) > abs(dy):
-            if dx > 100:
+            if dx > DRAG_THRESHOLD:
                 self.__data_controller.move(0)
-            elif dx < -100:
+            elif dx < -DRAG_THRESHOLD:
                 self.__data_controller.move(1)
         else:
-            if dy > 100:
+            if dy > DRAG_THRESHOLD:
                 self.__data_controller.move(2)
-            elif dy < -100:
+            elif dy < -DRAG_THRESHOLD:
                 self.__data_controller.move(3)
                         
     def __search_modal(self, controller:DataController) -> None:
         if controller is None:
-            print("검색 된 거 없음")
+            message_box(self, "Search Error", "No Search Data")
             return
         pos = self.pos()
         size = self.size()
@@ -66,7 +68,6 @@ class ImageLayer(QWidget):
             self.__modal.show()
         except Exception as e:
             print(e)
-        print("이미지 검색")
         
     def show_event(self) -> None:
         image, _ = self.__data_controller.get_cnt_image()
@@ -82,7 +83,7 @@ class ImageLayer(QWidget):
         self.__image_data_viewer.hide()
         self.__image_panel.off()
     
-    # -- 이벤트 함수 -- #
+    # -- 오버라이딩 이벤트 함수 -- #
     
     def closeEvent(self, event:QCloseEvent) -> None:
         self.__data_controller.close()

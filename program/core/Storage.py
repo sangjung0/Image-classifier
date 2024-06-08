@@ -5,6 +5,8 @@ from core.dto import Data
 
 
 class Storage:
+    """데이터 저장 클래스"""
+    
     def __init__(self, path:pathlib.Path):
         self.__path: pathlib.Path = path
         self.__data: Data = None

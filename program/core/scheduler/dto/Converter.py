@@ -4,15 +4,15 @@ from PIL import Image
 import io
 
 from core.scheduler.dto.Packet import Packet
+from core.Constant import CONVERTER_TIMEOUT
 
 
 class Converter:
     """
-    데이터 조작 및 전송하는 클래스
-    데이터 송신 전 PacketData의 이미지를 손실 압축
-    데이터 수신 후 PacketData의 이미지를 압축 해제 하는 역할.
+데이터 조작 및 전송하는 클래스 \n
+데이터 송신 전 PacketData의 이미지를 손실 압축 \n
+데이터 수신 후 PacketData의 이미지를 압축 해제 하는 역할. \n
     """
-    __TIMEOUT:int = 1
     
     def __init__(self, source: Queue) -> None:
         self.__source: Queue = source
@@ -32,7 +32,7 @@ class Converter:
         self.__source.put(value)
 
     def receive(self) -> tuple[bool, Packet]:
-        value = self.__source.get(timeout=Converter.__TIMEOUT)
+        value = self.__source.get(timeout=CONVERTER_TIMEOUT)
         for i in value: i.image = (self.__decompress(i.image))
         return True, value
         

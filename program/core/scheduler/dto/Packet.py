@@ -1,6 +1,7 @@
 from core.scheduler.dto import PacketData
 
 class Packet:
+    """멀티 프로세싱에 데이터 전달에 사용 할 패킷"""
     def __init__(self, datas:list[PacketData] = []) -> None:
         self.__data: list[PacketData] = datas
         

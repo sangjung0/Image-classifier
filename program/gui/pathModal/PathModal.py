@@ -1,17 +1,15 @@
 import pathlib
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QPushButton, QFileDialog, QHBoxLayout, QDialog
 from PyQt5.QtCore import QPoint
-from PyQt5.QtGui import QCloseEvent
 
 from gui.Utils import message_box
+from gui.Constant import PATH_MODAL_HEIGHT, PATH_MODAL_WIDTH
 
 
 class PathModal(QDialog):
     """
     PathModal 경로 지정 모달
     """
-    __WIDTH:int = 600
-    __HEIGHT:int = 50
     def __init__(self, base:QWidget, callback:callable, confirm_name: str, cancel_name: str) -> None:
         """
         callback -- callable 성공시 실행 함수
@@ -29,7 +27,7 @@ class PathModal(QDialog):
         """
         center -- QPoint 모달 center 위치
         """
-        self.setGeometry(center.x() - PathModal.__WIDTH//2, center.y() - PathModal.__HEIGHT//2, PathModal.__WIDTH, PathModal.__HEIGHT)
+        self.setGeometry(center.x() - PATH_MODAL_WIDTH//2, center.y() - PATH_MODAL_HEIGHT//2, PATH_MODAL_WIDTH, PATH_MODAL_HEIGHT)
         super().show()
     
     def __init_ui(self, confirm_name:str, cancel_name:str) -> None:
@@ -67,9 +65,7 @@ class PathModal(QDialog):
         """
         Browse 버튼 이벤트
         """
-        options = QFileDialog.Options()
-        #options |= QFileDialog.DontUseNativeDialog
-        result = QFileDialog.getExistingDirectory(self, "Select Folder", options=options)
+        result = QFileDialog.getExistingDirectory(self, "Select Folder", options=QFileDialog.Options())
         if result:
             self.__path_input.setText(result)
 

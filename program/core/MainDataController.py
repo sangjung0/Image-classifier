@@ -7,28 +7,26 @@ from core.AutoSave import AutoSave
 from core.DataController import DataController
 from core.scheduler import Scheduler
 from core.dto import  Image
+from core.Constant import SCHEDULER_BUF_SIZE, SCHEDULER_MAX_PATH_COUNT, SCHEDULER_PACKET_SIZE
 
 from utils import PathData
 
 class MainDataController(DataController):
+    """데이터 컨트롤러를 상속받는 메인 컨트롤러"""
     
-    __MAX_PATH_COUNT:int = 4
-    __BUF_SIZE:int = 4
-    __PACKET_SIZE:int = 4
-    
-    def __init__(self, path: pathlib.Path, sub_path:dict[int:pathlib.Path] = {}) -> None:
+    def __init__(self, path: pathlib.Path, sub_path:dict[int,pathlib.Path] = {}) -> None:
         storage = Storage(path)
         paths = list(PathData(path))
         data = storage.load()
         data.search(paths)
         super().__init__(paths, sub_path, data)
-        self.__sub_path:dict[int:pathlib.Path] = sub_path
+        self.__sub_path:dict[int,pathlib.Path] = sub_path
         
         self.__storage:Storage = storage
         self.__auto_save:AutoSave = AutoSave(path, paths, data)
         self.__scheduler:Scheduler = Scheduler(data, paths)
         
-        self.__scheduler.run(MainDataController.__BUF_SIZE, MainDataController.__PACKET_SIZE)
+        self.__scheduler.run(SCHEDULER_BUF_SIZE, SCHEDULER_PACKET_SIZE)
         
     def get_cnt_image(self) -> tuple[Image, np.ndarray]:
         image, ary = super().get_cnt_image()
@@ -40,11 +38,11 @@ class MainDataController(DataController):
         self.__auto_save.organization()
 
     def add_path(self, add_path:pathlib.Path) -> None:
-        if len(self.__sub_path) >= MainDataController.__MAX_PATH_COUNT: raise Exception()
+        if len(self.__sub_path) >= SCHEDULER_MAX_PATH_COUNT: raise Exception()
         self.__sub_path.append(add_path)
         
     def sub_path_is_full(self) -> bool:
-        if len(self.__sub_path) >= MainDataController.__MAX_PATH_COUNT: return True
+        if len(self.__sub_path) >= SCHEDULER_MAX_PATH_COUNT: return True
         return False 
     
     def close(self) -> None:

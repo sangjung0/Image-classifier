@@ -6,6 +6,8 @@ from PyQt5.QtCore import Qt, QPoint, QRectF, QTimer
 
 from core.dto import Character
 
+from gui.Constant import DEFAULT_IMAGE, IMAGE_PANEL_ON_BACKGROUND, IMAGE_STEP, IMAGE_PANEL_OFF_BACKGROUND, IMAGE_PANEL_RECT_COLOR, IMAGE_STEP_TIME
+
 class ImagePanel(QGraphicsView):
     """
     ImagePanel
@@ -13,12 +15,12 @@ class ImagePanel(QGraphicsView):
     이미지 뷰, 확대 & 축소
     """
     
-    __DEFAULT_IMAGE: np.ndarray = np.array(Image.open('./program/resource/test.png').convert('RGB'), dtype=np.uint8)
-    __RECT_COLOR:QColor = QColor(255, 0, 0, 255)
-    __ON_BACKGROUND:QColor = QColor(20, 120, 20)
-    __OFF_BACKGROUND:QColor = QColor(0, 0, 0)
-    __STEP:int = 10
-    __STEP_TIME:int = 10
+    __DEFAULT_IMAGE: np.ndarray = np.array(Image.open(DEFAULT_IMAGE).convert('RGB'), dtype=np.uint8)
+    __RECT_COLOR:QColor = QColor(*IMAGE_PANEL_RECT_COLOR)
+    __ON_BACKGROUND:QColor = QColor(*IMAGE_PANEL_ON_BACKGROUND)
+    __OFF_BACKGROUND:QColor = QColor(*IMAGE_PANEL_OFF_BACKGROUND)
+    __STEP:int = IMAGE_STEP
+    __STEP_TIME:int = IMAGE_STEP_TIME
     __BACKGROUND_STEP:tuple[float, float, float] = (__ON_BACKGROUND.red()/__STEP,__ON_BACKGROUND.green()/__STEP,__ON_BACKGROUND.blue()/__STEP)
     __RECT_STEP:float = __RECT_COLOR.alpha()/__STEP
 

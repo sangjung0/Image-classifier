@@ -3,14 +3,18 @@ import pathlib
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PyQt5.QtCore import QSize
 
+from Constant import IMAGE_DATA_VIEWER_HEIGHT, IMAGE_DATA_VIEWER_WIDTH, IMAGE_DATA_VIEWER_X_RATIO, IMAGE_DATA_VIEWER_Y_RATIO
 
 class ImageDataViewer(QWidget):
-    __X_RATIO:float = 0
-    __Y_RATIO:float = 0
-    __WIDTH:int = 200
-    __HEIGHT:int = 100
+    """QWidget을 상속받는 이미지 데이터를 표시하는 클래스"""
 
-    def __init__(self, base:QWidget, x_ratio: float = __X_RATIO, y_ratio: float = __Y_RATIO, width: int = __WIDTH, height: int = __HEIGHT, axes:tuple[int] = (0, 0)) -> None:
+    def __init__(self, 
+                 base:QWidget, 
+                 x_ratio: float = IMAGE_DATA_VIEWER_X_RATIO, 
+                 y_ratio: float = IMAGE_DATA_VIEWER_Y_RATIO, 
+                 width: int = IMAGE_DATA_VIEWER_WIDTH,
+                 height: int = IMAGE_DATA_VIEWER_HEIGHT, 
+                 axes:tuple[int] = (0, 0)) -> None:
         super().__init__(base)
         
         self.__x_ratio: float = x_ratio
@@ -26,13 +30,14 @@ class ImageDataViewer(QWidget):
         self.__name.setMargin(2)
         self.__date.setMargin(2)
         self.__path.setMargin(2)
+        self.__path.setWordWrap(True)
         self.setStyleSheet("background-color: rgba(0,0,0,100); color: white;")
         
         layout = QVBoxLayout()
         layout.setSpacing(0)
-        layout.addWidget(self.__name)
-        layout.addWidget(self.__date)
-        layout.addWidget(self.__path)
+        layout.addWidget(self.__name, 1)
+        layout.addWidget(self.__date, 1)
+        layout.addWidget(self.__path, 2)
         
         self.setLayout(layout)
         

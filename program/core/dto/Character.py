@@ -1,7 +1,5 @@
 class Character:
-    """
-    사진에서의 얼굴 위치와 이름을 가지고 있음
-    """
+    """사진에서의 얼굴 위치와 이름을 가지고 있음"""
     def __init__(self, name: int, pos:tuple[int, int] = (0, 0), size:tuple[int, int] = (0, 0)):
         self.name = name
         self.pos = pos

@@ -5,22 +5,24 @@ from PIL import Image
 from core.scheduler.processor.Processor import Processor
 from core.scheduler.dto import Packet
 from core.dto import Face, Character
+from core.Constant import SHAPE_PREDICTOR_PATH, FACE_RECOGNITION_MODEL
 
 class FaceDetector(Processor):
-    def __init__(self, name:str, loger_is_print:bool = False):
+    """얼굴 탐지를 하기 위한 멀티프로세싱 클래스"""
+    def __init__(self, name:str, loger_is_print:bool = False)->None:
         super().__init__(name, loger_is_print)
         
         self.__detector = None
         self.__sp = None
         self.__facerec = None
         
-    def __call__(self, *arg, **kwargs):
+    def __call__(self, *arg, **kwargs)->None:
         self.__detector = dlib.get_frontal_face_detector()
-        self.__sp = dlib.shape_predictor('./program/resource/dlib-models-master/shape_predictor_68_face_landmarks.dat')
-        self.__facerec = dlib.face_recognition_model_v1('./program/resource/dlib-models-master/dlib_face_recognition_resnet_model_v1.dat')
+        self.__sp = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
+        self.__facerec = dlib.face_recognition_model_v1(FACE_RECOGNITION_MODEL)
         super().__call__(*arg, **kwargs)
         
-    def processing(self, value:Packet):
+    def processing(self, value:Packet)->Packet:
         
         for p in value:
             if p.path == None: break

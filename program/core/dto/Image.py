@@ -9,10 +9,8 @@ from core.ReverseGeocoder import ReverseGeocoder
 
 
 class Image:
-    """
-    이미지 정보를 가지고 있음
-    이미지 경로, 이름, 날짜, 시간, 등장인물, 해시 값 등의 메타데이터와 이미지 자체 데이터
-    """
+    """이미지 정보를 가지고 있음. 
+    이미지 경로, 이름, 날짜, 시간, 등장인물, 해시 값 등의 메타데이터와 이미지 자체 데이터"""
     
     __DATETIME:str = "DateTime"
     __GPS_INFO:str = "GPSInfo"
@@ -93,8 +91,10 @@ class Image:
         else: raise TypeError()
         
     def __set_data(self):
-        """
-        이미지 메타데이터 읽은 후 매개변수 초기화
+        """_summary_
+        
+이미지 메타데이터 읽은 후 매개변수 초기화
+
         """
         if not self.__path.exists():
             return

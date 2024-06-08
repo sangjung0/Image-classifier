@@ -4,21 +4,21 @@ from core.dto import Face
 from core.scheduler.processor.Processor import Processor
 from core.scheduler.dto import Packet
 
+from core.Constant import FACE_CLASSIFIER_MAX_FACE, FACE_CLASSIFIER_THRESHOLD
+
 class FaceClassifier(Processor):
-    
-    __THRESHOLD:float = 0.4
-    __MAX_FACE:int = 3
+    """얼굴 분류하는 멀티프로세싱의 기반이 되는 클래스"""
     
     def __init__(self, name:str, faces:dict[int:list[Face]],loger_is_print:bool = False) -> None:
         super().__init__(name, loger_is_print)
         self.__faces:dict[int:list[Face]] = faces
     
     def compare(self, embedding_1:np.ndarray, embedding_2:np.ndarray) -> bool:
-        return np.linalg.norm(embedding_1 - embedding_2) < self.__class__.__THRESHOLD
+        return np.linalg.norm(embedding_1 - embedding_2) < FACE_CLASSIFIER_THRESHOLD
     
     def set_face(self, n: int, face: Face) -> None:
         self.__faces[n].append(face)
-        if(len(self.__faces[n]) > self.__class__.__MAX_FACE):
+        if(len(self.__faces[n]) > FACE_CLASSIFIER_MAX_FACE):
             self.__faces[n].pop(0)
             
     def processing(self, value:Packet) -> Packet:

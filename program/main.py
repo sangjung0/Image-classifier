@@ -1,2 +1,4 @@
+from gui.MainFrame import MainFrame
+
 if __name__ == "__main__":
-    pass
+    MainFrame.start()

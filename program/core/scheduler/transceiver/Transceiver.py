@@ -5,6 +5,7 @@ from core.scheduler.dto import Packet
 
 
 class Transceiver:
+    """Receiver와 Sender의 부모 클래스"""
     def __init__(self) ->None:
         self.__lock: Lock = Lock()
         self.__data: deque[Packet] = deque()

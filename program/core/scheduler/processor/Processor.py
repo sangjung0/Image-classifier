@@ -7,11 +7,12 @@ import gc
 
 from core.scheduler.transceiver import Receiver, Sender
 from core.scheduler.dto import Packet
-from core.scheduler.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE
+from core.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE
 
 from utils import Loger, Timer
 
 class Processor:
+    """멀티 프로세싱의 기반이 되는 클래스"""
     def __init__(self, name:str, loger_is_print:bool = False)->None:
         self.__name:str = name
         self.__loger_is_print:bool = loger_is_print

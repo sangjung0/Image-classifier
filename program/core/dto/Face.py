@@ -2,9 +2,7 @@ import numpy as np
 
 
 class Face:
-    """
-    얼굴의 이름 번호와 이미지 데이터를 가지고 있음
-    """
+    """얼굴의 이름 번호와 이미지 데이터를 가지고 있음"""
     def __init__(self, name: int, embedding: np.ndarray): 
         self.name = name
         self.embedding = embedding

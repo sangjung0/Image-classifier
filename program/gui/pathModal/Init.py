@@ -1,10 +1,9 @@
-
 from gui.pathModal.PathModal import PathModal
-
+from gui.Constant import INIT_CANCEL_NAME, INIT_CONFIRM_NAME
 
 class Init(PathModal):
-    __CONFIRM_NAME: str = "Start"
-    __CANCEL_NAME: str = "Exit"
+    __CONFIRM_NAME: str = INIT_CONFIRM_NAME
+    __CANCEL_NAME: str = INIT_CANCEL_NAME
     
 
     def __init__(self, callback: callable):

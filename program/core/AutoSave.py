@@ -9,6 +9,10 @@ from core.ReverseGeocoder import ReverseGeocoder
 
 
 class AutoSave:
+    """
+클러스터링 알고리즘을 사용해서 지역 클러스터링과 해당 지역에 대한 시간 클러스터링으로 군집화 하며
+중심 지역과 해당 클러스터의 시작 날짜와 끝날짜를 기준으로 폴더 이름을 정하여 파일을 정리 함 
+    """
     def __init__(self, path:pathlib.Path, paths:list[pathlib.Path], data:Data) -> None:
         self.__path: pathlib.Path = path
         self.__paths: list[pathlib.Path] = paths
@@ -25,7 +29,7 @@ class AutoSave:
             elif k == max_k:
                 directory["dailiy"].extend(location_dict[k])
                 continue
-            elif len(directory[k]) == 0: continue
+            elif len(location_dict[k]) == 0: continue
             location = ReverseGeocoder.get_location_name(k[0], k[1])
             name = f"{location['country']}_{location['city']}"
             paths = location_dict[k]
@@ -44,10 +48,13 @@ class AutoSave:
             dir_path = self.__path / k
             os.makedirs(dir_path, exist_ok=True)
             for p in directory[k]:
-                dest = dir_path / p.name
-                p.rename(dest)
-                self.__data.delete(p)
-                self.__paths[self.__paths.index(p)] = dest
+                try:
+                    dest = dir_path / p.name
+                    p.rename(dest)
+                    self.__data.delete(p)
+                    self.__paths[self.__paths.index(p)] = dest
+                except Exception as _:
+                    pass
         
     def __cluster_photos_by_location(self) -> dict[int | tuple[int, int], list[pathlib.Path]]:
         coords = []

@@ -5,6 +5,8 @@ from core.Histogram import Histogram
 
 
 class Searcher:
+    """검색을 지원하는 클래스"""
+    
     def __init__(self, images: Data, paths: list[pathlib.Path]):
         self.__images: Data = images
         self.__paths: list[pathlib.Path] = paths

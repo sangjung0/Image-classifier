@@ -5,6 +5,8 @@ from core.dto import Face, Character
 
 
 class PacketData:
+    """Packet 클래스에 담겨 전송되는 데이터"""
+    
     def __init__(self, path: pathlib.Path) -> None:
         self.path = path
         self.image = None

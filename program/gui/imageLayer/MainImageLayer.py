@@ -12,11 +12,12 @@ from core import MainDataController
 from gui.Utils import message_box
 
 class MainImageLayer(ImageLayer):
+    """메인 레이어 만드는 클래스 오직 한개만 생성 되야 함"""
     def __init__(self, base:QWidget, image_panel: ImagePanel, data_controller:MainDataController) -> None:
         super().__init__(base, image_panel, data_controller)
         self.__data_controller:MainDataController = data_controller
-        self.__new_folder: NewFolder = NewFolder(self, self.__new_folder_event, 0.5, 0.01, 100, 50, (-110, 0))
-        self.__auto_save: AutoSave = AutoSave(self, self.__auto_organization, 0.5, 0.01, 100, 50, (10, 0))
+        self.__new_folder: NewFolder = NewFolder(self, self.__new_folder_event)
+        self.__auto_save: AutoSave = AutoSave(self, self.__auto_organization)
         self.__add_path: AddPath = AddPath(self, self.__add_folder_event)
         
     def resizeEvent(self, event:QResizeEvent) -> None:

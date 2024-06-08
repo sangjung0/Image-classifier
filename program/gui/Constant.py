@@ -1,0 +1,58 @@
+AUTO_ORGANIZATION_NAME:str = "Auto Save"
+AUTO_ORGANIZATION_X_RATIO:float = 0.5
+AUTO_ORGANIZATION_Y_RATIO:float = 0.01
+AUTO_ORGANIZATION_WIDTH:int = 100
+AUTO_ORGANIZATION_HEIGHT:int = 50
+AUTO_ORGANIZATION_AXES:tuple[int, int] = (10, 0)
+
+IMAGE_DATA_VIEWER_X_RATIO:float = 0.01
+IMAGE_DATA_VIEWER_Y_RATIO:float = 0.99
+IMAGE_DATA_VIEWER_WIDTH:int = 600
+IMAGE_DATA_VIEWER_HEIGHT:int = 80
+IMAGE_DATA_VIEWER_AXES:tuple[int, int] = (0, -100)
+
+NEW_FOLDER_NAME:str = "New Folder"
+NEW_FOLDER_X_RATIO:float = 0.5
+NEW_FOLDER_Y_RATIO:float = 0.01
+NEW_FOLDER_WIDTH:int = 100
+NEW_FOLDER_HEIGHT:int = 50
+NEW_FOLDER_AXES:tuple[int, int] = (-110, 0)
+
+NEXT_NAME:str = ">>>"
+NEXT_X_RATIO:float = 1
+NEXT_Y_RATIO:float = 0.5
+NEXT_WIDTH:int = 100
+NEXT_HEIGHT:int = 50
+NEXT_AXES:tuple[int, int] = (-140, -25)
+
+PREV_NAME:str = "<<<"
+PREV_X_RATIO:float = 0
+PREV_Y_RATIO:float = 0.5
+PREV_WIDTH:int = 100
+PREV_HEIGHT:int = 50
+PREV_AXES:tuple[int, int] = (40, -25)
+
+DRAG_THRESHOLD:int = 100
+
+ADD_PATH_CONFIRM_NAME:str = "Add"
+ADD_PATH_CANCEL_NAME:str = "Cancel"
+
+INIT_CONFIRM_NAME:str = "Start"
+INIT_CANCEL_NAME:str = "Exit"
+
+PATH_MODAL_WIDTH:int = 600
+PATH_MODAL_HEIGHT:int = 50
+
+TITLE:str = "Image Classifier"
+
+MAIN_FRAME_X:int = 0
+MAIN_FRAME_Y:int = 0
+MAIN_FRAME_WIDTH:int = 800
+MAIN_FRAME_HEIGHT:int = 600
+
+DEFAULT_IMAGE:str = './program/resource/test.png'
+IMAGE_PANEL_RECT_COLOR:tuple[int, int, int, int] = (255, 0, 0, 255)
+IMAGE_PANEL_ON_BACKGROUND:tuple[int, int, int] = (20, 120, 20)
+IMAGE_PANEL_OFF_BACKGROUND:tuple[int, int, int] = (0, 0, 0)
+IMAGE_STEP:int = 10
+IMAGE_STEP_TIME:int = 10

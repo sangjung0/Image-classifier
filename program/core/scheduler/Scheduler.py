@@ -11,7 +11,7 @@ from core.dto import Data
 from core.scheduler.dto import Converter, Packet, PacketData
 from core.scheduler.processor import *
 from core.scheduler.transceiver import *
-from core.scheduler.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE, PROCESSOR_START
+from core.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE, PROCESSOR_START
 
 from utils import Loger, Timer
 
@@ -21,9 +21,11 @@ class Scheduler:
     """
     def __init__(self, data:Data, paths:list[pathlib.Path]) -> None:
         """
-        data    -- Data 객체. 이미지 정보를 참조 함
-        paths   -- path 리스트. 분석할 이미지 경로 
+        Args:
+            data (Data): 이미지 정보를 참조 함
+            paths (list[pathlib.Path]): 분석할 이미지 경로 
         """
+        
         self.__queue: deque[pathlib.Path] = deque(paths)
         self.__name:str = "scheduler"
         self.__loger_is_print:bool = False
@@ -37,10 +39,7 @@ class Scheduler:
     def add(self, path: pathlib.Path) -> None:
         with self.__lock:
             self.__queue.appendleft(path)
-
-    # def peek(self) -> pathlib.Path:
-    #     return self.__queue[0]
-
+            
     def poll(self) -> pathlib.Path:
         with self.__lock:
             return self.__queue.popleft()
@@ -49,12 +48,13 @@ class Scheduler:
         return len(self.__queue) == 0
 
     def run(self, buf_size:int, packet_size:int) ->None:
+        """멀티 프로세싱 시작 점. 이미지 해시 값, 얼굴 탐지, 얼굴 인식을 진행
+
+        Args:
+            buf_size (int): 멀티프록세싱 큐 사이즈
+            packet_size (int): 패킷 사이즈
         """
-        멀티 프로세싱 시작 점. 이미지 해시 값, 얼굴 탐지, 얼굴 인식을 진행
-        
-        buf_size    - int. 멀티프록세싱 큐 사이즈
-        packet_size - int. 패킷 사이즈
-        """
+
         
         self.__flag:SynchronizedBase = Value('i',PROCESSOR_PAUSE)
         termination_signal:SynchronizedBase = Value('i', 0)

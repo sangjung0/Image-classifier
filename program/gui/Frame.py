@@ -1,10 +1,10 @@
-import sys
 from typing import Type
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QResizeEvent, QCloseEvent
 
 from gui.imageLayer import ImageLayer
 from gui.ImagePanel import ImagePanel
+from gui.Constant import TITLE
 
 from core import DataController
 
@@ -13,8 +13,6 @@ class Frame(QWidget):
     프로그램 기반 위젯 생성
     """
     
-    __TITLE:str = "Image Classifier"
-
     def __init__(self, x: int, y: int, width: int, height: int, 
                  ImageLayer_:Type[ImageLayer] = ImageLayer, 
                  data_controller:DataController = None
@@ -38,7 +36,7 @@ class Frame(QWidget):
         self.init_ui()
         
     def init_ui(self) -> None:
-        self.setWindowTitle(self.__TITLE)
+        self.setWindowTitle(TITLE)
         self.setGeometry(self.__x, self.__y, self.__width, self.__height)
         #self.setStyleSheet("background-color: black;")
 
@@ -59,14 +57,3 @@ class Frame(QWidget):
     def closeEvent(self, event:QCloseEvent) -> None:
         self.__image_layer.closeEvent(event)
         super().closeEvent(event)
-        
-
-# test code
-def main():
-    app = QApplication(sys.argv)
-    main = Frame(100, 100, 500, 500)
-    main.show()
-    sys.exit(app.exec())
-    
-if __name__ == "__main__":
-    pass

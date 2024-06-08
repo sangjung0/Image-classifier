@@ -1,9 +1,14 @@
 import reverse_geocoder as rg
 import math
 
+from core.Constant import GRIDE_SIZE
+
 class ReverseGeocoder:
+    """
     
-    __GRID_SIZE:int = 1
+위도 경도 값을 통해서 지역 이름 가져오는 클래스
+    """
+
     __cache:dict[tuple[int, int], dict[str, str]] = {}
     
     @staticmethod
@@ -28,16 +33,13 @@ class ReverseGeocoder:
         lat_to_km = 2 * math.pi * 6371.0 / 360.0
         lon_to_km = 2 * math.pi * 6371.0 * math.cos(math.radians(latitude)) / 360.0
 
-        grid_lat = round(latitude * lat_to_km / ReverseGeocoder.__GRID_SIZE) * ReverseGeocoder.__GRID_SIZE / lat_to_km
-        grid_lon = round(longitude * lon_to_km / ReverseGeocoder.__GRID_SIZE) * ReverseGeocoder.__GRID_SIZE / lon_to_km
+        grid_lat = round(latitude * lat_to_km / GRIDE_SIZE) * GRIDE_SIZE / lat_to_km
+        grid_lon = round(longitude * lon_to_km / GRIDE_SIZE) * GRIDE_SIZE / lon_to_km
 
         return (grid_lat, grid_lon)
     
     @staticmethod
     def get_location_name(latitude, longitude) -> dict:
-        """
-        위도와 경도를 지역 이름으로 변환
-        """
         if latitude is None or longitude is None:
             return None
         

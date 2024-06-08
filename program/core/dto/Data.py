@@ -5,10 +5,7 @@ from core.dto.Face import Face
 from core.dto.Image import Image
 
 class Data:
-    """
-    DataController의 데이터를 관리함
-    이미지, 이름, 얼굴 데이터를 가지고 있음.
-    """
+    """DataController의 데이터를 관리함. 이미지, 이름, 얼굴 데이터를 가지고 있음."""
     
     __MAX_FACE:int = 3
     
@@ -35,8 +32,10 @@ class Data:
                 image.is_scheduled = False
 
     def search(self, paths:list[pathlib.Path]) -> None:
-        """
-        Thread를 통하여 이미지 데이터를 가져옴
+        """Thread를 통하여 이미지 데이터를 가져옴
+        
+        Args:
+            paths (list[pathlib.Path]): 경로 담은 리스트
         """
         self.__thread = threading.Thread(target=self, args=(paths,))
         self.__thread.start()
