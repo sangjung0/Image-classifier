@@ -1,5 +1,4 @@
 import pathlib
-from threading import Lock
 import numpy as np
 
 
@@ -7,7 +6,7 @@ from core.Storage import Storage
 from core.AutoSave import AutoSave
 from core.DataController import DataController
 from core.scheduler import Scheduler
-from core.dto import Data, Image
+from core.dto import  Image
 
 from utils import PathData
 
@@ -18,14 +17,15 @@ class MainDataController(DataController):
     __PACKET_SIZE:int = 4
     
     def __init__(self, path: pathlib.Path, sub_path:dict[int:pathlib.Path] = {}) -> None:
+        storage = Storage(path)
         paths = list(PathData(path))
-        data = Data()
+        data = storage.load()
         data.search(paths)
         super().__init__(paths, sub_path, data)
         self.__sub_path:dict[int:pathlib.Path] = sub_path
         
-        self.__storage:Storage
-        self.__auto_save:AutoSave
+        self.__storage:Storage = storage
+        self.__auto_save:AutoSave = AutoSave(path, paths, data)
         self.__scheduler:Scheduler = Scheduler(data, paths)
         
         self.__scheduler.run(MainDataController.__BUF_SIZE, MainDataController.__PACKET_SIZE)
@@ -36,7 +36,8 @@ class MainDataController(DataController):
             self.__scheduler.add(image.path)
         return image, ary
 
-    def organization(self) : pass
+    def organization(self):
+        self.__auto_save.organization()
 
     def add_path(self, add_path:pathlib.Path) -> None:
         if len(self.__sub_path) >= MainDataController.__MAX_PATH_COUNT: raise Exception()
@@ -48,4 +49,5 @@ class MainDataController(DataController):
     
     def close(self) -> None:
         self.__scheduler.close()
+        self.__storage.save()
         super().close()
