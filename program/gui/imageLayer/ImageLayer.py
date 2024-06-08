@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import  QWidget, QVBoxLayout
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtGui import QKeyEvent, QMouseEvent, QResizeEvent, QWheelEvent, QCloseEvent
+from PyQt5.QtWidgets import  QWidget
+from PyQt5.QtCore import Qt, QPoint, QTimer
+from PyQt5.QtGui import QKeyEvent, QMouseEvent, QResizeEvent, QWheelEvent, QCloseEvent, QEnterEvent
 
 from gui.imageLayer.interactiveObject import *
 from gui import ImagePanel
@@ -12,7 +12,7 @@ class ImageLayer(QWidget):
     def __init__(self, base:QWidget, image_panel: ImagePanel, data_controller:DataController) -> None:
         super().__init__(base)
         self.__image_panel: ImagePanel = image_panel
-        self.__image_data_viewer: ImageDataViewer = ImageDataViewer(self, lambda : 0, 0.01, 0.99, 300,100, (0, -100))
+        self.__image_data_viewer: ImageDataViewer = ImageDataViewer(self, 0.01, 0.99, 600, 80, (0, -100))
         self.__prev:Prev = Prev(self, self.__prev_event, 0, 0.5, 100, 50, (40, -25))
         self.__next:Next = Next(self, self.__next_event, 1, 0.5, 100, 50, (-140, -25))
         self.__data_controller:DataController = data_controller# 종속성 추가
@@ -22,7 +22,6 @@ class ImageLayer(QWidget):
         self.__prev_pos:QPoint = None
         self.__wheel_pressed:bool = False
         self.__move_event:QPoint = None
-        self.__modal_is_exist:bool = False
         self.__modal:QWidget = None
         
         self.setFocus()
@@ -32,11 +31,13 @@ class ImageLayer(QWidget):
     def __next_event(self) -> None:
         image, ary = self.__data_controller.get_next_image()
         self.__image_panel.set_image(image.characters, ary)
+        if image.is_detected: self.__image_panel.on()
         self.__image_data_viewer.set_data(image.name, image.date, image.path)
         
     def __prev_event(self) -> None:
         image, ary = self.__data_controller.get_prev_image()
         self.__image_panel.set_image(image.characters, ary)
+        if image.is_detected: self.__image_panel.on()
         self.__image_data_viewer.set_data(image.name, image.date, image.path)
 
     def __file_move_event(self, pos:QPoint) -> None:
@@ -66,8 +67,20 @@ class ImageLayer(QWidget):
         except Exception as e:
             print(e)
         print("이미지 검색")
-                
-    def __button_rander(self, b:bool) -> None: pass
+        
+    def show_event(self) -> None:
+        image, _ = self.__data_controller.get_cnt_image()
+        if image.is_detected:
+            self.__image_panel.on()
+        self.__prev.show()
+        self.__next.show()
+        self.__image_data_viewer.show()
+    
+    def hide_event(self) -> None:
+        self.__prev.hide()
+        self.__next.hide()
+        self.__image_data_viewer.hide()
+        self.__image_panel.off()
     
     # -- 이벤트 함수 -- #
     
@@ -100,8 +113,8 @@ class ImageLayer(QWidget):
     def mouseDoubleClickEvent(self, a0: QMouseEvent | None) -> None:
         if a0.button() == Qt.MouseButton.LeftButton:
             num = self.__image_panel.click_event(a0.pos())
-            if num == None:self.__search_modal(self.__data_controller.search_image())
-            else: self.__search_modal(self.__data_controller.search_face(num))
+            if num is None:self.__search_modal(self.__data_controller.search_image())
+            else : self.__search_modal(self.__data_controller.search_face(num))
         super().mouseDoubleClickEvent(a0)
         
     def mousePressEvent(self, a0: QMouseEvent | None) -> None:
@@ -116,7 +129,8 @@ class ImageLayer(QWidget):
         if a0.button() == Qt.MouseButton.MiddleButton:
             self.__wheel_pressed = False
         elif a0.button() == Qt.MouseButton.LeftButton:
-            self.__file_move_event(a0.pos() - self.__move_event)
+            if self.__move_event is not None:
+                self.__file_move_event(a0.pos() - self.__move_event)
         super().mouseReleaseEvent(a0)
         
     def mouseMoveEvent(self, a0: QMouseEvent | None) -> None:
@@ -125,5 +139,12 @@ class ImageLayer(QWidget):
             self.__image_panel.image_move(pos - self.__prev_pos)
             self.__prev_pos = pos
         super().mouseMoveEvent(a0)
+        
+    def enterEvent(self, a0:QEnterEvent):
+        self.show_event()
+        super().enterEvent(a0)
 
+    def leaveEvent(self, a0:QEnterEvent):
+        self.hide_event()
+        super().enterEvent(a0)
 

@@ -1,8 +1,8 @@
 import numpy as np
 from PIL import Image
 from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QGraphicsRectItem
-from PyQt5.QtGui import QPixmap, QImage, QPen, QColor
-from PyQt5.QtCore import Qt, QPoint, QRectF
+from PyQt5.QtGui import QPixmap, QImage, QPen, QColor, QBrush
+from PyQt5.QtCore import Qt, QPoint, QRectF, QTimer
 
 from core.dto import Character
 
@@ -14,6 +14,13 @@ class ImagePanel(QGraphicsView):
     """
     
     __DEFAULT_IMAGE: np.ndarray = np.array(Image.open('./program/resource/test.png').convert('RGB'), dtype=np.uint8)
+    __RECT_COLOR:QColor = QColor(255, 0, 0, 255)
+    __ON_BACKGROUND:QColor = QColor(20, 120, 20)
+    __OFF_BACKGROUND:QColor = QColor(0, 0, 0)
+    __STEP:int = 10
+    __STEP_TIME:int = 10
+    __BACKGROUND_STEP:tuple[float, float, float] = (__ON_BACKGROUND.red()/__STEP,__ON_BACKGROUND.green()/__STEP,__ON_BACKGROUND.blue()/__STEP)
+    __RECT_STEP:float = __RECT_COLOR.alpha()/__STEP
 
     def __init__(self, base:QWidget) -> None:
         """
@@ -35,7 +42,62 @@ class ImagePanel(QGraphicsView):
         self.__scene.addItem(self.__image_item)
         self.setScene(self.__scene)
         
+        self.__on_timer = QTimer(self)
+        self.__on_timer.timeout.connect(self.__update_on_color)
+        self.__off_timer = QTimer(self)
+        self.__off_timer.timeout.connect(self.__update_off_color)
+        
+        self.__current_background_color:QColor = QColor(self.__class__.__OFF_BACKGROUND.red(), self.__class__.__OFF_BACKGROUND.green(), self.__class__.__OFF_BACKGROUND.blue())
+        self.__current_rect_color:QColor = QColor(self.__class__.__RECT_COLOR.red(), self.__class__.__RECT_COLOR.green(), self.__class__.__RECT_COLOR.blue(), self.__class__.__RECT_COLOR.alpha())
+        self.__background_brush:QBrush = QBrush(self.__current_background_color)
+        self.__pen:QPen = QPen(QBrush(self.__current_rect_color), 2, Qt.PenStyle.SolidLine)
+        
+        self.setBackgroundBrush(self.__background_brush)
         self.draw_image()
+        
+    def __update_on_color(self) -> None:
+        self.__current_background_color.setRed(min(int(self.__current_background_color.red()+self.__BACKGROUND_STEP[0]), self.__ON_BACKGROUND.red()))
+        self.__current_background_color.setGreen(min(int(self.__current_background_color.green()+self.__BACKGROUND_STEP[1]), self.__ON_BACKGROUND.green()))
+        self.__current_background_color.setBlue(min(int(self.__current_background_color.blue()+self.__BACKGROUND_STEP[2]), self.__ON_BACKGROUND.blue()))
+        
+        self.__current_rect_color.setAlpha(min(int(self.__current_rect_color.alpha()+self.__RECT_STEP), 255))
+        
+        self.__background_brush.setColor(self.__current_background_color)
+        self.setBackgroundBrush(self.__background_brush)
+        self.__pen.setColor(self.__current_rect_color)
+        for i in range(len(self.__faces)):
+            self.__face_rect[i].setPen(self.__pen)
+        
+        if self.__current_background_color == self.__class__.__ON_BACKGROUND and self.__current_rect_color.alpha() == 255:
+            self.__off_timer.stop()
+            self.__on_timer.stop()
+        
+    def __update_off_color(self) -> None:
+        self.__current_background_color.setRed(max(int(self.__current_background_color.red()-self.__BACKGROUND_STEP[0]), self.__OFF_BACKGROUND.red()))
+        self.__current_background_color.setGreen(max(int(self.__current_background_color.green()-self.__BACKGROUND_STEP[1]), self.__OFF_BACKGROUND.green()))
+        self.__current_background_color.setBlue(max(int(self.__current_background_color.blue()-self.__BACKGROUND_STEP[2]), self.__OFF_BACKGROUND.blue()))
+        
+        self.__current_rect_color.setAlpha(max(int(self.__current_rect_color.alpha()-self.__RECT_STEP), 0))
+        
+        self.__background_brush.setColor(self.__current_background_color)
+        self.setBackgroundBrush(self.__background_brush)
+        self.__pen.setColor(self.__current_rect_color)
+        for i in range(len(self.__faces)):
+            self.__face_rect[i].setPen(self.__pen)
+            
+        if self.__current_background_color == self.__class__.__OFF_BACKGROUND and self.__current_rect_color.alpha() == 0:
+            self.__off_timer.stop()
+            self.__on_timer.stop()
+        
+    def on(self) -> None:
+        self.__off_timer.stop()
+        self.set_face()
+        self.__on_timer.start(self.__class__.__STEP_TIME)
+    
+    def off(self) -> None:
+        self.__on_timer.stop()
+        self.__off_timer.start(self.__class__.__STEP_TIME)
+        self.remove_faces()
         
     def set_image(self, face:dict[int:Character], image: np.ndarray) -> None:
         """ 
@@ -44,6 +106,7 @@ class ImagePanel(QGraphicsView):
         image -- np.ndarray 이미지
         """
         
+        self.off()
         self.remove_faces()
         if not isinstance(image, np.ndarray):
             self.__image = ImagePanel.__DEFAULT_IMAGE
@@ -51,25 +114,23 @@ class ImagePanel(QGraphicsView):
         else:
             self.__image = image
             self.__faces = face
+        self.add_face()
         self.draw_image()
-        self.set_face()
         self.resize_event()
         
+    def add_face(self) -> None:
+        for _ in range(len(self.__faces) - len(self.__face_rect)):
+            rect = QGraphicsRectItem()
+            rect.setPen(self.__pen)
+            self.__face_rect.append(rect)
+        
     def set_face(self) -> None:
-        pen = QPen(QColor(255, 0, 0), 2, Qt.PenStyle.SolidLine)
         for i in range(len(self.__faces)):
-            rect = None
-            if i >= len(self.__face_rect):
-                rect = QGraphicsRectItem()
-                rect.setPen(pen)
-                self.__face_rect.append(rect)
-            else:
-                rect = self.__face_rect[i]
-            self.__scene.addItem(rect)
+            self.__scene.addItem(self.__face_rect[i])
         
     def draw_faces(self, x:float, y:float) -> None:
         for i, face in enumerate(self.__faces.values()):
-            if i >= len(self.__face_rect): self.set_face()
+            if i >= len(self.__face_rect): self.add_face()
             rect = self.__face_rect[i]
             fx, fy = face.pos
             width, height = face.size
@@ -185,6 +246,6 @@ class ImagePanel(QGraphicsView):
     def click_event(self, pos:QPoint) -> int:
         scene_pos = self.mapToScene(pos)
         
-        for i, rect in enumerate(self.__face_rect):
-            if rect.contains(scene_pos - rect.pos()):
+        for i in range(len(self.__faces)):
+            if self.__face_rect[i].contains(scene_pos - self.__face_rect[i].pos()):
                 return i

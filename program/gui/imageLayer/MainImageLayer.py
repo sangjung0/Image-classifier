@@ -24,6 +24,16 @@ class MainImageLayer(ImageLayer):
         self.__new_folder.resize_event(size)
         self.__auto_save.resize_event(size)
         super().resizeEvent(event)
+        
+    def hide_event(self)->None:
+        self.__new_folder.hide()
+        self.__auto_save.hide()
+        super().hide_event()
+    
+    def show_event(self) ->None:
+        self.__new_folder.show()
+        self.__auto_save.show()
+        super().show_event()
 
     def __new_folder_event(self) -> None:
         self.__add_path.show(self.mapToGlobal(self.geometry().center()))
@@ -33,4 +43,5 @@ class MainImageLayer(ImageLayer):
             message_box(self, "add path error", "sub path is full")
         else: self.__data_controller.add_path(path)
         
-    def __auto_organization(self) -> None: pass
+    def __auto_organization(self) -> None:
+        self.__data_controller.organization()
