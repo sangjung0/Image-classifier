@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 
 from gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
-from gui.Constant import AUTO_ORGANIZATION_NAME, AUTO_ORGANIZATION_WIDTH, AUTO_ORGANIZATION_HEIGHT, AUTO_ORGANIZATION_X_RATIO, AUTO_ORGANIZATION_Y_RATIO
+from gui.Constant import AUTO_ORGANIZATION_NAME, AUTO_ORGANIZATION_WIDTH, AUTO_ORGANIZATION_HEIGHT, AUTO_ORGANIZATION_X_RATIO, AUTO_ORGANIZATION_Y_RATIO, AUTO_ORGANIZATION_AXES
 
 
 class AutoSave(InteractiveObject):
@@ -13,7 +13,7 @@ class AutoSave(InteractiveObject):
                  y_ratio: float = AUTO_ORGANIZATION_Y_RATIO, 
                  width: int = AUTO_ORGANIZATION_WIDTH, 
                  height: int = AUTO_ORGANIZATION_HEIGHT, 
-                 axes: tuple[int] = (0, 0)
+                 axes: tuple[int] = AUTO_ORGANIZATION_AXES
                  ) -> None:
         super().__init__(AUTO_ORGANIZATION_NAME, base, callback, x_ratio, y_ratio, width, height, axes)
         

@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 
 from gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
-from gui.Constant import NEXT_HEIGHT, NEXT_NAME, NEXT_WIDTH, NEXT_X_RATIO, NEXT_Y_RATIO
+from gui.Constant import NEXT_HEIGHT, NEXT_NAME, NEXT_WIDTH, NEXT_X_RATIO, NEXT_Y_RATIO, NEXT_AXES
 
 class Next(InteractiveObject):
 
@@ -12,7 +12,7 @@ class Next(InteractiveObject):
                  y_ratio: float = NEXT_Y_RATIO, 
                  width: int = NEXT_WIDTH, 
                  height: int = NEXT_HEIGHT, 
-                 axes:tuple[int] = (0, 0)
+                 axes:tuple[int] = NEXT_AXES
                  ) -> None:
         super().__init__(NEXT_NAME, base, callback, x_ratio, y_ratio, width, height, axes)
     

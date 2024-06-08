@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 
 from gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
-from gui.Constant import PREV_HEIGHT, PREV_NAME, PREV_WIDTH, PREV_X_RATIO, PREV_Y_RATIO
+from gui.Constant import PREV_HEIGHT, PREV_NAME, PREV_WIDTH, PREV_X_RATIO, PREV_Y_RATIO, PREV_AXES
 
 class Prev(InteractiveObject):
 
@@ -12,7 +12,7 @@ class Prev(InteractiveObject):
                  y_ratio: float = PREV_Y_RATIO, 
                  width: int = PREV_WIDTH, 
                  height: int = PREV_HEIGHT, 
-                 axes: tuple[int] = (0, 0)
+                 axes: tuple[int] = PREV_AXES
                  ) -> None:
         super().__init__(PREV_NAME, base, callback, x_ratio, y_ratio, width, height, axes)
         

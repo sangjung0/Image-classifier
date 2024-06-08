@@ -50,9 +50,9 @@ MAIN_FRAME_Y:int = 0
 MAIN_FRAME_WIDTH:int = 800
 MAIN_FRAME_HEIGHT:int = 600
 
-DEFAULT_IMAGE:str = './program/resource/test.png'
-IMAGE_PANEL_RECT_COLOR:tuple[int, int, int, int] = (255, 0, 0, 255)
-IMAGE_PANEL_ON_BACKGROUND:tuple[int, int, int] = (20, 120, 20)
+DEFAULT_IMAGE:str = './resource/test.png'
+IMAGE_PANEL_RECT_COLOR:tuple[int, int, int, int] = (150, 150, 150, 255)
+IMAGE_PANEL_ON_BACKGROUND:tuple[int, int, int] = (120, 120, 120)
 IMAGE_PANEL_OFF_BACKGROUND:tuple[int, int, int] = (0, 0, 0)
 IMAGE_STEP:int = 10
 IMAGE_STEP_TIME:int = 10

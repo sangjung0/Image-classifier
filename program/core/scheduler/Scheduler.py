@@ -11,7 +11,7 @@ from core.dto import Data
 from core.scheduler.dto import Converter, Packet, PacketData
 from core.scheduler.processor import *
 from core.scheduler.transceiver import *
-from core.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE, PROCESSOR_START
+from core.Constant import PROCESSOR_STOP, PROCESSOR_PAUSE, PROCESSOR_START, SCHEDULER_LOGER
 
 from utils import Loger, Timer
 
@@ -28,7 +28,7 @@ class Scheduler:
         
         self.__queue: deque[pathlib.Path] = deque(paths)
         self.__name:str = "scheduler"
-        self.__loger_is_print:bool = False
+        self.__loger_is_print:bool = SCHEDULER_LOGER
         self.__data:Data = data
         self.__lock:Lock = Lock()
         self.__processes:list[Process] = []

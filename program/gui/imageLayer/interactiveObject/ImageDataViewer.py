@@ -3,7 +3,7 @@ import pathlib
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PyQt5.QtCore import QSize
 
-from Constant import IMAGE_DATA_VIEWER_HEIGHT, IMAGE_DATA_VIEWER_WIDTH, IMAGE_DATA_VIEWER_X_RATIO, IMAGE_DATA_VIEWER_Y_RATIO
+from gui.Constant import IMAGE_DATA_VIEWER_HEIGHT, IMAGE_DATA_VIEWER_AXES, IMAGE_DATA_VIEWER_WIDTH, IMAGE_DATA_VIEWER_X_RATIO, IMAGE_DATA_VIEWER_Y_RATIO
 
 class ImageDataViewer(QWidget):
     """QWidget을 상속받는 이미지 데이터를 표시하는 클래스"""
@@ -14,7 +14,8 @@ class ImageDataViewer(QWidget):
                  y_ratio: float = IMAGE_DATA_VIEWER_Y_RATIO, 
                  width: int = IMAGE_DATA_VIEWER_WIDTH,
                  height: int = IMAGE_DATA_VIEWER_HEIGHT, 
-                 axes:tuple[int] = (0, 0)) -> None:
+                 axes:tuple[int] = IMAGE_DATA_VIEWER_AXES
+                 ) -> None:
         super().__init__(base)
         
         self.__x_ratio: float = x_ratio
