@@ -5,3 +5,5 @@ pillow==10.2.0
 numpy==1.26.4
 pyqt5==5.15.10
 cmake
+reverse_geocoder
+scikit-learn
