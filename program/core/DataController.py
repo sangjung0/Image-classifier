@@ -42,13 +42,7 @@ class DataController:
         else:
             ary = image.image
             self.__cache[path] = ary
-            
-        print(f"""
-              name : {image.name}
-              date: {image.date}
-              time: {image.time}
-              hash: {image.is_detected}
-              """)
+
         return image, ary
 
     def get_next_image(self) -> tuple[Image, np.ndarray]:
@@ -73,16 +67,13 @@ class DataController:
         if len(paths) == 0: return None
         return DataController(paths, self.__sub_path, self.__images)
 
-    def stop_search(self) -> None: pass
-
     def move(self, n: int) -> bool: 
         if n >= len(self.__sub_path): return False
         src = self.__image_path[self._cnt_image_index]
         dest:pathlib.Path = self.__sub_path[n] / src.name
         src.rename(dest)
         self.__images.delete(src)
-        index = self.__image_path.index(src)
-        self.__image_path[index] = dest   
+        self.__image_path[self.__image_path.index(src)] = dest   
         return True
     
     def __image_index(self, value:int) -> None:
