@@ -22,6 +22,7 @@ class Storage:
                     data =  pickle.load(file)
                     if isinstance(data, Data):
                         self.__data = data
+                        data.init()
                         return data
             except Exception as _: pass
         self.__data = Data()

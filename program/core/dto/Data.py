@@ -13,21 +13,26 @@ class Data:
     __MAX_FACE:int = 3
     
     def __init__(self) -> None:
-        self.__image: dict[pathlib.Path: Image] = dict()
-        self.__name: dict[int: str] = dict()
-        self.__faces: dict[int: list[Face]] = dict()
+        self.__image: dict[pathlib.Path, Image] = dict()
+        self.__name: dict[int, str] = dict()
+        self.__faces: dict[int, list[Face]] = dict()
         self.__lock:threading.Lock = threading.Lock()
         
         self.__flag:bool = False
         self.__thread:threading.Thread = None
         
     @property
-    def faces(self) -> dict[int: list[Face]]:
+    def faces(self) -> dict[int, list[Face]]:
         return self.__faces
     
     @property
-    def name(self) -> dict[int: str]:
+    def name(self) -> dict[int, str]:
         return self.__name
+    
+    def init(self)->None:
+        for image in self.__image.values():
+            if not image.is_detected:
+                image.is_scheduled = False
 
     def search(self, paths:list[pathlib.Path]) -> None:
         """

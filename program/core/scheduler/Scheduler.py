@@ -205,6 +205,7 @@ class Scheduler:
                         loger("데이터 수신 후 압축 해제", option=timer)
                         if ret: 
                             for i in data:
+                                if i.path == None: break
                                 image = self.__data.get_image(i.path)
                                 characters = i.characters
                                 for k in characters:
