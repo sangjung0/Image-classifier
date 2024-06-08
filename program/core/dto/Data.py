@@ -39,7 +39,7 @@ class Data:
     def __call__(self, paths:list[pathlib.Path]) -> None:
         for path in paths:
             if self.__flag: break
-            if not path in self.__image:
+            if not path in self.__image and path.exists():
                 image = Image(path)
                 with self.__lock:
                     self.__image[path] = image
@@ -71,3 +71,15 @@ class Data:
         with self.__lock:
             del self.__image[src]
         
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        
+        del state['_Data__lock']
+        del state['_Data__thread']
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        
+        self.__lock:threading.Lock = threading.Lock()
+        self.__thread:threading.Thread = None
