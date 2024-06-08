@@ -6,22 +6,22 @@ from core.scheduler.dto import Packet
 
 class FaceClassifier(Processor):
     
-    __THRESHOLD:float = 0.6
+    __THRESHOLD:float = 0.4
     __MAX_FACE:int = 3
     
-    def __init__(self, name:str, faces:dict[int:list[Face]],loger_is_print:bool = False):
+    def __init__(self, name:str, faces:dict[int:list[Face]],loger_is_print:bool = False) -> None:
         super().__init__(name, loger_is_print)
         self.__faces:dict[int:list[Face]] = faces
     
     def compare(self, embedding_1:np.ndarray, embedding_2:np.ndarray) -> bool:
-        return np.linalg.norm(embedding_1 - embedding_2) < FaceClassifier.__THRESHOLD
+        return np.linalg.norm(embedding_1 - embedding_2) < self.__class__.__THRESHOLD
     
     def set_face(self, n: int, face: Face) -> None:
         self.__faces[n].append(face)
-        if(len(self.__faces[n]) > FaceClassifier.__MAX_FACE):
+        if(len(self.__faces[n]) > self.__class__.__MAX_FACE):
             self.__faces[n].pop(0)
             
-    def processing(self, value:Packet):
+    def processing(self, value:Packet) -> Packet:
         
         for p in value:
             if p.path == None: break

@@ -1,26 +1,56 @@
 import datetime
 import pathlib
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PyQt5.QtCore import QSize
 
-from gui.imageLayer.interactiveObject.InteractiveObject import InteractiveObject
 
-
-class ImageDataViewer(InteractiveObject):
+class ImageDataViewer(QWidget):
     __X_RATIO:float = 0
     __Y_RATIO:float = 0
     __WIDTH:int = 200
     __HEIGHT:int = 100
 
-    def __init__(self, base:QWidget, callback: callable, x_ratio: float = __X_RATIO, y_ratio: float = __Y_RATIO, width: int = __WIDTH, height: int = __HEIGHT, axes:tuple[int] = (0, 0)) -> None:
-        super().__init__("",base, callback, x_ratio, y_ratio, width, height, axes)
-        self.set_data("test", datetime.datetime.now(), pathlib.Path("/image/"))
+    def __init__(self, base:QWidget, x_ratio: float = __X_RATIO, y_ratio: float = __Y_RATIO, width: int = __WIDTH, height: int = __HEIGHT, axes:tuple[int] = (0, 0)) -> None:
+        super().__init__(base)
         
+        self.__x_ratio: float = x_ratio
+        self.__y_ratio: float = y_ratio
+        self.__axes: tuple[int] = axes
+        self.__width: int = width
+        self.__height: int = height
+        
+        self.__name:QLabel = QLabel(self)
+        self.__date:QLabel = QLabel(self)
+        self.__path:QLabel = QLabel(self)
+        
+        self.__name.setMargin(2)
+        self.__date.setMargin(2)
+        self.__path.setMargin(2)
+        self.setStyleSheet("background-color: rgba(0,0,0,100); color: white;")
+        
+        layout = QVBoxLayout()
+        layout.setSpacing(0)
+        layout.addWidget(self.__name)
+        layout.addWidget(self.__date)
+        layout.addWidget(self.__path)
+        
+        self.setLayout(layout)
+        
+        self.setGeometry(0, 0, self.__width, self.__height)
+        self.set_data("None", datetime.datetime.now(), pathlib.Path("/image/"))
+
+    def resize_event(self, size:QSize) -> None:
+        """
+        크기에 따라 x, y 값 비율로 위치 조정
+        
+        size: QSize
+        """
+
+        self.move(int(size.width() * self.__x_ratio) + self.__axes[0], int(size.height() * self.__y_ratio + self.__axes[1]))
 
     def set_data(self, name: str, dt: datetime.datetime, path: pathlib.Path) -> None:
-        self.setText(f"""
-        name : {name}
-        dt : {dt}
-        path : {path}         
-        """)
+        self.__name.setText(name)
+        self.__date.setText(str(dt))
+        self.__path.setText(str(path))
     
     
