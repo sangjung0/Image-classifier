@@ -39,8 +39,7 @@ class MainDataController(DataController):
 
     def add_path(self, add_path:pathlib.Path) -> None:
         if len(self.__sub_path) >= SCHEDULER_MAX_PATH_COUNT: raise Exception()
-        self.__sub_path.append(add_path)
-        
+        self.__sub_path[len(self.__sub_path)] = add_path
     def sub_path_is_full(self) -> bool:
         if len(self.__sub_path) >= SCHEDULER_MAX_PATH_COUNT: return True
         return False 

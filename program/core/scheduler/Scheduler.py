@@ -138,12 +138,12 @@ class Scheduler:
         
         self.__flag.value = PROCESSOR_STOP
         
-        for p in self.__processes: p.join(0.1)
+        for p in self.__processes: p.join(0.2)
         for q in self.__queues:
             q.close()
             q.join_thread()
         for t in self.__threads:
-            t.join(0.1)
+            t.join()
         
     def __sender(self, packet_size:int, termination_signal: SynchronizedBase, queue:Queue) -> None:
         # --
@@ -157,15 +157,15 @@ class Scheduler:
         i = 0
         try:
             while True:
-                if self.is_empty():
+                if self.__flag.value == PROCESSOR_STOP:
+                    break
+                elif self.is_empty():
                     if i == 0: break
                     for i in range(packet_size): packet_ary[i].path = None
                     timer.measure(lambda: converter.send(packet))
                     break
-                if self.__flag.value == PROCESSOR_PAUSE:
+                elif self.__flag.value == PROCESSOR_PAUSE:
                     time.sleep(0.1)
-                elif self.__flag.value == PROCESSOR_STOP:
-                    break
                 else:
                     path = self.poll()
                     image = self.__data.get_image(path)
@@ -175,7 +175,12 @@ class Scheduler:
                     i += 1
                     if i == packet_size:
                         i = 0
-                        timer.measure(lambda: converter.send(packet))
+                        while True:
+                            try:
+                                timer.measure(lambda: converter.send(packet))
+                            except EQ.Full:
+                                continue
+                            break
                         loger("데이터 압축 후 송신", option=timer)
         except Exception as e:
             loger("쓰레드 오류",e, option="error") # loger
@@ -195,10 +200,10 @@ class Scheduler:
         
         try:
             while True:
-                if self.__flag.value == PROCESSOR_PAUSE:
-                    time.sleep(0.1)
-                elif self.__flag.value == PROCESSOR_STOP:
+                if self.__flag.value == PROCESSOR_STOP:
                     break
+                elif self.__flag.value == PROCESSOR_PAUSE:
+                    time.sleep(0.1)
                 else:
                     try:
                         ret, data = timer.measure(lambda : converter.receive())

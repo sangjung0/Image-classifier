@@ -46,7 +46,6 @@ class Processor:
                 else:
                     if receiver.is_empty():
                         if not receiver_thread.is_alive():
-                            termination_signal.value += 1
                             break
                         time.sleep(0.01)
                     else:
@@ -61,6 +60,7 @@ class Processor:
         if receiver_thread is not None: receiver_thread.join()
         if sender_thread is not None: sender_thread.join()
         loger(os.getpid(), "종료", option="terminate")
+        termination_signal.value += 1
         
     def processing(self, value:Packet) -> Packet:
         raise Exception("구현 안됨")

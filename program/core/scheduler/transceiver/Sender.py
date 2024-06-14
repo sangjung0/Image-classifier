@@ -1,5 +1,6 @@
 from multiprocessing.sharedctypes import SynchronizedBase
 from multiprocessing import Queue
+import queue as EQ
 import time
 
 from core.scheduler.transceiver.Transceiver import Transceiver
@@ -39,11 +40,15 @@ class Sender(Transceiver):
                         time.sleep(0.01)
                     else:
                         data = self.get()
-                        timer.measure(lambda :converter.send(data))
-                        loger("데이터 압축 후 송신", option=timer)
+                        while flag.value != PROCESSOR_STOP:
+                            try:
+                                timer.measure(lambda: converter.send(data))
+                            except EQ.Full:
+                                continue
+                            loger("데이터 압축 후 송신", option=timer)
+                            break
         except Exception as e:
             loger("쓰레드 오류",e, option="error") # loger
             flag.value = PROCESSOR_STOP
         loger(f"압축 후 송신 평균 속도 {timer.average}", option='result') # loger
         loger("쓰레드 종료", option='terminate') # loger
-        return

@@ -18,7 +18,7 @@ class Converter:
         self.__source: Queue = source
         
     def __compress(self, value:np.ndarray) -> bytes:
-        if value is None: return None
+        if not isinstance(value, np.ndarray): return value
         byteIo = io.BytesIO()
         Image.fromarray(value).save(byteIo, format='JPEG')
         return byteIo.getvalue()
@@ -29,7 +29,7 @@ class Converter:
         
     def send(self, value: Packet) -> None:
         for i in value: i.image = (self.__compress(i.image))
-        self.__source.put(value)
+        self.__source.put(value, timeout=CONVERTER_TIMEOUT)
 
     def receive(self) -> tuple[bool, Packet]:
         value = self.__source.get(timeout=CONVERTER_TIMEOUT)
