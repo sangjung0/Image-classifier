@@ -26,6 +26,7 @@
 
 ### Windows 실행 파일
 dist 폴더내의 Main.exe 실행. dist 폴더 내의 resource 폴더도 꼭 같은 경로에 있어야 합니다.
+** 실행파일로 자동 정리시 라이브러리 문제로 중단됩니다. 개발 도구를 통한 실행 후 자동정리하면 문제 없습니다.
 
 ### 개발 도구
 python 3.11 버전으로 requirements.txt 내의 모듈들을 적용하고 program 폴더 안의 Main.py를 실행하면 됩니다.
