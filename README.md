@@ -5,8 +5,8 @@
 
   <br>
   
-  <a href="https://github.com/sangjung0/Schedular/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=sangjung0/Schedular" />
+  <a href="https://github.com/sangjung0/Image_classifier/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=sangjung0/Image_classifier" />
   </a>
   
   <br>
